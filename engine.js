@@ -1,0 +1,274 @@
+(function () {
+  "use strict";
+
+  var state = { name: "", charClass: "", flags: {}, history: [] };
+
+  var setupContentEl  = document.getElementById("setup-content");
+  var sceneChapterEl  = document.getElementById("scene-chapter");
+  var sceneTitleEl    = document.getElementById("scene-title");
+  var sceneLocationEl = document.getElementById("scene-location");
+  var classBadgeEl    = document.getElementById("class-badge");
+  var sceneTextEl     = document.getElementById("scene-text");
+  var sceneInteractEl = document.getElementById("scene-interact");
+
+  /* ---- DOM UTILITIES (same patterns as original) ---- */
+
+  function showPage(id) {
+    document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
+    document.getElementById(id).classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  function addP(container, text, variant) {
+    var p = document.createElement("p");
+    p.className = "passage" + (variant ? " " + variant : "");
+    p.textContent = text;
+    container.appendChild(p);
+    p.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return p;
+  }
+
+  function addPs(container, lines, variant) {
+    for (var i = 0; i < lines.length; i++) addP(container, lines[i], variant);
+  }
+
+  function clearInteract(el) {
+    el.innerHTML = "";
+    el.hidden = true;
+  }
+
+  function renderContinue(el, label, onClick) {
+    el.innerHTML = "";
+    el.hidden = false;
+    var row = document.createElement("div");
+    row.className = "btn-row";
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "primary";
+    btn.textContent = label;
+    btn.addEventListener("click", onClick);
+    row.appendChild(btn);
+    el.appendChild(row);
+    el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    btn.focus();
+  }
+
+  /* ---- SETUP FLOW ---- */
+
+  function startGame() {
+    state = { name: "", charClass: "", flags: {}, history: [] };
+    showPage("page-setup");
+    showSetupIntro();
+  }
+
+  function showSetupIntro() {
+    setupContentEl.innerHTML = "";
+
+    var intro = document.createElement("p");
+    intro.className = "setup-intro-text";
+    intro.textContent = "Dark clouds hang over the city of Thornwall. An ancient evil stirs within Valdrath's Keep, and the dead walk once more. A desperate lord needs a hero — and that hero is you.";
+
+    var row = document.createElement("div");
+    row.className = "btn-row";
+    row.style.marginTop = "1.5rem";
+
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "primary";
+    btn.textContent = "Begin Your Journey";
+    btn.addEventListener("click", askName);
+
+    row.appendChild(btn);
+    setupContentEl.appendChild(intro);
+    setupContentEl.appendChild(row);
+    btn.focus();
+  }
+
+  function askName() {
+    setupContentEl.innerHTML = "";
+
+    var label = document.createElement("p");
+    label.className = "setup-prompt";
+    label.id = "setup-name-label";
+    label.textContent = "What is your name, adventurer?";
+
+    var field = document.createElement("div");
+    field.className = "setup-field";
+
+    var input = document.createElement("input");
+    input.type = "text";
+    input.autocomplete = "off";
+    input.placeholder = "Enter your name…";
+    input.setAttribute("aria-labelledby", "setup-name-label");
+    input.setAttribute("aria-describedby", "name-error");
+
+    var error = document.createElement("p");
+    error.className = "error-msg";
+    error.id = "name-error";
+    error.setAttribute("aria-live", "assertive");
+
+    var row = document.createElement("div");
+    row.className = "btn-row";
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "primary";
+    btn.textContent = "Continue";
+    btn.disabled = true;
+
+    function trimmed() { return input.value.trim(); }
+    function sync() { btn.disabled = !trimmed(); }
+    function submit() {
+      var v = trimmed();
+      if (!v) { error.textContent = "Please enter your name."; input.focus(); return; }
+      state.name = v;
+      askClass();
+    }
+
+    input.addEventListener("input", function () { sync(); if (trimmed()) error.textContent = ""; });
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); submit(); } });
+    btn.addEventListener("click", submit);
+
+    row.appendChild(btn);
+    field.appendChild(input);
+    field.appendChild(error);
+    field.appendChild(row);
+    setupContentEl.appendChild(label);
+    setupContentEl.appendChild(field);
+    input.focus();
+  }
+
+  var CLASS_DEFS = [
+    { id: "fighter", name: "Fighter", tag: "Strength & Steel",  desc: "Master of arms and armor. Your combat prowess gives you an edge in direct confrontations." },
+    { id: "wizard",  name: "Wizard",  tag: "Arcane Mastery",    desc: "Scholar of the arcane arts. Your knowledge opens doors — and minds — closed to others." },
+    { id: "rogue",   name: "Rogue",   tag: "Shadow & Cunning",  desc: "A creature of shadow. Locks, traps, and going unnoticed are your greatest weapons." },
+    { id: "cleric",  name: "Cleric",  tag: "Divine Favor",      desc: "Bearer of holy power. Your faith grants healing, light, and dominion over the undead." }
+  ];
+
+  function askClass() {
+    setupContentEl.innerHTML = "";
+
+    var label = document.createElement("p");
+    label.className = "setup-prompt";
+    label.textContent = "Choose your class, " + state.name + ":";
+    setupContentEl.appendChild(label);
+
+    var grid = document.createElement("div");
+    grid.className = "class-grid";
+    grid.setAttribute("role", "group");
+    grid.setAttribute("aria-label", "Choose your class");
+
+    CLASS_DEFS.forEach(function (cls) {
+      var card = document.createElement("button");
+      card.type = "button";
+      card.className = "class-card " + cls.id;
+
+      var name = document.createElement("div");
+      name.className = "class-card-name";
+      name.textContent = cls.name;
+
+      var tag = document.createElement("div");
+      tag.className = "class-card-tag";
+      tag.textContent = cls.tag;
+
+      var desc = document.createElement("div");
+      desc.className = "class-card-desc";
+      desc.textContent = cls.desc;
+
+      card.appendChild(name);
+      card.appendChild(tag);
+      card.appendChild(desc);
+      card.addEventListener("click", function () {
+        state.charClass = cls.id;
+        beginStory();
+      });
+      grid.appendChild(card);
+    });
+
+    setupContentEl.appendChild(grid);
+    grid.querySelector("button").focus();
+  }
+
+  /* ---- SCENE ENGINE ---- */
+
+  var BADGE_LABELS = { fighter: "⚔ Fighter", wizard: "✦ Wizard", rogue: "◆ Rogue", cleric: "✧ Cleric" };
+
+  function beginStory() {
+    classBadgeEl.textContent = BADGE_LABELS[state.charClass] || state.charClass;
+    classBadgeEl.className = "class-badge " + state.charClass;
+    loadScene(window.STORY.start);
+  }
+
+  function loadScene(id) {
+    var scene = window.STORY.scenes[id];
+    if (!scene) { console.error("Missing scene:", id); return; }
+
+    state.history.push(id);
+    showPage("page-scene");
+
+    sceneChapterEl.textContent  = scene.chapter  || "";
+    sceneTitleEl.textContent    = scene.title     || "";
+    sceneLocationEl.textContent = scene.location  || "";
+
+    sceneTextEl.innerHTML = "";
+    var paras = scene.paragraphs || [];
+    var lines = paras.map(function (p) { return typeof p === "function" ? p(state) : p; });
+    addPs(sceneTextEl, lines);
+
+    clearInteract(sceneInteractEl);
+
+    if (scene.isEnding) {
+      renderContinue(sceneInteractEl, "Play Again", startGame);
+    } else {
+      renderChoices(scene.choices || [], scene.choicePrompt);
+    }
+  }
+
+  function resolveNext(next) {
+    if (typeof next === "string") return next;
+    return next[state.charClass] || next["default"] || "";
+  }
+
+  function renderChoices(choices, prompt) {
+    var visible = choices.filter(function (c) {
+      if (c.onlyFor && c.onlyFor.indexOf(state.charClass) === -1) return false;
+      if (c.requiresFlag && !state.flags[c.requiresFlag]) return false;
+      return true;
+    });
+
+    if (!visible.length) return;
+
+    sceneInteractEl.hidden = false;
+
+    if (visible.length === 1) {
+      renderContinue(sceneInteractEl, visible[0].text, function () { applyChoice(visible[0]); });
+      return;
+    }
+
+    var promptEl = document.createElement("p");
+    promptEl.className = "choice-prompt";
+    promptEl.textContent = prompt || "What do you do?";
+    sceneInteractEl.appendChild(promptEl);
+
+    var row = document.createElement("div");
+    row.className = "btn-row choices-col";
+
+    visible.forEach(function (choice) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = choice.text;
+      btn.addEventListener("click", function () { applyChoice(choice); });
+      row.appendChild(btn);
+    });
+
+    sceneInteractEl.appendChild(row);
+    sceneInteractEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    row.querySelector("button").focus();
+  }
+
+  function applyChoice(choice) {
+    if (choice.setsFlag) state.flags[choice.setsFlag] = true;
+    loadScene(resolveNext(choice.next));
+  }
+
+  startGame();
+})();
