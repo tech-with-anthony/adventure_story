@@ -224,6 +224,7 @@
   }
 
   function resolveNext(next) {
+    if (typeof next === "function") return next(state);
     if (typeof next === "string") return next;
     return next[state.charClass] || next["default"] || "";
   }

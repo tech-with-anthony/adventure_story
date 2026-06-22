@@ -1,4 +1,4 @@
-/* story-data.js — stub for engine verification. Full story added next. */
+/* story-data.js — The Curse of Valdrath's Keep: complete scene graph */
 window.STORY = {
   start: "tavern",
   scenes: {
@@ -815,6 +815,328 @@ window.STORY = {
       ],
       choices: [
         { text: "Step through into the crypt.", next: "crypt_descent" }
+      ]
+    },
+
+    /* ================================================================
+       ACT III — THE CRYPT & MALACHAR'S SANCTUM
+    ================================================================ */
+
+    "crypt_descent": {
+      chapter: "Act III — The Crypt",
+      title: "Into the Dark Below",
+      location: "Valdrath's Keep — The Crypt",
+      paragraphs: [
+        "The crypt is older than the keep above it. The stone here was cut before Valdrath's family ever claimed this land — older work, from builders whose names are not recorded.",
+        "Alcoves line the walls, each sealed with an iron plaque. The dead here are old enough that they don't move. Whatever Malachar commands, he spares the oldest resting here — or perhaps he simply can't reach that far back.",
+        "At the far end of the crypt, a passage opens into a lit chamber. The green light is constant now — not flickering. Waiting.",
+        function (s) {
+          var items = [];
+          if (s.flags.has_phylactery) items.push("the phylactery in your pocket pulses like a heartbeat");
+          if (s.flags.altar_restored) items.push("the warmth of the reconsecrated altar still lingers at your back");
+          if (s.flags.knows_phylactery) items.push("you know what needs to be done");
+          if (items.length === 0) return "You walk toward the light with everything you have.";
+          return "As you walk: " + items.join(", ") + ".";
+        }
+      ],
+      choices: [
+        { text: "Enter the sanctum.", next: "crypt_puzzle" }
+      ]
+    },
+
+    "crypt_puzzle": {
+      chapter: "Act III — The Crypt",
+      title: "The Trial of the Ancients",
+      location: "Valdrath's Keep — The Seal Chamber",
+      choicePrompt: "How do you proceed?",
+      paragraphs: [
+        "The passage opens into a circular chamber. At its center, a raised dais with a stone seal — eight feet across, covered in interlocking runes that shift slowly as you watch. The passage beyond is blocked by it.",
+        "This is old magic. Not Malachar's work — predating him by centuries. Whoever built this crypt built in a test of worthiness.",
+        "Four pillars surround the dais, each carved with a different symbol: a sword, a flame, a shadow, and a sunburst."
+      ],
+      choices: [
+        { text: "Approach the sword pillar and test it with force.", onlyFor: ["fighter"], next: "puzzle_fighter" },
+        { text: "Study the rune patterns and work out the sequence.", onlyFor: ["wizard"], next: "puzzle_wizard" },
+        { text: "Look for a mechanism hidden within the pillar bases.", onlyFor: ["rogue"], next: "puzzle_rogue" },
+        { text: "Approach the sunburst pillar and channel your divine connection.", onlyFor: ["cleric"], next: "puzzle_cleric" },
+        { text: "Press forward through the seal by force — there's no time for puzzles.", next: "puzzle_force" }
+      ]
+    },
+
+    "puzzle_fighter": {
+      chapter: "Act III — The Crypt",
+      title: "The Trial of Steel",
+      location: "Valdrath's Keep — The Seal Chamber",
+      paragraphs: [
+        "The sword pillar responds to your touch — it was built for someone like you. You place your palm against the carved blade and feel it pull, assessing you. It tests your intent, not your strength.",
+        "You think of why you came here. Not gold — you stopped thinking about gold three rooms ago. You think of the dead in the hall above who were soldiers once, and deserved better than this.",
+        "The pillar glows. The seal retracts with a sound like a held breath releasing."
+      ],
+      choices: [
+        { text: "Step through to the sanctum.", next: "boss_approach", setsFlag: "seal_solved" }
+      ]
+    },
+
+    "puzzle_wizard": {
+      chapter: "Act III — The Crypt",
+      title: "The Trial of Lore",
+      location: "Valdrath's Keep — The Seal Chamber",
+      paragraphs: [
+        "The rune sequence is complex — a cascading cipher where each symbol's meaning depends on its neighbor. You trace the pattern with your finger, not touching, reading.",
+        "Twenty minutes of work. The solution is elegant: a mathematical relationship built into the original inscription that resolves to a single activation sequence. You speak the seven words in order.",
+        "The seal retracts smoothly. It was built to respond to exactly this kind of patient, systematic thinking."
+      ],
+      choices: [
+        { text: "Step through to the sanctum.", next: "boss_approach", setsFlag: "seal_solved" }
+      ]
+    },
+
+    "puzzle_rogue": {
+      chapter: "Act III — The Crypt",
+      title: "The Trial of Cunning",
+      location: "Valdrath's Keep — The Seal Chamber",
+      paragraphs: [
+        "The runes are impressive. The mechanism beneath them is simpler — you find it almost immediately, hidden in the floor beneath the shadow pillar's base: four pressure plates, disguised as worn stone.",
+        "The sequence matters: shadow, flame, sword, sunburst. You work it out by elimination, pressing each plate and watching which runes dim in response.",
+        "The seal drops with a satisfying click. The builders respected a different kind of intelligence."
+      ],
+      choices: [
+        { text: "Step through to the sanctum.", next: "boss_approach", setsFlag: "seal_solved" }
+      ]
+    },
+
+    "puzzle_cleric": {
+      chapter: "Act III — The Crypt",
+      title: "The Trial of Faith",
+      location: "Valdrath's Keep — The Seal Chamber",
+      paragraphs: [
+        "The sunburst pillar was carved for you. You place both hands against it and feel the connection immediately — an old consecration, laid down by a priest centuries before your order existed, but recognizable in the way a familiar language is recognizable even in an unfamiliar accent.",
+        "You offer what you have: the reconsecration of the altar above, the binding of the wight, the honest reckoning of what you came here to do.",
+        "The seal recognizes the gift. It withdraws."
+      ],
+      choices: [
+        { text: "Step through to the sanctum.", next: "boss_approach", setsFlag: "seal_solved" }
+      ]
+    },
+
+    "puzzle_force": {
+      chapter: "Act III — The Crypt",
+      title: "Through by Will Alone",
+      location: "Valdrath's Keep — The Seal Chamber",
+      paragraphs: [
+        "The seal doesn't move when you push at it. You attack it with everything you have — blade, shoulder, a running charge — and each time it simply refuses.",
+        "Finally you find the edges, wedge your fingers into a gap in the stone, and haul. Something gives — not the seal, but the floor plate beneath it. You've forced a mechanical bypass.",
+        "The seal rises just enough. You squeeze through sideways, scraping both shoulders, and emerge on the other side bruised and breathing hard."
+      ],
+      choices: [
+        { text: "Press on to the sanctum.", next: "boss_approach", setsFlag: "seal_forced" }
+      ]
+    },
+
+    "boss_approach": {
+      chapter: "Act III — The Sanctum",
+      title: "The Lich's Sanctum",
+      location: "Valdrath's Keep — Malachar's Chamber",
+      choicePrompt: "How do you face Malachar?",
+      paragraphs: [
+        "The chamber beyond is vast — carved from the bedrock below the keep's foundation, lit by green flames that cast no shadows. At its center, on a throne of fused bones and dark iron, sits Malachar.",
+        "He was tall, once. He is taller now — stretched by a century of slow transformation, his robes replaced by something that looks like darkness solidified into cloth. His eyes are twin green flames.",
+        "'Another one,' he says. His voice has the quality of stone grinding on stone. 'Lord Harwick sends mice to kill lions.'",
+        function (s) {
+          var lines = [];
+          if (s.flags.has_phylactery) lines.push("The phylactery in your pocket screams. Malachar's gaze snaps to you — he can feel it.");
+          if (s.flags.seal_solved) lines.push("You came through the trial intact. Whatever the old builders placed in that test, it recognized you as worthy.");
+          if (s.flags.altar_restored) lines.push("Malachar's gaze flickers with something almost like unease when it passes over you — the chapel's restoration has weakened his reach into this place.");
+          return lines.length > 0 ? lines.join(" ") : "You face him across the chamber.";
+        }
+      ],
+      choices: [
+        { text: "Attack immediately — drive him back before he can act.", next: { fighter: "boss_fighter", default: "boss_direct" } },
+        { text: "Raise your holy symbol and invoke the rite of unmaking.", onlyFor: ["cleric"], next: { default: "boss_cleric" } },
+        { text: "Use the ritual oil from the library to anoint the throne.", requiresFlag: "has_ritual_oil", next: "boss_ritual" },
+        { text: "Destroy the phylactery — now, before he can stop you.", requiresFlag: "has_phylactery", next: "boss_phylactery" },
+        { text: "Exploit the weakness you learned — strike where he is unbound.", requiresFlag: "know_weakness", next: "boss_cunning" }
+      ]
+    },
+
+    "boss_fighter": {
+      chapter: "Act III — The Sanctum",
+      title: "Steel Against the Undying",
+      location: "Valdrath's Keep — Malachar's Chamber",
+      paragraphs: [
+        "Malachar laughs — and then stops laughing as you cover the distance between you faster than he expected. He raises a hand and black lightning pours from his fingers. You drop under it, come up inside his reach, and hit him with everything you have.",
+        "He is not made of bone and void alone. There is something still physical about him — and physical things can be broken. You discover this by breaking several of them in quick succession.",
+        "He falls. Slowly. Still fighting until the last second, green fire fading from his eyes.",
+        function (s) {
+          return s.flags.has_phylactery
+            ? "The phylactery in your pocket shatters on its own as the binding breaks."
+            : s.flags.seal_solved
+            ? "The seal you passed weighs on the air above you — you came here worthy of this."
+            : "The binding holds — he is weakened but not destroyed. He will return, diminished, in years or decades.";
+        }
+      ],
+      choices: [
+        { text: "See the end of this.", next: function (s) {
+          if (s.flags.has_phylactery || s.flags.seal_solved) return "end_heroic";
+          return "end_costly";
+        }}
+      ]
+    },
+
+    "boss_direct": {
+      chapter: "Act III — The Sanctum",
+      title: "The Final Battle",
+      location: "Valdrath's Keep — Malachar's Chamber",
+      paragraphs: [
+        "You charge and Malachar rises to meet you. He is stronger than anything you have faced — black lightning, cold hands that drain warmth on contact, a body that shrugs off blows that would kill a living man.",
+        "You fight for a long time. Longer than you thought you could. You take damage that will take weeks to heal.",
+        "Eventually, through sheer refusal to stop, you drive him back. He does not fall — but he retreats, pulling his power inward.",
+        function (s) {
+          if (s.flags.has_phylactery) return "The phylactery explodes in your pocket. The binding shatters. Malachar screams and comes apart at the seams.";
+          return "Without destroying the phylactery, you cannot kill him. He sinks into the throne and goes still — dormant, beaten back, but not ended.";
+        }
+      ],
+      choices: [
+        { text: "See how it ends.", next: function (s) {
+          return s.flags.has_phylactery ? "end_heroic" : "end_partial";
+        }}
+      ]
+    },
+
+    "boss_cleric": {
+      chapter: "Act III — The Sanctum",
+      title: "The Light of Dawn",
+      location: "Valdrath's Keep — Malachar's Chamber",
+      paragraphs: [
+        "You raise your holy symbol and speak the rite — the full version, not the shortened battlefield prayer. The words are old and they cost something to say correctly.",
+        "Malachar raises his hands and the green flames surge. But the rite is not aimed at the fire — it is aimed at the binding itself. At the hundred-year-old chain that holds his soul to this place.",
+        function (s) {
+          if (s.flags.altar_restored) {
+            return "The chapel above answers. The reconsecrated altar amplifies the rite across the keep's foundations. Malachar screams — a sound that has been waiting a century to happen.";
+          }
+          return "The rite lands and holds. Malachar convulses, green light fragmenting at the edges of him.";
+        },
+        function (s) {
+          if (s.flags.has_phylactery || s.flags.altar_restored) {
+            return "The binding breaks. The phylactery dissolves. Malachar comes apart into cold green sparks and is gone.";
+          }
+          return "He is weakened — badly. The binding frays but holds. He withdraws into the throne, dormant.";
+        }
+      ],
+      choices: [
+        { text: "Witness the end.", next: function (s) {
+          return (s.flags.has_phylactery || s.flags.altar_restored) ? "end_heroic" : "end_partial";
+        }}
+      ]
+    },
+
+    "boss_ritual": {
+      chapter: "Act III — The Sanctum",
+      title: "The Rite of Unmaking",
+      location: "Valdrath's Keep — Malachar's Chamber",
+      paragraphs: [
+        "You uncork the ritual oil and cross the chamber in a dead run, sliding the last ten feet and slamming your shoulder against the throne. Malachar's lightning misses by a hand's width.",
+        "You anoint the throne with the oil and speak the word from the torn page.",
+        "Malachar howls. The throne cracks from base to top, green light hemorrhaging through the fractures. 'What — how did you — '",
+        "He never finishes the sentence. The binding unravels. The soul he trapped in this place is finally free — free to pass, free to end. The green flames go out all at once."
+      ],
+      choices: [
+        { text: "Stand in the sudden dark.", next: "end_heroic" }
+      ]
+    },
+
+    "boss_phylactery": {
+      chapter: "Act III — The Sanctum",
+      title: "Breaking the Stone",
+      location: "Valdrath's Keep — Malachar's Chamber",
+      paragraphs: [
+        "You pull the phylactery from your pocket. Malachar's reaction is immediate and total — he lunges from the throne with a speed his frame shouldn't be capable of, all composure gone.",
+        "He crashes into you before you can act. You go down hard, stone floor, his hands at your throat, cold burning through your skin.",
+        "You close your fist and squeeze.",
+        "The phylactery shatters. Black light pours through your fingers. Malachar's grip vanishes. He flies backward — pulled apart from the inside — and the green flames guttering in every brazier go out as he comes undone."
+      ],
+      choices: [
+        { text: "Get up. It's over.", next: "end_heroic" }
+      ]
+    },
+
+    "boss_cunning": {
+      chapter: "Act III — The Sanctum",
+      title: "Finding the Weakness",
+      location: "Valdrath's Keep — Malachar's Chamber",
+      paragraphs: [
+        "You know what the wight told you: where the binding is anchored. Not the throne, not the phylactery — the line of power that runs between them, visible to the right kind of attention.",
+        "You don't fight Malachar. You move around him, forcing him to turn, keeping him reactive while you trace that line of power to its narrowest point — a place where the binding is thinnest, where the chain linking his soul to the phylactery is exposed.",
+        "You hit it. Hard. With everything you have.",
+        "The line snaps. Malachar staggers, looks at his hands as the green fades from them, and speaks one word in a language you don't understand. It might have been the word for home.",
+        "Then he is gone."
+      ],
+      choices: [
+        { text: "Stand in the silence.", next: "end_heroic" }
+      ]
+    },
+
+    /* ================================================================
+       ENDINGS
+    ================================================================ */
+
+    "end_heroic": {
+      chapter: "The End",
+      title: "The Curse Broken",
+      location: "Valdrath's Keep — Dawn",
+      isEnding: true,
+      paragraphs: [
+        function (s) { return "The keep is silent for the first time in a century. " + s.name + " stands in the dark of the sanctum and listens to nothing at all."; },
+        "Then: sound. Wind, from somewhere above. A distant bird call — the first one you've heard since crossing into the Thornwood. The world remembering how to be alive.",
+        "When you climb back through the keep, the undead are gone — not fled, not hiding, but simply ended, their animating force released. Bones lie in scattered piles. The green light is gone from every window.",
+        "Lord Harwick meets you at the gate at sunrise. He pays without hesitation and adds a third more. You get the sense he expected to be paying someone else — or paying no one.",
+        function (s) {
+          return "The city of Thornwall will tell this story for a generation. The name of " + s.name + " the " + s.charClass + " will be spoken in the same breath as the name of Malachar — the thing undone by the thing that was not afraid of it.";
+        }
+      ]
+    },
+
+    "end_costly": {
+      chapter: "The End",
+      title: "Victory's Price",
+      location: "Valdrath's Keep — The Morning After",
+      isEnding: true,
+      paragraphs: [
+        function (s) { return s.name + " emerges from the keep at dawn, moving slowly. The curse is broken — Malachar driven back so deeply into dormancy that he may not surface again for decades, perhaps longer."; },
+        "It is not the clean victory the songs would tell. But the dead are still and the green light is gone and Thornwall will sleep without nightmares for a while.",
+        "Lord Harwick pays. He offers a healer without asking. You accept both.",
+        "The Thornwood is already quieter as you ride south — birds returning, the fog thinning in the morning light.",
+        function (s) {
+          return "It cost something to come here. " + s.name + " knows that. But the balance sheet, on reflection, lands in the right direction.";
+        }
+      ]
+    },
+
+    "end_partial": {
+      chapter: "The End",
+      title: "The Lich Retreats",
+      location: "Valdrath's Keep — Before Dawn",
+      isEnding: true,
+      paragraphs: [
+        function (s) { return s.name + " made it out. That counts for something."; },
+        "Malachar is weakened — driven back into the deep stone of his crypt, his power diminished, his undead scattered. He is not destroyed. He will return, someday, if no one goes back to finish what was started.",
+        "But not this year. Not next year. And Thornwall can breathe for now.",
+        "Lord Harwick pays a portion of the promised gold, his expression unreadable. You get the sense he understands, at least, what you walked into.",
+        "The road south is cold and long. But you are on it, which is not nothing."
+      ]
+    },
+
+    "end_defeat": {
+      chapter: "The End",
+      title: "Darkness Eternal",
+      location: "Valdrath's Keep",
+      isEnding: true,
+      paragraphs: [
+        "Malachar is patient. He has been patient for a century. He will be patient for another.",
+        function (s) { return s.name + " came further than most — deeper into the keep, closer to the truth of what lives here than any of Lord Harwick's previous attempts."; },
+        "That almost matters. But almost is the word the dead know best.",
+        "The green light burns on in Valdrath's Keep, visible from the road on clear nights. Thornwall closes its shutters and does not look north after dark.",
+        "The story is not over. It is only waiting for someone else to try."
       ]
     }
 
