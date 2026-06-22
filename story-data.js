@@ -301,6 +301,521 @@ window.STORY = {
       choices: [
         { text: "Unlock the door and slip inside.", next: "keep_side_entry" }
       ]
+    },
+
+    /* ================================================================
+       ACT II — INSIDE VALDRATH'S KEEP
+       All paths converge at keep_hall after entering via any route.
+    ================================================================ */
+
+    "keep_hall": {
+      chapter: "Act II — The Keep",
+      title: "The Grand Hall",
+      location: "Valdrath's Keep — Main Hall",
+      choicePrompt: "Where do you go?",
+      paragraphs: [
+        function (s) {
+          var prefix = s.flags.entered_quietly
+            ? "You emerge into the grand hall unseen."
+            : "You push into the grand hall, your heart pounding.";
+          return prefix + " Whatever this place was in life, it is ruin now. Tapestries hang in rot. Overturned furniture lies in patterns that suggest something dragged it aside, looking for something.";
+        },
+        "Three passages lead deeper into the keep. To the left, a set of double doors hangs open — beyond them, the scrape and clatter of bone on stone. Straight ahead, a narrower corridor leads toward the old library wing, its entrance carved with a scholar's sigil. To the right, a heavy door bears the crossed-swords crest of Valdrath's house guard.",
+        "A green light pulses faintly from somewhere above — the keep's upper floors. It flickers in a rhythm that might be breathing, if light could breathe."
+      ],
+      choices: [
+        { text: "Go left — toward the sound of movement. Face whatever waits.", next: "keep_hall_combat" },
+        { text: "Go straight — the library. Knowledge of what you're fighting.", next: { wizard: "keep_library_wizard", default: "keep_library" } },
+        { text: "Go right — the armory. Better equipped, better odds.", next: { fighter: "keep_armory_fighter", default: "keep_armory" } }
+      ]
+    },
+
+    "keep_hall_combat": {
+      chapter: "Act II — The Keep",
+      title: "The Hall of Bones",
+      location: "Valdrath's Keep — West Wing",
+      choicePrompt: "What is your approach?",
+      paragraphs: [
+        "The double doors open into what was once a dining hall. Six skeleton warriors stand at irregular intervals, each wearing the corroded livery of Valdrath's house guard. They turn as one when you enter.",
+        "They're well-made undead — not shambling, not confused. Something is directing them. But you notice they hold their positions, moving to intercept rather than pursuing. Whatever controls them may not want them out of this room."
+      ],
+      choices: [
+        { text: "Charge straight through — fast and aggressive.", next: { fighter: "hall_combat_fighter", cleric: "hall_combat_cleric", default: "hall_combat_default" } },
+        { text: "Draw them toward the doorway and fight them one at a time.", next: "hall_combat_tactical" },
+        { text: "Hold your ground and call out. Something might be watching.", next: "hall_combat_call" }
+      ]
+    },
+
+    "hall_combat_fighter": {
+      chapter: "Act II — The Keep",
+      title: "Through the Line",
+      location: "Valdrath's Keep — West Wing",
+      paragraphs: [
+        "Years of fighting instinct take over. You read the spacing, identify the weakest flank, and commit. The first skeleton shatters on the second swing. The second loses its sword arm. By the time the third engages, you've already shifted your weight for the follow-through.",
+        "Six become none in under two minutes. The room is littered with bones and rust. You're barely winded.",
+        "A doorway beyond leads to a small chapel — and something else: a staircase descending."
+      ],
+      choices: [
+        { text: "Investigate the chapel before descending.", next: "keep_altar" },
+        { text: "Take the stairs down — the crypt must be below.", next: "crypt_entrance" }
+      ]
+    },
+
+    "hall_combat_cleric": {
+      chapter: "Act II — The Keep",
+      title: "The Light of Faith",
+      location: "Valdrath's Keep — West Wing",
+      paragraphs: [
+        "You raise your holy symbol and speak the words of turning. The skeletons hesitate — a visible shudder passes through them, like wind through paper.",
+        "Three of the six crumble where they stand, their animating force burned out by your faith. The remaining three advance, but they're slower now, fighting something they can't understand.",
+        "You finish them with blade and prayer. The room settles into silence."
+      ],
+      choices: [
+        { text: "Investigate the chapel beyond.", next: "keep_altar" },
+        { text: "Take the stairs down.", next: "crypt_entrance" }
+      ]
+    },
+
+    "hall_combat_default": {
+      chapter: "Act II — The Keep",
+      title: "The Grinding Fight",
+      location: "Valdrath's Keep — West Wing",
+      paragraphs: [
+        "You charge into the middle of them and immediately regret it. Six against one is six against one, no matter how determined you are. You fight desperately — breaking bones, ducking blows, using the furniture as cover.",
+        "You destroy four before the remaining two back off, retreating to opposite corners. You've won, but you're cut and exhausted, and the keep still has more to offer.",
+        "A doorway leads to a small chapel and a staircase down."
+      ],
+      choices: [
+        { text: "Rest briefly in the chapel before going further.", next: "keep_altar", setsFlag: "combat_worn" },
+        { text: "Push through to the stairs — no time to rest.", next: "crypt_entrance", setsFlag: "combat_worn" }
+      ]
+    },
+
+    "hall_combat_tactical": {
+      chapter: "Act II — The Keep",
+      title: "The Doorway Defense",
+      location: "Valdrath's Keep — West Wing",
+      paragraphs: [
+        "Smart. You back into the doorway, forcing them to come at you one at a time through a bottleneck they weren't built to navigate efficiently.",
+        "It takes longer — fifteen minutes of careful work — but you take the skeletons apart methodically. A bruise on your shoulder, a scrape on your cheek. Acceptable.",
+        "The hall beyond holds a small chapel and a staircase leading down."
+      ],
+      choices: [
+        { text: "Check the chapel.", next: "keep_altar" },
+        { text: "Head straight for the stairs.", next: "crypt_entrance" }
+      ]
+    },
+
+    "hall_combat_call": {
+      chapter: "Act II — The Keep",
+      title: "Silence in Return",
+      location: "Valdrath's Keep — West Wing",
+      paragraphs: [
+        "You raise a hand and speak. 'I've not come to destroy what's here. I want to speak with whoever commands this place.'",
+        "The skeletons stop. Hold. For ten full seconds, nothing moves. Then, all at once, they resume their advance — and hit harder than before, as if whatever is watching decided you were an annoyance rather than a threat.",
+        "You fight your way through at cost, finally collapsing the last one in a corner.",
+        function (s) {
+          return "But you've learned something: " + (s.flags.knows_wards ? "it can hear you, and it's intelligent. Combined with what you know about the wards, this tells you something about its range of control." : "whatever controls them is present, intelligent, and monitoring you. It can hear you. It didn't want to talk.");
+        }
+      ],
+      choices: [
+        { text: "Continue into the chapel beyond.", next: "keep_altar", setsFlag: "lich_knows_you" },
+        { text: "Take the stairs down.", next: "crypt_entrance", setsFlag: "lich_knows_you" }
+      ]
+    },
+
+    "keep_library": {
+      chapter: "Act II — The Keep",
+      title: "The Cursed Library",
+      location: "Valdrath's Keep — East Wing",
+      choicePrompt: "What do you investigate?",
+      paragraphs: [
+        "The library is intact — almost deliberately so. Shelves of books and scrolls, undisturbed by whatever ransacked the rest of the keep. Candles burn with a cold blue flame that cast no warmth.",
+        "Someone has been using this room recently. A reading stand near the window holds an open volume, pages covered in a cramped script you don't immediately recognize.",
+        "There are also scattered notes in a more modern hand — someone else's research."
+      ],
+      choices: [
+        { text: "Try to read the ancient volume on the stand.", next: "library_ancient" },
+        { text: "Read the modern notes — easier and possibly more relevant.", next: "library_notes" }
+      ]
+    },
+
+    "keep_library_wizard": {
+      chapter: "Act II — The Keep",
+      title: "The Cursed Library",
+      location: "Valdrath's Keep — East Wing",
+      choicePrompt: "What do you focus on?",
+      paragraphs: [
+        "The library calls to you like an old friend. Cold blue candles, shelves of undisturbed books, and in the center — an open volume on a reading stand, written in High Arcane script.",
+        "You can read it. Others couldn't. The volume is Malachar's own research notes — compiled over decades of binding studies, detailing how a soul can be anchored to a physical object to prevent passing.",
+        "The key passage is marked: a soul thus bound can only be fully destroyed if its phylactery — the object containing the binding — is first located and shattered. The phylactery is described as 'small, black, made of lodestone, bearing the old sigil.'"
+      ],
+      choices: [
+        { text: "Search the library shelves for the phylactery.", next: "library_search_phylactery", setsFlag: "knows_phylactery" },
+        { text: "Memorize what you need and move on — the throne room next.", next: "keep_throne", setsFlag: "knows_phylactery" }
+      ]
+    },
+
+    "library_ancient": {
+      chapter: "Act II — The Keep",
+      title: "The Ancient Text",
+      location: "Valdrath's Keep — Library",
+      paragraphs: [
+        "The script is an archaic form of scholarly notation — you can parse it, slowly, with effort. The book is a treatise on soul-binding magic.",
+        "You piece together enough to understand the broad concept: the author believed a soul could be anchored to an object — a phylactery — to prevent death. The soul would endure, maintaining control over the surrounding area, as long as the phylactery remained intact.",
+        "More practically: destroying the phylactery destroys the bound soul."
+      ],
+      choices: [
+        { text: "Search the shelves for any sign of this phylactery.", next: "library_search_phylactery", setsFlag: "knows_phylactery" },
+        { text: "Continue deeper into the keep with this knowledge.", next: "keep_throne", setsFlag: "knows_phylactery" }
+      ]
+    },
+
+    "library_notes": {
+      chapter: "Act II — The Keep",
+      title: "Someone Else's Research",
+      location: "Valdrath's Keep — Library",
+      paragraphs: [
+        "The modern notes are written in a hurried, frightened hand. They describe a researcher — possibly Lord Harwick's own scholar — who came here months ago to investigate the curse.",
+        "The notes are incomplete. But one line stands out, underlined twice: 'Malachar's power source. Not in the keep. Not in the crypt. In the throne room — where the old lord's chair stands. Under the stone.'"
+      ],
+      choices: [
+        { text: "Head to the throne room immediately.", next: "keep_throne", setsFlag: "knows_throne_secret" },
+        { text: "Look around the library for anything else useful before moving on.", next: "library_search_phylactery" }
+      ]
+    },
+
+    "library_search_phylactery": {
+      chapter: "Act II — The Keep",
+      title: "Searching the Shelves",
+      location: "Valdrath's Keep — Library",
+      paragraphs: [
+        "You work methodically through the shelves — pulling books, checking spaces, looking for a small black stone marked with a sigil.",
+        "It's not here. But tucked behind a loose brick in the far wall, you find something else: a leather satchel containing a vial of sanctified oil and a page torn from a larger text, describing a ritual to temporarily weaken an anchored spirit.",
+        "The ritual requires anointing a surface connected to the spirit's binding with the oil, then speaking a single word of unmaking. The word is written at the bottom of the page."
+      ],
+      choices: [
+        { text: "Take the satchel and move on to the throne room.", next: "keep_throne", setsFlag: "has_ritual_oil" }
+      ]
+    },
+
+    "keep_armory": {
+      chapter: "Act II — The Keep",
+      title: "The Broken Armory",
+      location: "Valdrath's Keep — Guard Wing",
+      choicePrompt: "What do you take?",
+      paragraphs: [
+        "The armory has been picked over — weapon racks empty, most of the good material stripped by time or scavengers. What remains is a mixed haul: some useful, some ruined.",
+        "A ghost lingers here. It doesn't attack — it stands in the corner by an empty rack, staring at where its weapons used to hang. You get the sense that if you could communicate with it, it might tell you something worth knowing."
+      ],
+      choices: [
+        { text: "Search the racks and crates for anything serviceable.", next: "armory_search" },
+        { text: "Attempt to communicate with the ghost.", next: { cleric: "keep_ghost_cleric", default: "keep_ghost_default" } }
+      ]
+    },
+
+    "keep_armory_fighter": {
+      chapter: "Act II — The Keep",
+      title: "The Broken Armory",
+      location: "Valdrath's Keep — Guard Wing",
+      choicePrompt: "What do you take?",
+      paragraphs: [
+        "Your eye goes immediately to the weapon racks. Mostly empty — but not entirely. Tucked in the back you find a hand-and-a-half sword with a grip worn smooth by years of use. The balance is perfect. Better than what you came in with.",
+        "A ghost stands in the corner, motionless. It wears guard's livery and stares at nothing. You've seen battle-shock in living soldiers. This is something similar.",
+        "The sword goes on your belt without a second thought. The question is what to do about the ghost."
+      ],
+      choices: [
+        { text: "Take the sword and move on — ghosts are not your problem.", next: "keep_throne", setsFlag: "has_sword_upgrade" },
+        { text: "Try to communicate with the ghost before leaving.", next: { cleric: "keep_ghost_cleric", default: "keep_ghost_default" } }
+      ]
+    },
+
+    "armory_search": {
+      chapter: "Act II — The Keep",
+      title: "Salvage",
+      location: "Valdrath's Keep — Armory",
+      paragraphs: [
+        "You find a serviceable short blade still wrapped in oiled cloth, a round shield with only one cracked boss, and a coil of rope that doesn't appear rotten.",
+        "The ghost watches you the whole time. It doesn't move or speak."
+      ],
+      choices: [
+        { text: "Take what you can carry and head for the throne room.", next: "keep_throne", setsFlag: "has_rope" }
+      ]
+    },
+
+    "keep_ghost_cleric": {
+      chapter: "Act II — The Keep",
+      title: "The Soldier's Ghost",
+      location: "Valdrath's Keep — Armory",
+      paragraphs: [
+        "You extend your awareness toward the spirit — opening a channel the way your training taught you. The ghost's head turns. It can feel you.",
+        "It speaks in the language of the dead: images, not words. You see Malachar as a living man — tall, cold-eyed — conducting a ritual in the throne room. You see him place something under the flagstone beneath the lord's chair. A small black object.",
+        "The ghost's gaze holds yours for a long moment. Then it fades."
+      ],
+      choices: [
+        { text: "Head to the throne room — you know where the phylactery is.", next: "keep_throne", setsFlag: "knows_phylactery" }
+      ]
+    },
+
+    "keep_ghost_default": {
+      chapter: "Act II — The Keep",
+      title: "The Soldier's Ghost",
+      location: "Valdrath's Keep — Armory",
+      paragraphs: [
+        "You try to address the ghost — name yourself, explain why you've come. It stares through you. Not hostile. Simply unreachable, locked in whatever moment it's trapped in.",
+        "After a few minutes, you give up. The ghost has nothing for you today.",
+        "The armory's only other door leads back toward the main hall — or you could press on toward the throne room via the guard corridor."
+      ],
+      choices: [
+        { text: "Head through the guard corridor to the throne room.", next: "keep_throne" }
+      ]
+    },
+
+    "keep_altar": {
+      chapter: "Act II — The Keep",
+      title: "The Defiled Altar",
+      location: "Valdrath's Keep — Chapel",
+      paragraphs: [
+        "The chapel is small, its altar toppled and the devotional carvings scored by something sharp. Whatever faith this room once held has been deliberately erased.",
+        "You can feel it — the lingering absence of something sacred, and the aggressive presence of something that wanted it gone.",
+        function (s) {
+          if (s.charClass === "cleric") {
+            return "To you, the desecration is almost physically painful. But it also means there's work to be done here — and the work is yours to do.";
+          }
+          return "The staircase down is visible at the far end of the chapel. The altar is a detour, but something about it draws your attention.";
+        }
+      ],
+      choices: [
+        { text: "Attempt to reconsecrate the altar.", onlyFor: ["cleric"], next: "altar_reconsecrate" },
+        { text: "Study the defiled carvings — they might tell you something.", next: "altar_study" },
+        { text: "Leave the altar and take the stairs down.", next: "crypt_entrance" }
+      ]
+    },
+
+    "altar_reconsecrate": {
+      chapter: "Act II — The Keep",
+      title: "Restoration",
+      location: "Valdrath's Keep — Chapel",
+      paragraphs: [
+        "You work for nearly an hour. Your hands bleed where you cut yourself on a broken stone. The prayers come in waves — some whispered, some barely formed in your mind.",
+        "It holds. The altar doesn't glow, doesn't transform — but the cold wrongness of the room lessens. Something sacred has been restored, small as it is.",
+        "You feel stronger for it. Whatever you're walking toward, you walk with something at your back."
+      ],
+      choices: [
+        { text: "Take the stairs to the crypt.", next: "crypt_entrance", setsFlag: "altar_restored" }
+      ]
+    },
+
+    "altar_study": {
+      chapter: "Act II — The Keep",
+      title: "The Defaced Carvings",
+      location: "Valdrath's Keep — Chapel",
+      paragraphs: [
+        "The carvings were scenes of the divine — the standard iconography of the old faith. What's been scored through most deliberately is a specific image: a figure holding a glowing stone in two hands, surrounded by flames.",
+        "You've seen that image before. It's the iconographic representation of destroying a soul-vessel.",
+        "Malachar erased it deliberately. He knew someone might come here and understand it."
+      ],
+      choices: [
+        { text: "Take the stairs to the crypt.", next: "crypt_entrance", setsFlag: "knows_phylactery" }
+      ]
+    },
+
+    "keep_throne": {
+      chapter: "Act II — The Keep",
+      title: "The Throne Room",
+      location: "Valdrath's Keep — Great Hall",
+      choicePrompt: "How do you deal with the lieutenant?",
+      paragraphs: [
+        "The throne room is the largest space in the keep — vaulted ceiling, cracked stone floor, and at the far end, the lord's chair: high-backed, black with age, carved with the Valdrath house crest.",
+        "Standing before it is something that was once human. Tall, wearing armor that no longer fits its form correctly, its eyes burning with the same cold green light as the keep's upper windows. A wight — a former warrior bound to serve even after death.",
+        function (s) {
+          var prefix = s.flags.knows_phylactery
+            ? "You know that somewhere beneath the throne's flagstone is the phylactery. You need to get past this thing to reach it."
+            : "Whatever is commanding this place, this wight is guarding the room with clear purpose.";
+          return prefix + " The wight turns to face you.";
+        }
+      ],
+      choices: [
+        { text: "Attack immediately — fight your way to the throne.", next: { fighter: "throne_battle_fighter", cleric: "throne_battle_cleric", default: "throne_battle_default" } },
+        { text: "Hold your ground and try to communicate with it.", next: { rogue: "throne_parley_rogue", wizard: "throne_parley_wizard", default: "throne_parley_default" } },
+        { text: "Move to flank it and get to the throne before it can stop you.", onlyFor: ["rogue"], next: "throne_rogue_flank" }
+      ]
+    },
+
+    "throne_battle_fighter": {
+      chapter: "Act II — The Keep",
+      title: "The Lieutenant Falls",
+      location: "Valdrath's Keep — Throne Room",
+      paragraphs: [
+        "The wight is strong — stronger than the skeletons downstairs by an order of magnitude. It lands two blows that would have put a lesser fighter through the wall. But you've fought worse, and you know how to make strength work against itself.",
+        "You take it apart systematically: hamstring it, pin its weapon arm, finish it at the joints. It collapses in a smoking heap.",
+        "The room is yours. The throne waits."
+      ],
+      choices: [
+        { text: "Search beneath the throne's flagstone.", next: "throne_flagstone" }
+      ]
+    },
+
+    "throne_battle_cleric": {
+      chapter: "Act II — The Keep",
+      title: "The Lieutenant Falls",
+      location: "Valdrath's Keep — Throne Room",
+      paragraphs: [
+        "The wight advances and so do you — but your weapon is your voice. The words of binding, the prayer of unmade chains — the wight staggers with every syllable.",
+        "By the time it reaches you, it has lost half its cohesion. Two blows finish what your prayer started. It dissolves into silence.",
+        "The altar's restoration pulses through you like a second wind.",
+        function (s) {
+          return s.flags.altar_restored
+            ? "The reconsecrated chapel's blessing holds here too. You feel its clarity at the edge of your senses."
+            : "The throne waits at the far end of the room.";
+        }
+      ],
+      choices: [
+        { text: "Search beneath the throne's flagstone.", next: "throne_flagstone" }
+      ]
+    },
+
+    "throne_battle_default": {
+      chapter: "Act II — The Keep",
+      title: "A Hard Fight",
+      location: "Valdrath's Keep — Throne Room",
+      paragraphs: [
+        "The wight is faster than it looks. You get in good hits, but it returns most of them with interest — your arms, your sides, your shoulder. This is the hardest fight the keep has offered.",
+        "You prevail through stubbornness more than skill, finally driving your blade into a gap in its armor and twisting until the green light in its eyes goes out.",
+        "You're battered. You lean against the wall for a long moment before pushing toward the throne."
+      ],
+      choices: [
+        { text: "Search beneath the throne's flagstone.", next: "throne_flagstone", setsFlag: "wight_fight_worn" }
+      ]
+    },
+
+    "throne_parley_rogue": {
+      chapter: "Act II — The Keep",
+      title: "Words with the Dead",
+      location: "Valdrath's Keep — Throne Room",
+      paragraphs: [
+        "You keep your hands in view and your voice measured. 'I'm not here to destroy the keep. I'm here to end what's wrong with it. Tell me what you know.'",
+        "The wight doesn't speak. But it doesn't advance, either. It tilts its head — listening to something you can't hear.",
+        "Then it steps aside.",
+        "Not all the way. Not permanently. But enough: a clear path to the throne's flagstone, and a window of seconds to use it."
+      ],
+      choices: [
+        { text: "Move fast — straight to the throne before it changes its mind.", next: "throne_flagstone", setsFlag: "know_weakness" }
+      ]
+    },
+
+    "throne_parley_wizard": {
+      chapter: "Act II — The Keep",
+      title: "Words with the Dead",
+      location: "Valdrath's Keep — Throne Room",
+      paragraphs: [
+        "You address the wight in the formal language of arcane contract — the old words that even the dead respond to, if they were once part of the scholarly tradition.",
+        "The wight stills completely. Then, in a voice like scraping stone: 'The master's stone. The binding. If you destroy it — he dies, and we go with him. That is what you want. That is the truth of what is here.'",
+        "It steps back from the throne and watches you."
+      ],
+      choices: [
+        { text: "Approach the throne and lift the flagstone.", next: "throne_flagstone", setsFlag: "know_weakness" }
+      ]
+    },
+
+    "throne_parley_default": {
+      chapter: "Act II — The Keep",
+      title: "No Answer",
+      location: "Valdrath's Keep — Throne Room",
+      paragraphs: [
+        "You try. The wight listens with those burning green eyes and does not respond. After a moment, it begins to advance.",
+        "You fight. It's difficult but you manage — taking cuts and bruises before the wight finally loses coherence and collapses.",
+        "The throne waits. The flagstone beneath it looks different from the rest of the floor — newer, replaced at some point."
+      ],
+      choices: [
+        { text: "Lift the flagstone.", next: "throne_flagstone", setsFlag: "wight_fight_worn" }
+      ]
+    },
+
+    "throne_rogue_flank": {
+      chapter: "Act II — The Keep",
+      title: "The Quick Way",
+      location: "Valdrath's Keep — Throne Room",
+      paragraphs: [
+        "You don't fight it. You feint left, dodge right, and sprint for the throne while the wight recovers from a lunge that hit air. A wight is not built for speed.",
+        "You're at the flagstone with three seconds to spare. You pry it up one-handed while the wight bellows behind you.",
+        "Beneath it: a small black lodestone, stamped with a sigil that makes your eyes water to look at directly."
+      ],
+      choices: [
+        { text: "Grab the phylactery and run.", next: "crypt_entrance_phylactery", setsFlag: "has_phylactery" }
+      ]
+    },
+
+    "throne_flagstone": {
+      chapter: "Act II — The Keep",
+      title: "Beneath the Throne",
+      location: "Valdrath's Keep — Throne Room",
+      paragraphs: [
+        "The flagstone is heavier than it looks. You pry it up and set it aside.",
+        "Beneath it, in a hollow carved into the foundation stone: a small black lodestone, no larger than your fist, stamped with a sigil that throbs with cold green light. The phylactery.",
+        "The moment you touch it, the keep shudders. Somewhere below — deep below — something screams in rage."
+      ],
+      choices: [
+        { text: "Pocket the phylactery and head for the crypt stairs.", next: "crypt_entrance", setsFlag: "has_phylactery" }
+      ]
+    },
+
+    "crypt_entrance_phylactery": {
+      chapter: "Act II — The Keep",
+      title: "Point of No Return",
+      location: "Valdrath's Keep — Crypt Stairs",
+      paragraphs: [
+        "The stairs descend steeply into dark stone. Cold air rises from below — colder than any natural cellar, colder than the keep's upper rooms.",
+        "The phylactery in your pocket pulses. Whatever is below knows you have it.",
+        "There will be no leaving this place until this is finished."
+      ],
+      choices: [
+        { text: "Descend into the crypt.", next: "crypt_descent" }
+      ]
+    },
+
+    "crypt_entrance": {
+      chapter: "Act II — The Keep",
+      title: "Point of No Return",
+      location: "Valdrath's Keep — Crypt Stairs",
+      choicePrompt: "How do you approach the descent?",
+      paragraphs: [
+        "The stairs go down a long way. The cold intensifies with every step, and the green light — source unknown — grows stronger as you descend.",
+        "At the base, a stone door stands ajar. Beyond it: the sound of something moving in deliberate circles, like a mind pacing.",
+        "You pause on the landing. The door is ahead. You will not be able to come back this way once you push through."
+      ],
+      choices: [
+        { text: "Check the door for traps before entering.", next: { rogue: "crypt_check_rogue", default: "crypt_check_default" } },
+        { text: "Push through immediately — speed is a weapon.", next: "crypt_descent", setsFlag: "rushed_crypt" }
+      ]
+    },
+
+    "crypt_check_rogue": {
+      chapter: "Act II — The Keep",
+      title: "The Landing",
+      location: "Valdrath's Keep — Crypt Stairs",
+      paragraphs: [
+        "You study the door frame carefully. A tripwire, knee-height, attached to a bell somewhere in the passage beyond. You disable it in thirty seconds.",
+        "There's also a glyph carved into the door's lintel — a ward that would have announced your presence to whatever waits inside the moment you touched the door. You carefully scratch it out with your knife.",
+        "When you push through, you will arrive unannounced."
+      ],
+      choices: [
+        { text: "Push through quietly.", next: "crypt_descent", setsFlag: "crypt_safe_entry" }
+      ]
+    },
+
+    "crypt_check_default": {
+      chapter: "Act II — The Keep",
+      title: "The Landing",
+      location: "Valdrath's Keep — Crypt Stairs",
+      paragraphs: [
+        "You study the door carefully. Stone, iron fittings, no visible lock. You lean in close to look at the frame.",
+        "There — a tripwire. You spot it just before your shin hits it. Carefully, you step over it and ease the door open.",
+        "Whatever is below, you've bought yourself a moment."
+      ],
+      choices: [
+        { text: "Step through into the crypt.", next: "crypt_descent" }
+      ]
     }
 
   }
