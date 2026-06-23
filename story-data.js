@@ -23,18 +23,6 @@ window.STORY = {
       ]
     },
 
-    "test_engine_ok": {
-      chapter: "Engine Test",
-      title: "All Systems Go",
-      location: "Stub Story",
-      isEnding: true,
-      paragraphs: [
-        function (s) { return "Welcome, " + s.name + " the " + s.charClass + ". The engine works."; },
-        "Class gates, flags, branching next — all functional.",
-        "The real story will replace this stub in the next commit."
-      ]
-    },
-
     "road_bold": {
       chapter: "Act I — The Call",
       title: "Setting Out at Dawn",
