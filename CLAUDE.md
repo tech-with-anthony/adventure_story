@@ -4,6 +4,32 @@
 
 `adventure_story` is a DnD-themed "Choose Your Own Adventure" interactive story game. It is a static browser application (no build step, no server) created as CIS110 coursework by Anthony Woodward. The story is "The Curse of Valdrath's Keep" — a fully branching adventure with class-mechanical choices, flag-based state, and four distinct endings.
 
+## Current Status (as of last session)
+
+**Branch: `choices`** — this is where all current work lives. The branch is pushed to GitHub and up to date.
+
+### What was built
+
+The project was refactored from a single `adventure.html` file into three files, and the complete story was written from scratch:
+
+- **`adventure.html`** — HTML shell + full dark-fantasy CSS
+- **`engine.js`** — Full game engine (IIFE, state machine, class gates, flag system)
+- **`story-data.js`** — 71 scenes across 3 acts with 4 endings (~1,150 lines)
+
+The Fighter → Heroic path was smoke-tested end-to-end in headless Chromium and confirmed working. Zero JavaScript errors.
+
+### What still needs to happen — NEXT SESSION
+
+**The game has NOT yet been tested by a human in a real browser.** Before considering this done:
+
+1. Open `adventure.html` in Chrome and Firefox and actually play through it.
+2. Walk all 9 test paths listed in the Testing section below and note anything that feels wrong — broken text, missing choices, awkward wording, scene transitions that don't make sense.
+3. Check layout at mobile width (≤ 420 px) and confirm the 2×2 class picker, choice buttons, and text panels all look right.
+4. Come back with feedback on: story writing quality, pacing, any scenes that feel too short or too long, and any mechanical issues (flag gates not working, class options appearing for wrong class, etc.).
+5. Consider whether the `end_defeat` ending needs a clearer path to reach it — currently it requires hitting `boss_direct` without `has_phylactery`, which takes deliberate effort.
+
+---
+
 ## Running the Project
 
 Open `adventure.html` directly in any modern web browser. No server, build tool, or package manager is needed.
@@ -14,7 +40,7 @@ xdg-open adventure.html    # Linux
 start adventure.html       # Windows
 ```
 
-The only external resource is Google Fonts (Cinzel, EB Garamond) loaded from a CDN; the game functions without it if offline.
+The only external resource is Google Fonts (Cinzel, EB Garamond) loaded from a CDN; the game functions without it if offline (system serif fonts are used as fallback).
 
 ## Repository Structure
 
@@ -76,7 +102,7 @@ var state = {
 | `renderChoices(choices, prompt)` | Filters visible choices, renders buttons or a Continue button |
 | `resolveNext(next)` | Resolves `next` as string, `{class: id, default: id}` object, or `fn(state)→id` |
 | `applyChoice(choice)` | Sets `setsFlag` if present, then calls `loadScene(resolveNext(...))` |
-| `addP` / `addPs` / `clearInteract` / `renderContinue` | DOM utility helpers (same patterns as original) |
+| `addP` / `addPs` / `clearInteract` / `renderContinue` | DOM utility helpers |
 
 ### Scene Data (`story-data.js`)
 
@@ -204,14 +230,14 @@ ENDINGS
 
 No automated test suite. Test manually by opening `adventure.html` in a browser and walking these paths:
 
-1. **Fighter → Heroic**: Bold road → fight (easy win) → gate rush → hall combat → throne (fight) → crypt puzzle → boss (attack) + has_phylactery → `end_heroic`
-2. **Wizard → Heroic**: Wise road → help survivor → gate informed (postern) → hall magic → library wizard → throne (parley) → crypt puzzle → boss ritual/cunning → `end_heroic`
-3. **Rogue → Heroic**: Wise road → help → gate informed → hall stealth → throne rogue flank → crypt puzzle → boss phylactery → `end_heroic`
-4. **Cleric → Heroic**: Equipped road → hall combat (holy) → altar reconsecrate → throne (cleric fight) → crypt puzzle → boss cleric (with altar_restored) → `end_heroic`
-5. **Partial ending**: Any path → boss without has_phylactery or seal_solved → `end_partial`
-6. **Defeat ending**: Any path → boss_direct without has_phylactery → boss loses → `end_defeat` (verify boss_direct routes here)
-7. **Class gates**: Select Wizard and verify Fighter-only choices are absent; select Fighter and verify Wizard-only choices absent.
-8. **Flag gates**: Confirm "Use the postern key" choice only appears after taking a path that sets `has_postern_key`.
-9. **Play Again**: Verify `startGame()` fully resets state and returns cleanly to setup.
+1. **Fighter → Heroic**: Bold road → fight (easy win) → gate rush → hall combat → investigate chapel → altar study → crypt puzzle (sword pillar) → boss attack → `end_heroic` (via `seal_solved`)
+2. **Wizard → Heroic**: Wise road → help survivor → gate informed (postern) → library wizard → throne parley → crypt puzzle (rune sequence) → boss cunning/ritual → `end_heroic`
+3. **Rogue → Heroic**: Wise road → help → gate informed → throne rogue flank → `has_phylactery` → crypt puzzle (mechanism) → boss phylactery → `end_heroic`
+4. **Cleric → Heroic**: Equipped road → hall combat (turn undead) → altar reconsecrate (`altar_restored`) → throne cleric fight → crypt puzzle (sunburst pillar) → boss cleric rite → `end_heroic`
+5. **Partial ending**: Any path → boss without `has_phylactery` or `seal_solved` → `end_partial`
+6. **Defeat ending**: Reach `boss_direct` without `has_phylactery` → `end_defeat`
+7. **Class gates**: Wizard should not see Fighter-only choices; Fighter should not see Wizard-only choices.
+8. **Flag gates**: "Use the postern key" choice must only appear after a path that sets `has_postern_key`.
+9. **Play Again**: `startGame()` must fully reset state and return cleanly to setup with no leftover text or flags.
 
-Verify in at least Chrome and Firefox. Check animations, fonts, and layout at ≤ 420 px viewport width.
+Verify in at least Chrome and Firefox. Check layout at ≤ 420 px viewport width.
