@@ -981,12 +981,15 @@ window.STORY = {
         "Eventually, through sheer refusal to stop, you drive him back. He does not fall — but he retreats, pulling his power inward.",
         function (s) {
           if (s.flags.has_phylactery) return "The phylactery explodes in your pocket. The binding shatters. Malachar screams and comes apart at the seams.";
-          return "Without destroying the phylactery, you cannot kill him. He sinks into the throne and goes still — dormant, beaten back, but not ended.";
+          if (s.flags.seal_solved) return "Without destroying the phylactery, you cannot kill him. He sinks into the throne and goes still — dormant, beaten back, but not ended.";
+          return "Malachar does not fall. You cannot make him fall. When you can no longer lift your arm, he stops — not out of mercy, but because you have ceased to be interesting. You are allowed to leave.";
         }
       ],
       choices: [
         { text: "See how it ends.", next: function (s) {
-          return s.flags.has_phylactery ? "end_heroic" : "end_partial";
+          if (s.flags.has_phylactery) return "end_heroic";
+          if (s.flags.seal_solved) return "end_partial";
+          return "end_defeat";
         }}
       ]
     },

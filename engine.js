@@ -57,6 +57,8 @@
 
   function startGame() {
     state = { name: "", charClass: "", flags: {}, history: [] };
+    classBadgeEl.textContent = "";
+    classBadgeEl.className = "class-badge";
     showPage("page-setup");
     showSetupIntro();
   }
