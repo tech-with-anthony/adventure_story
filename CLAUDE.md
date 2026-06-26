@@ -16,17 +16,29 @@ The project was refactored from a single `adventure.html` file into three files,
 - **`engine.js`** — Full game engine (IIFE, state machine, class gates, flag system)
 - **`story-data.js`** — 71 scenes across 3 acts with 4 endings (~1,150 lines)
 
-The Fighter → Heroic path was smoke-tested end-to-end in headless Chromium and confirmed working. Zero JavaScript errors.
+### What was tested and fixed (second session)
+
+All four class paths and all four endings were tested end-to-end via automated browser driving (Chrome DevTools Protocol). **179 checks passed, 0 failures.**
+
+Paths confirmed working:
+- Fighter → Heroic (bold road, gate rush, hall fight, seal trial, `boss_fighter`)
+- Rogue → Heroic (wise road, postern, library, throne flank, mechanism puzzle, `boss_phylactery`)
+- Cleric → Heroic (equipped road, turn undead, altar reconsecrate, sunburst puzzle, `boss_cleric`)
+- Wizard → Heroic (wise road, postern, wizard library exclusive scene, throne parley, rune puzzle, `boss_cunning`)
+- `end_defeat`, `end_partial`, `end_costly` all confirmed reachable and distinct
+
+Two bugs found and fixed (commit `fbfbed3`):
+1. **Stale class badge** — `startGame()` now clears the badge element on reset so it doesn't persist on the hidden scene page.
+2. **`end_defeat` unreachable** — `boss_direct` now routes to `end_defeat` when neither `has_phylactery` nor `seal_solved` is set (no preparation at all). `end_partial` now requires `seal_solved`. New defeat-branch narration added.
 
 ### What still needs to happen — NEXT SESSION
 
-**The game has NOT yet been tested by a human in a real browser.** Before considering this done:
+**The game has not been checked by a human for story quality or mobile layout.** Remaining items:
 
-1. Open `adventure.html` in Chrome and Firefox and actually play through it.
-2. Walk all 9 test paths listed in the Testing section below and note anything that feels wrong — broken text, missing choices, awkward wording, scene transitions that don't make sense.
-3. Check layout at mobile width (≤ 420 px) and confirm the 2×2 class picker, choice buttons, and text panels all look right.
-4. Come back with feedback on: story writing quality, pacing, any scenes that feel too short or too long, and any mechanical issues (flag gates not working, class options appearing for wrong class, etc.).
-5. Consider whether the `end_defeat` ending needs a clearer path to reach it — currently it requires hitting `boss_direct` without `has_phylactery`, which takes deliberate effort.
+1. **Mobile layout** — resize browser to ≤ 420 px and confirm: 2×2 class picker holds, choice buttons stack cleanly, text doesn't overflow.
+2. **Story quality pass** — read through at least two paths and note any scenes that feel too short, too long, tonally off, or awkwardly worded. The Rogue and Wizard paths have the most prose variety.
+3. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
+4. **Consider a README** — the current `README.md` is a placeholder. A short description of the project for the GitHub repo would be appropriate before submitting.
 
 ---
 
