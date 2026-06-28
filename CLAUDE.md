@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-`adventure_story` is a DnD-themed "Choose Your Own Adventure" interactive story game. It is a static browser application (no build step, no server) created as CIS110 coursework by Anthony Woodward. The story is "The Curse of Valdrath's Keep" — a fully branching adventure with class-mechanical choices, flag-based state, and four distinct endings.
+`adventure_story` is a DnD-themed "Choose Your Own Adventure" interactive story game. It is a static browser application (no build step, no server). The story is "The Curse of Valdrath's Keep" — a fully branching adventure with class-mechanical choices, flag-based state, and four distinct endings.
 
 ## Current Status (as of last session)
 
@@ -31,14 +31,22 @@ Two bugs found and fixed (commit `fbfbed3`):
 1. **Stale class badge** — `startGame()` now clears the badge element on reset so it doesn't persist on the hidden scene page.
 2. **`end_defeat` unreachable** — `boss_direct` now routes to `end_defeat` when neither `has_phylactery` nor `seal_solved` is set (no preparation at all). `end_partial` now requires `seal_solved`. New defeat-branch narration added.
 
+### What was completed (third session)
+
+- **Mobile layout verified** — simulated 420px viewport in Chrome; class picker stacks to 1-column, choice buttons full-width, text clean. No issues found.
+- **Standalone bundle** — `adventure_standalone.html` created (single self-contained file, all JS inlined, ~84KB). Uploaded to Google Drive and shared.
+- **App icon** — 1024×1024 PNG generated via Canvas API (dark castle, green glowing windows, gold border). Downsized to 512×512 and 192×192 via Pillow.
+- **PWA** — `manifest.json` + `sw.js` added; service worker caches core assets for offline use. Meta tags (`theme-color`, `manifest`, `apple-touch-icon`) added to `adventure.html`.
+- **Capacitor Android** — Capacitor 8 wired up (`capacitor.config.json`, `android/` platform). `npm run build` copies game files to `www/`; `npm run sync` syncs to Android assets. Debug APK successfully built (4.9MB) via Android Studio.
+- **Credit line removed** — "Anthony Woodward — CIS110" removed from all HTML files and CSS.
+
 ### What still needs to happen — NEXT SESSION
 
-**The game has not been checked by a human for story quality or mobile layout.** Remaining items:
-
-1. **Mobile layout** — resize browser to ≤ 420 px and confirm: 2×2 class picker holds, choice buttons stack cleanly, text doesn't overflow.
-2. **Story quality pass** — read through at least two paths and note any scenes that feel too short, too long, tonally off, or awkwardly worded. The Rogue and Wizard paths have the most prose variety.
-3. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
-4. **Consider a README** — the current `README.md` is a placeholder. A short description of the project for the GitHub repo would be appropriate before submitting.
+1. **Story quality pass** — read through at least two paths and note any scenes that feel too short, too long, tonally off, or awkwardly worded. The Rogue and Wizard paths have the most prose variety.
+2. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
+3. **README** — current `README.md` is a placeholder; needs a proper description.
+4. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
+5. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).
 
 ---
 
