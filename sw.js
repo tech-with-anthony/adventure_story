@@ -1,4 +1,4 @@
-const CACHE = 'valdrath-v1';
+const CACHE = 'adventure-stories-v1';
 const ASSETS = [
   '/adventure.html',
   '/engine.js',

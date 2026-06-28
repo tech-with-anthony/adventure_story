@@ -1,7 +1,7 @@
 {
-  "name": "The Curse of Valdrath's Keep",
-  "short_name": "Valdrath's Keep",
-  "description": "A DnD-themed Choose Your Own Adventure — battle the undead lich Malachar and decide the fate of the cursed keep.",
+  "name": "Adventure Stories",
+  "short_name": "Adventure Stories",
+  "description": "A collection of branching interactive stories. Choose your tale, choose your class, and shape the outcome.",
   "start_url": "/adventure.html",
   "display": "standalone",
   "background_color": "#0a1a0d",

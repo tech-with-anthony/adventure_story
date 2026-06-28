@@ -1,7 +1,18 @@
-/* story-data.js — The Curse of Valdrath's Keep: complete scene graph */
-window.STORY = {
-  start: "tavern",
-  scenes: {
+/* story-data.js — The Curse of Valdrath's Keep */
+window.STORIES = window.STORIES || [];
+window.STORIES.push({
+  id: "valdrath",
+  title: "The Curse of Valdrath’s Keep",
+  blurb: "Dark clouds hang over the city of Thornwall. An ancient evil stirs within Valdrath’s Keep, and the dead walk once more. A desperate lord needs a hero — and that hero is you.",
+  classes: [
+    { id: "fighter", name: "Fighter", tag: "Strength & Steel",  desc: "Master of arms and armor. Your combat prowess gives you an edge in direct confrontations." },
+    { id: "wizard",  name: "Wizard",  tag: "Arcane Mastery",    desc: "Scholar of the arcane arts. Your knowledge opens doors — and minds — closed to others." },
+    { id: "rogue",   name: "Rogue",   tag: "Shadow & Cunning",  desc: "A creature of shadow. Locks, traps, and going unnoticed are your greatest weapons." },
+    { id: "cleric",  name: "Cleric",  tag: "Divine Favor",      desc: "Bearer of holy power. Your faith grants healing, light, and dominion over the undead." }
+  ],
+  story: {
+    start: "tavern",
+    scenes: {
 
     "tavern": {
       chapter: "Prologue",
@@ -1131,5 +1142,6 @@ window.STORY = {
       ]
     }
 
+    }
   }
-};
+});

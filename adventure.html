@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0a1a0d">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>The Curse of Valdrath's Keep</title>
+<title>Adventure Stories</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -266,14 +266,113 @@
     .btn-row button { flex: 1 1 100%; }
     .class-grid { grid-template-columns: 1fr; }
   }
+
+  /* LIBRARY PAGE */
+  #page-library { align-items: flex-start; }
+  .library-col { max-width: 800px; }
+
+  .library-header { text-align: center; margin-bottom: 2rem; }
+  .library-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: clamp(2rem, 7vw, 3.2rem);
+    line-height: 1.15;
+    text-shadow: 0 2px 12px rgba(217,178,91,0.25), 0 1px 2px #000;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.3rem;
+  }
+
+  .story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+    width: 100%;
+  }
+
+  .story-card {
+    background: linear-gradient(180deg, var(--bg-panel) 0%, #0f1c14 100%);
+    border: 1px solid var(--bg-panel-edge);
+    border-radius: 14px;
+    padding: clamp(1.25rem, 4vw, 1.75rem);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--text);
+    min-height: 48px;
+    width: 100%;
+  }
+  .story-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px var(--shadow);
+  }
+  .story-card:focus-visible {
+    outline: 3px solid var(--gold-bright);
+    outline-offset: 2px;
+  }
+
+  .story-card-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
+    color: var(--gold-bright);
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
+  .story-card-blurb {
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    font-style: italic;
+    line-height: 1.55;
+  }
+  .story-card-classes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.25rem;
+  }
+  .story-class-chip {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .story-class-chip.fighter { color: var(--green-bright); border-color: var(--green); }
+  .story-class-chip.wizard  { color: var(--arcane-bright); border-color: var(--arcane); }
+  .story-class-chip.rogue   { color: var(--text-dim); border-color: #4a4a3a; }
+  .story-class-chip.cleric  { color: var(--gold-bright); border-color: var(--gold); }
+  .story-class-chip.unknown { color: var(--text-dim); border-color: #4a4a3a; }
+
+  @media (max-width: 480px) {
+    .story-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
 
+<!-- LIBRARY PAGE — story selection, shown on app open -->
+<section id="page-library" class="page" aria-label="Story library">
+  <div class="page-col library-col">
+    <header class="library-header">
+      <h1 class="library-title">Adventure Stories</h1>
+      <p class="subtitle">Choose your tale</p>
+    </header>
+    <div id="story-grid" class="story-grid" role="list"></div>
+  </div>
+</section>
+
 <!-- SETUP PAGE -->
-<section id="page-setup" class="page active" aria-label="Character creation">
+<section id="page-setup" class="page" aria-label="Character creation">
   <div class="page-col">
-    <h1>The Curse of Valdrath's Keep</h1>
+    <h1 id="setup-title"></h1>
     <p class="subtitle">A choose your own adventure</p>
     <div id="setup-box">
       <div id="setup-content"></div>
