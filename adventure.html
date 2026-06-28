@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a1a0d">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>The Curse of Valdrath's Keep</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -177,7 +180,6 @@
   .choices-col { flex-direction: column; align-items: stretch; }
   .choices-col button { flex: none; width: 100%; text-align: left; font-size: 0.97rem; }
 
-  .page-credit { text-align: center; color: var(--text-dim); font-size: 0.9rem; margin-top: 1.5rem; font-style: italic; }
 
   /* SETUP PAGE */
   #page-setup { align-items: center; justify-content: center; }
@@ -276,7 +278,6 @@
     <div id="setup-box">
       <div id="setup-content"></div>
     </div>
-    <p class="page-credit">Anthony Woodward &mdash; CIS110</p>
   </div>
 </section>
 
@@ -295,11 +296,11 @@
       <div id="scene-text" class="story-text"></div>
       <div id="scene-interact" class="interaction" hidden></div>
     </div>
-    <p class="page-credit">Anthony Woodward &mdash; CIS110</p>
   </div>
 </section>
 
 <script src="story-data.js"></script>
 <script src="engine.js"></script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 </body>
 </html>

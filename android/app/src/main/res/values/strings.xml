@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Valdrath\'s Keep</string>
+    <string name="title_activity_main">Valdrath\'s Keep</string>
+    <string name="package_name">com.anthonywoodward.valdrathskeep</string>
+    <string name="custom_url_scheme">com.anthonywoodward.valdrathskeep</string>
+</resources>

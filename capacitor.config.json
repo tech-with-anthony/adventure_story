@@ -1,0 +1,8 @@
+{
+  "appId": "com.anthonywoodward.valdrathskeep",
+  "appName": "Valdrath's Keep",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
