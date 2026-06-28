@@ -1,0 +1,19 @@
+{
+  "name": "adventure_story",
+  "version": "1.0.0",
+  "description": "",
+  "main": "engine.js",
+  "scripts": {
+    "build": "mkdir -p www && cp adventure.html www/index.html && cp engine.js story-data.js manifest.json sw.js icon-192.png icon-512.png icon-1024.png www/",
+    "sync": "npm run build && npx cap sync android",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^8.4.1",
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1"
+  }
+}

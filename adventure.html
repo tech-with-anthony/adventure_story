@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Choose Your Own Adventure</title>
+<meta name="theme-color" content="#0a1a0d">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>The Curse of Valdrath's Keep</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -17,7 +20,9 @@
     --gold-bright: #f0cf82;
     --text: #e7e2d4;
     --text-dim: #b3ac98;
-    --shadow: rgba(0, 0, 0, 0.55);
+    --shadow: rgba(0,0,0,0.55);
+    --arcane: #6a4d8a;
+    --arcane-bright: #b08ad4;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,8 +30,8 @@
   body {
     min-height: 100vh;
     background:
-      radial-gradient(circle at 20% 0%, rgba(62, 107, 72, 0.25), transparent 45%),
-      radial-gradient(circle at 80% 100%, rgba(74, 53, 38, 0.35), transparent 50%),
+      radial-gradient(circle at 20% 0%, rgba(62,107,72,0.25), transparent 45%),
+      radial-gradient(circle at 80% 100%, rgba(74,53,38,0.35), transparent 50%),
       linear-gradient(160deg, #0a110c 0%, #0c140f 50%, #090d0a 100%);
     background-attachment: fixed;
     color: var(--text);
@@ -39,7 +44,6 @@
   .page { display: none; min-height: 100vh; }
   .page.active { display: flex; }
 
-  /* SHARED COLUMN */
   .page-col {
     width: 100%;
     max-width: 720px;
@@ -49,7 +53,6 @@
     padding: clamp(1.5rem, 5vw, 3rem) 1.25rem;
   }
 
-  /* SHARED PANEL CARD */
   .panel {
     background: linear-gradient(180deg, var(--bg-panel) 0%, #11201a 100%);
     border: 1px solid var(--bg-panel-edge);
@@ -58,35 +61,46 @@
     box-shadow: 0 18px 40px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.03);
   }
 
-  /* SHARED PAGE HEADER */
-  .page-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
+  /* SCENE HEADER */
+  .scene-header { text-align: center; margin-bottom: 0.85rem; }
+  .chapter-label {
+    font-family: 'Cinzel', serif;
+    color: var(--green-bright);
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
   }
-  .page-header h1 {
+  .scene-header h1 {
     font-family: 'Cinzel', serif;
     font-weight: 700;
     color: var(--gold);
-    font-size: clamp(1.6rem, 6vw, 2.6rem);
+    font-size: clamp(1.4rem, 5vw, 2.2rem);
     line-height: 1.15;
     text-shadow: 0 2px 12px rgba(217,178,91,0.25), 0 1px 2px #000;
     letter-spacing: 0.04em;
   }
-  .page-header .chapter-label {
+  .scene-location { font-style: italic; color: var(--text-dim); font-size: 0.95rem; margin-top: 0.3rem; }
+
+  /* CLASS BADGE */
+  .class-badge-wrap { text-align: center; margin-bottom: 1rem; }
+  .class-badge {
+    display: inline-block;
     font-family: 'Cinzel', serif;
-    color: var(--green-bright);
-    font-size: 0.92rem;
+    font-size: 0.72rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    margin-top: 0.4rem;
+    padding: 0.18rem 0.8rem;
+    border-radius: 20px;
+    border: 1px solid;
   }
+  .class-badge.fighter { color: var(--green-bright); border-color: var(--green); }
+  .class-badge.wizard  { color: var(--arcane-bright); border-color: var(--arcane); }
+  .class-badge.rogue   { color: var(--text-dim); border-color: #4a4a3a; }
+  .class-badge.cleric  { color: var(--gold-bright); border-color: var(--gold); }
 
-  /* STORY PARAGRAPHS */
-  .story-text {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
+  /* STORY TEXT */
+  .story-text { display: flex; flex-direction: column; gap: 1.5rem; }
   .passage {
     margin: 0;
     opacity: 0;
@@ -96,7 +110,7 @@
   .passage.emphasis {
     font-family: 'Cinzel', serif;
     color: var(--gold-bright);
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     letter-spacing: 0.06em;
     text-align: center;
   }
@@ -105,7 +119,7 @@
     .passage { animation: none; opacity: 1; transform: none; }
   }
 
-  /* INTERACTION AREA */
+  /* INTERACTION */
   .interaction {
     margin-top: 1.75rem;
     padding-top: 1.5rem;
@@ -115,10 +129,9 @@
     gap: 1rem;
   }
   .interaction[hidden] { display: none; }
-
   .choice-prompt {
     font-family: 'Cinzel', serif;
-    font-size: clamp(1.1rem, 3vw, 1.45rem);
+    font-size: clamp(1rem, 3vw, 1.3rem);
     color: var(--gold-bright);
     text-align: center;
     letter-spacing: 0.03em;
@@ -126,12 +139,7 @@
   }
 
   /* BUTTONS */
-  .btn-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.85rem;
-    justify-content: center;
-  }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 0.85rem; justify-content: center; }
   button {
     font-family: 'Cinzel', serif;
     font-weight: 500;
@@ -168,13 +176,10 @@
     outline-offset: 2px;
   }
 
-  .page-credit {
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 0.9rem;
-    margin-top: 1.5rem;
-    font-style: italic;
-  }
+  /* STORY CHOICE BUTTONS — stacked column */
+  .choices-col { flex-direction: column; align-items: stretch; }
+  .choices-col button { flex: none; width: 100%; text-align: left; font-size: 0.97rem; }
+
 
   /* SETUP PAGE */
   #page-setup { align-items: center; justify-content: center; }
@@ -189,13 +194,7 @@
     letter-spacing: 0.04em;
     margin-bottom: 0.3rem;
   }
-  #page-setup .subtitle {
-    color: var(--green-bright);
-    font-style: italic;
-    font-size: 1.05rem;
-    letter-spacing: 0.03em;
-    margin-bottom: 1.75rem;
-  }
+  .subtitle { color: var(--green-bright); font-style: italic; font-size: 1.05rem; letter-spacing: 0.03em; margin-bottom: 1.75rem; }
   #setup-box {
     width: 100%;
     background: linear-gradient(180deg, var(--bg-panel) 0%, #11201a 100%);
@@ -204,15 +203,10 @@
     padding: clamp(1.5rem, 5vw, 2.5rem);
     box-shadow: 0 18px 40px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.03);
   }
-  .setup-intro-text {
-    color: var(--text-dim);
-    font-style: italic;
-    line-height: 1.7;
-    margin-bottom: 1.75rem;
-  }
+  .setup-intro-text { color: var(--text-dim); font-style: italic; line-height: 1.7; margin-bottom: 1.75rem; }
   .setup-prompt {
     font-family: 'Cinzel', serif;
-    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
     color: var(--gold-bright);
     letter-spacing: 0.03em;
     margin-bottom: 1.25rem;
@@ -232,473 +226,81 @@
     text-align: center;
   }
   input[type="text"]::placeholder { color: #6f7a6c; font-style: italic; }
-  .error-msg {
-    color: #e89b7d;
-    font-size: 0.95rem;
-    font-style: italic;
-    min-height: 1.2rem;
-  }
+  .error-msg { color: #e89b7d; font-size: 0.95rem; font-style: italic; min-height: 1.2rem; }
 
-  /* ENDING PAGE */
-  #page-ending { align-items: center; justify-content: center; }
-  #page-ending .page-col { align-items: center; text-align: center; max-width: 640px; }
-  #ending-box {
-    width: 100%;
-    background: linear-gradient(180deg, var(--bg-panel) 0%, #11201a 100%);
+  /* CLASS PICKER */
+  .class-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-top: 1.25rem; }
+  .class-card {
+    background: linear-gradient(180deg, var(--bg-panel) 0%, #0f1c14 100%);
     border: 1px solid var(--bg-panel-edge);
-    border-radius: 14px;
-    padding: clamp(1.5rem, 5vw, 2.5rem);
-    box-shadow: 0 18px 40px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.03);
+    border-radius: 10px;
+    padding: 1.1rem 0.85rem;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.15s, transform 0.12s, box-shadow 0.15s;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.4rem;
+    min-height: 48px;
   }
-  #ending-title {
-    font-family: 'Cinzel', serif;
-    font-weight: 700;
-    color: var(--gold);
-    font-size: clamp(2.2rem, 9vw, 4rem);
-    letter-spacing: 0.1em;
-    text-shadow: 0 2px 24px rgba(217,178,91,0.4), 0 1px 2px #000;
-  }
-  #ending-text {
-    display: flex;
-    flex-direction: column;
-    gap: 1.3rem;
-  }
-  #ending-text p {
-    margin: 0;
-    opacity: 0;
-    transform: translateY(14px);
-    animation: rise 0.55s ease forwards;
-  }
+  .class-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow); }
+  .class-card:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 2px; }
+  .class-card.fighter { border-color: var(--green); }
+  .class-card.fighter:hover { border-color: var(--green-bright); }
+  .class-card.wizard  { border-color: var(--arcane); }
+  .class-card.wizard:hover  { border-color: var(--arcane-bright); }
+  .class-card.rogue   { border-color: #4a4a3a; }
+  .class-card.rogue:hover   { border-color: var(--text-dim); }
+  .class-card.cleric  { border-color: var(--gold); }
+  .class-card.cleric:hover  { border-color: var(--gold-bright); }
+  .class-card-name { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em; }
+  .class-card.fighter .class-card-name { color: var(--green-bright); }
+  .class-card.wizard  .class-card-name { color: var(--arcane-bright); }
+  .class-card.rogue   .class-card-name { color: var(--text-dim); }
+  .class-card.cleric  .class-card-name { color: var(--gold-bright); }
+  .class-card-tag { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+  .class-card-desc { font-size: 0.83rem; color: var(--text-dim); font-style: italic; line-height: 1.4; margin-top: 0.2rem; }
 
-  @media (max-width: 420px) {
+  @media (max-width: 480px) {
     body { font-size: 18px; }
     .btn-row button { flex: 1 1 100%; }
+    .class-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
-<!-- PAGE 1: INTRO / SETUP -->
-<section id="page-setup" class="page active" aria-label="Story setup">
+<!-- SETUP PAGE -->
+<section id="page-setup" class="page active" aria-label="Character creation">
   <div class="page-col">
-    <h1>Choose Your Own Adventure</h1>
-    <p class="subtitle">A tale of fog, fortune, and fate</p>
+    <h1>The Curse of Valdrath's Keep</h1>
+    <p class="subtitle">A choose your own adventure</p>
     <div id="setup-box">
       <div id="setup-content"></div>
     </div>
-    <p class="page-credit">Anthony Woodward &mdash; CIS110</p>
   </div>
 </section>
 
-<!-- PAGE 2: INTRODUCTION -->
-<section id="page-intro" class="page" aria-label="Introduction">
+<!-- SCENE PAGE — all story content renders here dynamically -->
+<section id="page-scene" class="page" aria-label="Adventure">
   <div class="page-col">
-    <div class="page-header">
-      <h1>Choose Your Own Adventure</h1>
-      <p class="chapter-label">The Story Begins</p>
+    <div class="scene-header">
+      <p id="scene-chapter" class="chapter-label"></p>
+      <h1 id="scene-title"></h1>
+      <p id="scene-location" class="scene-location"></p>
+    </div>
+    <div class="class-badge-wrap">
+      <span id="class-badge" class="class-badge"></span>
     </div>
     <div class="panel" aria-live="polite">
-      <div id="intro-text" class="story-text"></div>
-      <div id="intro-interact" class="interaction" hidden></div>
+      <div id="scene-text" class="story-text"></div>
+      <div id="scene-interact" class="interaction" hidden></div>
     </div>
-    <p class="page-credit">Anthony Woodward &mdash; CIS110</p>
   </div>
 </section>
 
-<!-- PAGE 3: SCENARIO 1 — THE CAVE -->
-<section id="page-s1" class="page" aria-label="Chapter one">
-  <div class="page-col">
-    <div class="page-header">
-      <h1>Choose Your Own Adventure</h1>
-      <p class="chapter-label">Chapter I &mdash; The Cave</p>
-    </div>
-    <div class="panel" aria-live="polite">
-      <div id="s1-text" class="story-text"></div>
-      <div id="s1-interact" class="interaction" hidden></div>
-    </div>
-    <p class="page-credit">Anthony Woodward &mdash; CIS110</p>
-  </div>
-</section>
-
-<!-- PAGE 3: SCENARIO 2 — THE RIVER -->
-<section id="page-s2" class="page" aria-label="Chapter two">
-  <div class="page-col">
-    <div class="page-header">
-      <h1>Choose Your Own Adventure</h1>
-      <p class="chapter-label">Chapter II &mdash; The River</p>
-    </div>
-    <div class="panel" aria-live="polite">
-      <div id="s2-text" class="story-text"></div>
-      <div id="s2-interact" class="interaction" hidden></div>
-    </div>
-    <p class="page-credit">Anthony Woodward &mdash; CIS110</p>
-  </div>
-</section>
-
-<!-- PAGE 4: ENDING -->
-<section id="page-ending" class="page" aria-label="Story ending">
-  <div class="page-col">
-    <div id="ending-box">
-      <div id="ending-title">The End</div>
-      <div id="ending-text" aria-live="polite"></div>
-      <div id="ending-actions" class="btn-row"></div>
-    </div>
-    <p class="page-credit">Anthony Woodward &mdash; CIS110</p>
-  </div>
-</section>
-
-<script>
-(function () {
-  "use strict";
-
-  var answers = {};
-  var choices = {};
-
-  var setupQuestions = [
-    { key: "name",              prompt: "What is the name of the main character?",     retry: "Please enter a name:" },
-    { key: "forestName",        prompt: "What is the name of the mysterious forest?",  retry: "Please enter a forest name:" },
-    { key: "clothingType",      prompt: "What kind of clothing are they wearing?",     retry: "Please enter a clothing type:" },
-    { key: "legendaryTreasure", prompt: "What is the legendary treasure said to be?", retry: "Please enter the legendary treasure:" },
-    { key: "smallChest",        prompt: "What is inside the small chest?",             retry: "Please enter what is inside the small chest:" }
-  ];
-
-  var setupContentEl  = document.getElementById("setup-content");
-  var introTextEl     = document.getElementById("intro-text");
-  var introInteractEl = document.getElementById("intro-interact");
-  var s1TextEl        = document.getElementById("s1-text");
-  var s1InteractEl    = document.getElementById("s1-interact");
-  var s2TextEl        = document.getElementById("s2-text");
-  var s2InteractEl    = document.getElementById("s2-interact");
-  var endingTextEl    = document.getElementById("ending-text");
-  var endingActionsEl = document.getElementById("ending-actions");
-
-  function showPage(id) {
-    document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
-    document.getElementById(id).classList.add("active");
-    window.scrollTo(0, 0);
-  }
-
-  function v(key) { return answers[key]; }
-
-  function addP(container, text, variant) {
-    var p = document.createElement("p");
-    p.className = "passage" + (variant ? " " + variant : "");
-    p.textContent = text;
-    container.appendChild(p);
-    p.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    return p;
-  }
-
-  function addPs(container, lines, variant) {
-    for (var i = 0; i < lines.length; i++) addP(container, lines[i], variant);
-  }
-
-  function clearInteract(el) {
-    el.innerHTML = "";
-    el.hidden = true;
-  }
-
-  function renderChoice(interactEl, promptText, onChoose) {
-    clearInteract(interactEl);
-    interactEl.hidden = false;
-
-    var label = document.createElement("p");
-    label.className = "choice-prompt";
-    label.textContent = promptText;
-
-    var btnRow = document.createElement("div");
-    btnRow.className = "btn-row";
-
-    var yesBtn = document.createElement("button");
-    yesBtn.type = "button";
-    yesBtn.className = "primary";
-    yesBtn.textContent = "Yes";
-    yesBtn.addEventListener("click", function () { onChoose("yes"); });
-
-    var noBtn = document.createElement("button");
-    noBtn.type = "button";
-    noBtn.textContent = "No";
-    noBtn.addEventListener("click", function () { onChoose("no"); });
-
-    btnRow.appendChild(yesBtn);
-    btnRow.appendChild(noBtn);
-    interactEl.appendChild(label);
-    interactEl.appendChild(btnRow);
-    interactEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    yesBtn.focus();
-  }
-
-  function renderContinue(interactEl, label, onClick) {
-    interactEl.innerHTML = "";
-    interactEl.hidden = false;
-
-    var btnRow = document.createElement("div");
-    btnRow.className = "btn-row";
-
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "primary";
-    btn.textContent = label;
-    btn.addEventListener("click", onClick);
-
-    btnRow.appendChild(btn);
-    interactEl.appendChild(btnRow);
-    interactEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    btn.focus();
-  }
-
-  /* ---- GAME FLOW ---- */
-
-  function startGame() {
-    answers = {};
-    choices = {};
-    introTextEl.innerHTML = "";
-    s1TextEl.innerHTML = "";
-    s2TextEl.innerHTML = "";
-    clearInteract(introInteractEl);
-    clearInteract(s1InteractEl);
-    clearInteract(s2InteractEl);
-    showPage("page-setup");
-    showSetupIntro();
-  }
-
-  function showSetupIntro() {
-    setupContentEl.innerHTML = "";
-
-    var intro = document.createElement("p");
-    intro.className = "setup-intro-text";
-    intro.textContent = "Hi, there! I have an exciting adventure story to tell you. I can't wait to share it! Before the story begins, I have a few questions I need you to answer. After typing your answer, be sure to press the enter key.";
-
-    var btnRow = document.createElement("div");
-    btnRow.className = "btn-row";
-    btnRow.style.marginTop = "1.5rem";
-
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "primary";
-    btn.textContent = "Press to Continue";
-    btn.addEventListener("click", function () { runSetup(0); });
-
-    btnRow.appendChild(btn);
-    setupContentEl.appendChild(intro);
-    setupContentEl.appendChild(btnRow);
-    btn.focus();
-  }
-
-  function runSetup(index) {
-    if (index >= setupQuestions.length) {
-      beginIntro();
-      return;
-    }
-    var q = setupQuestions[index];
-    renderSetupQuestion(q, function (value) {
-      answers[q.key] = value;
-      runSetup(index + 1);
-    });
-  }
-
-  function renderSetupQuestion(question, onSubmit) {
-    setupContentEl.innerHTML = "";
-
-    var label = document.createElement("p");
-    label.className = "setup-prompt";
-    label.id = "setup-label";
-    label.textContent = question.prompt;
-
-    var field = document.createElement("div");
-    field.className = "setup-field";
-
-    var input = document.createElement("input");
-    input.type = "text";
-    input.id = "field-input";
-    input.autocomplete = "off";
-    input.setAttribute("aria-labelledby", "setup-label");
-    input.setAttribute("aria-describedby", "field-error");
-
-    var error = document.createElement("p");
-    error.className = "error-msg";
-    error.id = "field-error";
-    error.setAttribute("aria-live", "assertive");
-
-    var btnRow = document.createElement("div");
-    btnRow.className = "btn-row";
-
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "primary";
-    btn.textContent = "Continue";
-    btn.disabled = true;
-
-    function trimmed() { return input.value.trim(); }
-    function sync() { btn.disabled = trimmed().length === 0; }
-    function submit() {
-      var value = trimmed();
-      if (value.length === 0) { error.textContent = question.retry; input.focus(); return; }
-      onSubmit(value);
-    }
-
-    input.addEventListener("input", function () { sync(); if (trimmed().length > 0) error.textContent = ""; });
-    input.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); submit(); } });
-    btn.addEventListener("click", submit);
-
-    btnRow.appendChild(btn);
-    field.appendChild(input);
-    field.appendChild(error);
-    field.appendChild(btnRow);
-    setupContentEl.appendChild(label);
-    setupContentEl.appendChild(field);
-    input.focus();
-  }
-
-  /* ---- INTRODUCTION ---- */
-
-  function beginIntro() {
-    showPage("page-intro");
-
-    addP(introTextEl, "LET'S GO!!!", "emphasis");
-
-    addPs(introTextEl, [
-      "Once upon a time, there was a curious explorer named " + v("name") + " who came from a poor family struggling to make ends meet.",
-      "Most of " + v("name") + "'s exploring was driven by the hope of finding a source of income to help their family.",
-      "One night, just before midnight, " + v("name") + " stood at the entrance of " + v("forestName") + " — a mysterious forest shrouded in thick fog.",
-      "Strange noises echoed from deep within the darkness.",
-      v("name") + " had heard rumors of a legendary " + v("legendaryTreasure") + " hidden somewhere inside the forest.",
-      "Dressed in " + v("clothingType") + ", " + v("name") + " took a deep breath and stepped into the shadows."
-    ]);
-
-    renderContinue(introInteractEl, "Continue to Chapter I", beginChapter1);
-  }
-
-  /* ---- CHAPTER 1: THE CAVE ---- */
-
-  function beginChapter1() {
-    showPage("page-s1");
-
-    addPs(s1TextEl, [
-      "Deep inside " + v("forestName") + ", " + v("name") + " discovers a cave. Inside, a pack of wolves is sleeping.",
-      "Behind the wolves, a map is visible on the wall — a map that could lead to the " + v("legendaryTreasure") + ".",
-      "But " + v("name") + " is wearing " + v("clothingType") + " with metal pieces that rattle with every move."
-    ]);
-
-    renderChoice(
-      s1InteractEl,
-      "Should " + v("name") + " remove the " + v("clothingType") + " with metal first?",
-      function (decision) {
-        choices.removeClothing = decision;
-        clearInteract(s1InteractEl);
-
-        if (decision === "yes") {
-          addPs(s1TextEl, [
-            v("name") + " carefully removes the " + v("clothingType") + ", setting it down without making a sound.",
-            "Moving silently through the cave, " + v("name") + " slips past the sleeping wolves one by one.",
-            "Heart pounding, " + v("name") + " reaches the wall and pulls down the map.",
-            "Without making any noise, " + v("name") + " manages to retrieve the map without waking the wolves.",
-            "Now armed with a map, " + v("name") + " slips back out of the cave and continues deeper into " + v("forestName") + "."
-          ]);
-        } else {
-          addPs(s1TextEl, [
-            v("name") + " decides to press on without removing the " + v("clothingType") + ".",
-            "With each step, the metal pieces clank and rattle loudly.",
-            "The wolves stir — then leap to their feet, snarling and growling.",
-            "The wolves chase " + v("name") + " out of the cave with no map, leaving " + v("name") + " lost in " + v("forestName") + "."
-          ]);
-        }
-
-        renderContinue(s1InteractEl, "Continue to Chapter II", beginChapter2);
-      }
-    );
-  }
-
-  /* ---- CHAPTER 2: THE RIVER ---- */
-
-  function beginChapter2() {
-    showPage("page-s2");
-
-    addPs(s2TextEl, [
-      "Deeper into " + v("forestName") + ", " + v("name") + " arrives at a rushing river.",
-      "The current is far too strong to walk through — " + v("name") + " would be swept away immediately.",
-      "Looking around, " + v("name") + " spots a length of rope nearby. The gap across also looks like it might be jumpable."
-    ]);
-
-    renderChoice(
-      s2InteractEl,
-      "Should " + v("name") + " use the rope to cross the river?",
-      function (decision) {
-        choices.useRope = decision;
-        clearInteract(s2InteractEl);
-
-        if (decision === "yes") {
-          addPs(s2TextEl, [
-            v("name") + " grabs the rope and ties one end to a sturdy tree on the near bank.",
-            "With a strong throw, the other end sails across and catches on a branch on the far side.",
-            v("name") + " pulls it tight and uses the rope to safely cross over the rushing river.",
-            v("name") + " lands on the other side and continues the search for the " + v("legendaryTreasure") + "."
-          ]);
-        } else {
-          addPs(s2TextEl, [
-            v("name") + " decides to attempt to jump across the river.",
-            "Taking a running start, " + v("name") + " leaps with everything they have.",
-            "But " + v("name") + " just barely misses and falls into the river.",
-            v("name") + " is swept away by the current and ends up deeper in " + v("forestName") + " than intended."
-          ]);
-        }
-
-        renderContinue(s2InteractEl, "See How the Story Ends", showEnding);
-      }
-    );
-  }
-
-  /* ---- ENDING ---- */
-
-  function showEnding() {
-    var lines = [];
-
-    if (choices.removeClothing === "yes" && choices.useRope === "yes") {
-      lines = [
-        "With the map in hand and safely across the river, " + v("name") + " follows the path to its end.",
-        "There, buried beneath an ancient stone, is the legendary " + v("legendaryTreasure") + ".",
-        v("name") + " manages to come across the rumored legendary " + v("legendaryTreasure") + ", helping the family come out of poverty.",
-        "The family's struggles were finally over, and " + v("name") + " became a legend in their own right."
-      ];
-    } else if (choices.removeClothing === "no" && choices.useRope === "no") {
-      lines = [
-        "With no map and swept far off course by the river, " + v("name") + " wanders " + v("forestName") + " for days.",
-        v("name") + " failed to find any treasure and was lost in " + v("forestName") + " for the rest of their life.",
-        "The legendary " + v("legendaryTreasure") + " was never found, and the family never heard from " + v("name") + " again."
-      ];
-    } else {
-      lines = [
-        "Though " + v("name") + " faced setbacks along the way, hope was not entirely lost.",
-        v("name") + " doesn't find the legendary " + v("legendaryTreasure") + ", but does find a small chest containing " + v("smallChest") + ".",
-        "The small chest improves the family's income a small amount temporarily.",
-        "But only after " + v("name") + " makes it home many years later after being lost in " + v("forestName") + "."
-      ];
-    }
-
-    endingTextEl.innerHTML = "";
-    endingActionsEl.innerHTML = "";
-
-    for (var i = 0; i < lines.length; i++) {
-      var p = document.createElement("p");
-      p.textContent = lines[i];
-      endingTextEl.appendChild(p);
-    }
-
-    var btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "primary";
-    btn.textContent = "Play Again";
-    btn.addEventListener("click", startGame);
-    endingActionsEl.appendChild(btn);
-
-    showPage("page-ending");
-  }
-
-  startGame();
-})();
-</script>
+<script src="story-data.js"></script>
+<script src="engine.js"></script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 </body>
 </html>
