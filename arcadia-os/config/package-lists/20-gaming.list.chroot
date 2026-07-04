@@ -1,0 +1,35 @@
+# Arcadia OS — Core gaming software (from the Debian archive)
+#
+# Only packages that ship reliably in Debian's main/contrib/non-free are listed
+# here, so a rename between Debian releases can't break the whole build. Steam
+# (needs i386 first) and less-stable extras are handled by hooks in
+# config/hooks/normal/ instead — see 0010-i386-and-steam and 0020-extras.
+
+# --- Launchers / platforms ---
+lutris                 # GOG, Epic, Humble, emulators, generic Windows games
+
+# --- Wine / Windows compatibility ---
+wine
+winetricks
+mono-runtime
+fonts-wine
+
+# --- Performance & overlays ---
+gamemode               # Feral GameMode: on-demand CPU/GPU performance profile
+libgamemode0
+libgamemodeauto0
+mangohud               # FPS / frametime / temperature overlay
+
+# --- Emulation ---
+retroarch
+libretro-core-info
+mupen64plus-ui-console # Nintendo 64
+dolphin-emu            # GameCube / Wii
+
+# --- Controllers & input ---
+antimicrox             # map controllers to keyboard/mouse
+joystick
+evtest
+
+# --- Streaming / capture / voice ---
+obs-studio             # recording & streaming
