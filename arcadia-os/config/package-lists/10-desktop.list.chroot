@@ -1,0 +1,35 @@
+# Arcadia OS — Desktop environment
+# KDE Plasma: the most console-like, gaming-friendly desktop (also what
+# SteamOS-style "big picture" setups build on). Kept fairly lean rather than
+# pulling the full KDE application suite.
+
+kde-plasma-desktop
+plasma-workspace
+plasma-nm
+plasma-pa
+sddm
+sddm-theme-breeze
+kwin-x11
+kwin-wayland
+dolphin
+konsole
+ark
+kate
+kscreen
+powerdevil
+bluedevil
+plasma-systemmonitor
+xdg-desktop-portal-kde
+qtwayland5
+
+# Fonts and theming
+fonts-noto
+fonts-noto-color-emoji
+fonts-liberation
+fonts-dejavu
+papirus-icon-theme
+
+# Xorg / Wayland session bits
+xserver-xorg
+xserver-xorg-input-libinput
+xwayland

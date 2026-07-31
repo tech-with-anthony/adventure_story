@@ -1,0 +1,34 @@
+#!/bin/sh
+set -e
+
+# Arcadia OS build hook: wire up Flatpak/Flathub and preinstall the popular
+# gaming apps that are only distributed as Flatpaks (Discord, Heroic, etc.).
+#
+# Set INSTALL_FLATPAK_APPS=false to ship only the Flathub remote and let users
+# install these later with `arcadia-install-extras` (smaller, faster build).
+
+INSTALL_FLATPAK_APPS="${INSTALL_FLATPAK_APPS:-true}"
+
+echo "I: [arcadia] configuring Flatpak / Flathub"
+
+# Register Flathub system-wide so it's ready on first boot regardless of the
+# choice below.
+flatpak remote-add --if-not-exists flathub \
+	https://flathub.org/repo/flathub.flatpakrepo || \
+	echo "W: [arcadia] could not reach Flathub; remote will be added on first boot"
+
+if [ "$INSTALL_FLATPAK_APPS" = "true" ]; then
+	echo "I: [arcadia] preinstalling Flatpak gaming apps"
+	for app in \
+		com.discordapp.Discord \
+		com.heroicgameslauncher.hgl \
+		com.usebottles.bottles \
+		net.davidotek.pupgui2
+	do
+		if flatpak install -y --system --noninteractive flathub "$app"; then
+			echo "I: [arcadia]   + $app"
+		else
+			echo "W: [arcadia]   - $app could not be installed, skipped"
+		fi
+	done
+fi

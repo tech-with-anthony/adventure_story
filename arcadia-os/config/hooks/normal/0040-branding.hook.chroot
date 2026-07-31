@@ -1,0 +1,36 @@
+#!/bin/sh
+set -e
+
+# Arcadia OS build hook: rebrand the base system while keeping the Debian
+# lineage discoverable (os-release keeps ID_LIKE=debian for compatibility).
+
+echo "I: [arcadia] applying branding"
+
+cat > /etc/os-release <<'EOF'
+PRETTY_NAME="Arcadia OS 1.0 (Gaming Edition)"
+NAME="Arcadia OS"
+VERSION_ID="1.0"
+VERSION="1.0 (trixie)"
+VERSION_CODENAME=trixie
+ID=arcadia
+ID_LIKE=debian
+HOME_URL="https://example.org/arcadia"
+SUPPORT_URL="https://example.org/arcadia/support"
+BUG_REPORT_URL="https://example.org/arcadia/bugs"
+EOF
+
+# Keep a copy for tools that read /usr/lib/os-release.
+cp /etc/os-release /usr/lib/os-release 2>/dev/null || true
+
+echo "Arcadia OS 1.0 (Gaming Edition) \\n \\l" > /etc/issue
+echo "Arcadia OS 1.0 (Gaming Edition)" > /etc/issue.net
+
+cat > /etc/motd <<'EOF'
+
+   ▄▀█ █▀█ █▀▀ ▄▀█ █▀▄ █ ▄▀█   █▀█ █▀
+   █▀█ █▀▄ █▄▄ █▀█ █▄▀ █ █▀█   █▄█ ▄█   Gaming Edition
+
+   Steam · Lutris · Wine/Proton · GameMode · MangoHud · RetroArch
+   Run  arcadia-welcome  for tips, or  arcadia-install-extras  for more apps.
+
+EOF

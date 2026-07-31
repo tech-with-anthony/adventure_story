@@ -1,0 +1,17 @@
+# live-build working directories and outputs — never commit these.
+.build/
+cache/
+chroot/
+chroot.files
+binary/
+binary.*
+*.iso
+*.img
+*.log
+config/binary
+config/bootstrap
+config/chroot
+config/common
+config/source
+auto/clean
+auto/build
