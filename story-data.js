@@ -303,9 +303,14 @@ window.STORY = {
       choicePrompt: "Where do you go?",
       paragraphs: [
         function (s) {
-          var prefix = s.flags.entered_quietly
-            ? "You emerge into the grand hall unseen."
-            : "You push into the grand hall, your heart pounding.";
+          var prefix;
+          if (s.flags.entered_quietly) {
+            prefix = "You emerge into the grand hall unseen.";
+          } else if (s.flags.alerted_keep) {
+            prefix = "You push into the grand hall with the alarm still sounding behind you. Somewhere in the floors above, the horn is answered — twice.";
+          } else {
+            prefix = "You push into the grand hall, your heart pounding.";
+          }
           return prefix + " Whatever this place was in life, it is ruin now. Tapestries hang in rot. Overturned furniture lies in patterns that suggest something dragged it aside, looking for something.";
         },
         "Three passages lead deeper into the keep. To the left, a set of double doors hangs open — beyond them, the scrape and clatter of bone on stone. Straight ahead, a narrower corridor leads toward the old library wing, its entrance carved with a scholar's sigil. To the right, a heavy door bears the crossed-swords crest of Valdrath's house guard.",
@@ -418,7 +423,7 @@ window.STORY = {
       location: "Valdrath's Keep — East Wing",
       choicePrompt: "What do you investigate?",
       paragraphs: [
-        "The library is intact — almost deliberately so. Shelves of books and scrolls, undisturbed by whatever ransacked the rest of the keep. Candles burn with a cold blue flame that cast no warmth.",
+        "The library is intact — almost deliberately so. Shelves of books and scrolls, undisturbed by whatever ransacked the rest of the keep. Candles burn with a cold blue flame that gives no warmth.",
         "Someone has been using this room recently. A reading stand near the window holds an open volume, pages covered in a cramped script you don't immediately recognize.",
         "There are also scattered notes in a more modern hand — someone else's research."
       ],
@@ -468,7 +473,7 @@ window.STORY = {
         "The notes are incomplete. But one line stands out, underlined twice: 'Malachar's power source. Not in the keep. Not in the crypt. In the throne room — where the old lord's chair stands. Under the stone.'"
       ],
       choices: [
-        { text: "Head to the throne room immediately.", next: "keep_throne", setsFlag: "knows_throne_secret" },
+        { text: "Head to the throne room immediately.", next: "keep_throne", setsFlag: "knows_phylactery" },
         { text: "Look around the library for anything else useful before moving on.", next: "library_search_phylactery" }
       ]
     },
@@ -651,10 +656,9 @@ window.STORY = {
       paragraphs: [
         "The wight advances and so do you — but your weapon is your voice. The words of binding, the prayer of unmade chains — the wight staggers with every syllable.",
         "By the time it reaches you, it has lost half its cohesion. Two blows finish what your prayer started. It dissolves into silence.",
-        "The altar's restoration pulses through you like a second wind.",
         function (s) {
           return s.flags.altar_restored
-            ? "The reconsecrated chapel's blessing holds here too. You feel its clarity at the edge of your senses."
+            ? "The reconsecrated chapel's blessing holds here too — you feel its clarity at the edge of your senses, like a second wind."
             : "The throne waits at the far end of the room.";
         }
       ],

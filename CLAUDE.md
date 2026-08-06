@@ -14,7 +14,7 @@ The project was refactored from a single `adventure.html` file into three files,
 
 - **`adventure.html`** — HTML shell + full dark-fantasy CSS
 - **`engine.js`** — Full game engine (IIFE, state machine, class gates, flag system)
-- **`story-data.js`** — 71 scenes across 3 acts with 4 endings (~1,150 lines)
+- **`story-data.js`** — 70 scenes across 3 acts with 4 endings (~1,150 lines)
 
 ### What was tested and fixed (second session)
 
@@ -40,13 +40,24 @@ Two bugs found and fixed (commit `fbfbed3`):
 - **Capacitor Android** — Capacitor 8 wired up (`capacitor.config.json`, `android/` platform). `npm run build` copies game files to `www/`; `npm run sync` syncs to Android assets. Debug APK successfully built (4.9MB) via Android Studio.
 - **Credit line removed** — "Anthony Woodward — CIS110" removed from all HTML files and CSS.
 
+### What was completed (fourth session)
+
+- **Arcadia OS moved out** — the Debian gaming-distro project that briefly lived in `arcadia-os/` now has its own repository (`tech-with-anthony/arcadia-os`). It shared nothing with this game.
+- **Story quality pass** — four defects found and fixed, each verified by a scripted render of the affected scenes (12/12 assertions):
+  1. `keep_library` — "a cold blue flame that cast no warmth": subject/verb disagreement, and flames *cast* shadows but *give* warmth.
+  2. `throne_battle_cleric` — told every Cleric "the altar's restoration pulses through you" **unconditionally**, contradicting the very next paragraph's `altar_restored` check. A Cleric who reached the throne via the library or armory never saw the chapel, so the line was simply false. Removed; the conditional now carries it.
+  3. `library_notes` — was a trap choice. It reveals where the phylactery is hidden, then set `knows_throne_secret`, a flag nothing reads, while its sibling choice set `knows_phylactery` and unlocked real options. Now sets `knows_phylactery`.
+  4. `alerted_keep` — documented here as affecting scenes, but never read anywhere. Raising the alarm had zero narrative consequence. Now branches the grand hall's opening (three distinct openings: quiet / alerted / plain).
+- **README** — replaced the one-line placeholder with a player-facing description plus a developer section on the scene-data format.
+- **Custom Android launcher icon** — generated from `icon-1024.png` at all five densities: legacy `ic_launcher`, circular `ic_launcher_round`, and full-bleed adaptive `ic_launcher_foreground`. `ic_launcher_background` changed from Capacitor's default `#FFFFFF` (which put the dark tower on a white plate) to `#09100A`, sampled from the art's own edge. The adaptive foreground deliberately drops the gold frame and title text, since launcher masks eat the outer ~25%; verified by compositing against circle and squircle masks.
+
 ### What still needs to happen — NEXT SESSION
 
-1. **Story quality pass** — read through at least two paths and note any scenes that feel too short, too long, tonally off, or awkwardly worded. The Rogue and Wizard paths have the most prose variety.
-2. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
-3. **README** — current `README.md` is a placeholder; needs a proper description.
-4. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
-5. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).
+1. **Cross-browser check** — still outstanding. Firefox is not installable in the cloud session (`firefox-esr` has no candidate), so this needs a local machine. Chrome/Chromium is the only engine ever tested.
+2. **Release APK** — debug APK is sideloadable but Play Store distribution needs a signed release APK (`Build → Generate Signed Bundle / APK`). Requires a keystore, which is a signing secret you should generate and keep yourself.
+3. **Remaining dead flags** (optional) — eight flags are still set but never read: `combat_worn`, `crypt_safe_entry`, `has_rope`, `has_sword_upgrade`, `lich_knows_you`, `rushed_crypt`, `seal_forced`, `wight_fight_worn`. Each is a place the story could react and currently doesn't. `lich_knows_you` is the most promising — the player deliberately provokes Malachar in `hall_combat_call` and nothing ever comes of it.
+
+> **Note:** the engine sets only one flag per choice (`applyChoice` does `state.flags[choice.setsFlag] = true`). Wiring up several of these at once would need that to accept an array.
 
 ---
 
@@ -198,7 +209,7 @@ Class gating is implemented via:
 |------|--------|--------|
 | `has_postern_key` | Helping the survivor (Act I) or buying the map | Unlocks postern-door choices at the keep gate |
 | `entered_quietly` | Postern entry, gate climb (clean), wizard drain | Affects opening narration in the grand hall |
-| `alerted_keep` | Noisy climb, rushed fight | Some scenes acknowledge the keep is on alert |
+| `alerted_keep` | Noisy climb, rushed fight | Grand hall opens with the alarm still sounding and the horn answered twice |
 | `knows_phylactery` | Library research, altar study, ghost communication | Enables extra boss options |
 | `has_phylactery` | Taking the lodestone from under the throne | Enables direct phylactery destruction at boss |
 | `altar_restored` | Cleric reconsecrating the chapel | Amplifies Cleric's boss rite; affects boss narration |
