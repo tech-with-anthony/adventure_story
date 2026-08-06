@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Arcadia — Install Extra Apps
-Comment=Install more launchers and emulators from Flathub
-Exec=konsole -e arcadia-install-extras
-Icon=applications-games
-Terminal=false
-Categories=Game;System;
-Keywords=arcadia;install;flatpak;games;
