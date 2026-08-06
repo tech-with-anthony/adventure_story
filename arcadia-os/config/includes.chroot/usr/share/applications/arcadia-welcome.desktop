@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Arcadia Welcome
-Comment=What's installed and how to get gaming
-Exec=konsole -e arcadia-welcome
-Icon=input-gaming
-Terminal=false
-Categories=Game;System;
-Keywords=arcadia;welcome;gaming;help;
