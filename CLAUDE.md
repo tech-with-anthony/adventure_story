@@ -2,7 +2,58 @@
 
 ## Project Overview
 
-`adventure_story` is a DnD-themed "Choose Your Own Adventure" interactive story game. It is a static browser application (no build step, no server) created as CIS110 coursework by Anthony Woodward. The story is "The Curse of Valdrath's Keep" — a fully branching adventure with class-mechanical choices, flag-based state, and four distinct endings.
+`adventure_story` is a DnD-themed "Choose Your Own Adventure" interactive story game. It is a static browser application (no build step, no server). The story is "The Curse of Valdrath's Keep" — a fully branching adventure with class-mechanical choices, flag-based state, and four distinct endings.
+
+## Current Status (as of last session)
+
+**Branch: `main`** — all current work is on main and deployed to GitHub Pages.
+
+### What was built
+
+The project was refactored from a single `adventure.html` file into three files, and the complete story was written from scratch:
+
+- **`adventure.html`** — HTML shell + full dark-fantasy CSS
+- **`engine.js`** — Full game engine (IIFE, state machine, class gates, flag system)
+- **`story-data.js`** — 71 scenes across 3 acts with 4 endings (~1,150 lines)
+
+### What was tested and fixed (second session)
+
+All four class paths and all four endings were tested end-to-end via automated browser driving (Chrome DevTools Protocol). **179 checks passed, 0 failures.**
+
+Paths confirmed working:
+- Fighter → Heroic (bold road, gate rush, hall fight, seal trial, `boss_fighter`)
+- Rogue → Heroic (wise road, postern, library, throne flank, mechanism puzzle, `boss_phylactery`)
+- Cleric → Heroic (equipped road, turn undead, altar reconsecrate, sunburst puzzle, `boss_cleric`)
+- Wizard → Heroic (wise road, postern, wizard library exclusive scene, throne parley, rune puzzle, `boss_cunning`)
+- `end_defeat`, `end_partial`, `end_costly` all confirmed reachable and distinct
+
+Two bugs found and fixed (commit `fbfbed3`):
+1. **Stale class badge** — `startGame()` now clears the badge element on reset so it doesn't persist on the hidden scene page.
+2. **`end_defeat` unreachable** — `boss_direct` now routes to `end_defeat` when neither `has_phylactery` nor `seal_solved` is set (no preparation at all). `end_partial` now requires `seal_solved`. New defeat-branch narration added.
+
+### What was completed (third session)
+
+- **Mobile layout verified** — simulated 420px viewport in Chrome; class picker stacks to 1-column, choice buttons full-width, text clean. No issues found.
+- **Standalone bundle** — `adventure_standalone.html` created (single self-contained file, all JS inlined, ~84KB).
+- **App icon** — 1024×1024 PNG generated via Canvas API (dark castle, green glowing windows, gold border). Downsized to 512×512 and 192×192 via Pillow.
+- **PWA** — `manifest.json` + `sw.js` added; service worker caches core assets for offline use. Meta tags (`theme-color`, `manifest`, `apple-touch-icon`) added to `adventure.html`.
+- **Capacitor Android** — Capacitor 8 wired up (`capacitor.config.json`, `android/` platform). `npm run build` copies game files to `www/`; `npm run sync` syncs to Android assets. Debug APK successfully built (4.9MB) via Android Studio.
+- **Credit line removed** — "Anthony Woodward — CIS110" removed from all HTML files and CSS.
+
+### What was completed (fourth session)
+
+- **GitHub Pages deployed** — game is live at `https://tech-with-anthony.github.io/adventure_story/adventure.html`.
+- **Root URL redirect** — `index.html` added with `<meta http-equiv="refresh">` so the root path redirects to `adventure.html`. The game is accessible at `https://tech-with-anthony.github.io/adventure_story/`.
+
+### What still needs to happen — NEXT SESSION
+
+1. **Story quality pass** — read through at least two paths and note any scenes that feel too short, too long, tonally off, or awkwardly worded. The Rogue and Wizard paths have the most prose variety.
+2. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
+3. **README** — current `README.md` is a placeholder; needs a proper description with the live URL.
+4. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
+5. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).
+
+---
 
 ## Running the Project
 
@@ -14,17 +65,30 @@ xdg-open adventure.html    # Linux
 start adventure.html       # Windows
 ```
 
-The only external resource is Google Fonts (Cinzel, EB Garamond) loaded from a CDN; the game functions without it if offline.
+The game is also available online at:
+`https://tech-with-anthony.github.io/adventure_story/`
+
+The only external resource is Google Fonts (Cinzel, EB Garamond) loaded from a CDN; the game functions without it if offline (system serif fonts are used as fallback).
 
 ## Repository Structure
 
 ```
 adventure_story/
-├── adventure.html   # HTML shell + all CSS
-├── engine.js        # Game engine: setup, scene rendering, state, class gates
-├── story-data.js    # All scene definitions (window.STORY)
-├── CLAUDE.md        # This file
-└── README.md        # Placeholder title
+├── adventure.html           # HTML shell + all CSS
+├── adventure_standalone.html# Self-contained single-file bundle (~84KB)
+├── engine.js                # Game engine: setup, scene rendering, state, class gates
+├── story-data.js            # All scene definitions (window.STORY)
+├── index.html               # Root redirect → adventure.html (for GitHub Pages)
+├── manifest.json            # PWA manifest
+├── sw.js                    # Service worker (offline cache)
+├── icon-1024.png            # App icon source
+├── icon-512.png             # PWA icon (512×512)
+├── icon-192.png             # PWA icon (192×192)
+├── capacitor.config.json    # Capacitor Android config
+├── package.json             # npm scripts for Capacitor sync
+├── android/                 # Capacitor Android project
+├── CLAUDE.md                # This file
+└── README.md                # Placeholder title
 ```
 
 `adventure.html` loads the scripts in dependency order:
@@ -76,7 +140,7 @@ var state = {
 | `renderChoices(choices, prompt)` | Filters visible choices, renders buttons or a Continue button |
 | `resolveNext(next)` | Resolves `next` as string, `{class: id, default: id}` object, or `fn(state)→id` |
 | `applyChoice(choice)` | Sets `setsFlag` if present, then calls `loadScene(resolveNext(...))` |
-| `addP` / `addPs` / `clearInteract` / `renderContinue` | DOM utility helpers (same patterns as original) |
+| `addP` / `addPs` / `clearInteract` / `renderContinue` | DOM utility helpers |
 
 ### Scene Data (`story-data.js`)
 
@@ -204,14 +268,14 @@ ENDINGS
 
 No automated test suite. Test manually by opening `adventure.html` in a browser and walking these paths:
 
-1. **Fighter → Heroic**: Bold road → fight (easy win) → gate rush → hall combat → throne (fight) → crypt puzzle → boss (attack) + has_phylactery → `end_heroic`
-2. **Wizard → Heroic**: Wise road → help survivor → gate informed (postern) → hall magic → library wizard → throne (parley) → crypt puzzle → boss ritual/cunning → `end_heroic`
-3. **Rogue → Heroic**: Wise road → help → gate informed → hall stealth → throne rogue flank → crypt puzzle → boss phylactery → `end_heroic`
-4. **Cleric → Heroic**: Equipped road → hall combat (holy) → altar reconsecrate → throne (cleric fight) → crypt puzzle → boss cleric (with altar_restored) → `end_heroic`
-5. **Partial ending**: Any path → boss without has_phylactery or seal_solved → `end_partial`
-6. **Defeat ending**: Any path → boss_direct without has_phylactery → boss loses → `end_defeat` (verify boss_direct routes here)
-7. **Class gates**: Select Wizard and verify Fighter-only choices are absent; select Fighter and verify Wizard-only choices absent.
-8. **Flag gates**: Confirm "Use the postern key" choice only appears after taking a path that sets `has_postern_key`.
-9. **Play Again**: Verify `startGame()` fully resets state and returns cleanly to setup.
+1. **Fighter → Heroic**: Bold road → fight (easy win) → gate rush → hall combat → investigate chapel → altar study → crypt puzzle (sword pillar) → boss attack → `end_heroic` (via `seal_solved`)
+2. **Wizard → Heroic**: Wise road → help survivor → gate informed (postern) → library wizard → throne parley → crypt puzzle (rune sequence) → boss cunning/ritual → `end_heroic`
+3. **Rogue → Heroic**: Wise road → help → gate informed → throne rogue flank → `has_phylactery` → crypt puzzle (mechanism) → boss phylactery → `end_heroic`
+4. **Cleric → Heroic**: Equipped road → hall combat (turn undead) → altar reconsecrate (`altar_restored`) → throne cleric fight → crypt puzzle (sunburst pillar) → boss cleric rite → `end_heroic`
+5. **Partial ending**: Any path → boss without `has_phylactery` or `seal_solved` → `end_partial`
+6. **Defeat ending**: Reach `boss_direct` without `has_phylactery` → `end_defeat`
+7. **Class gates**: Wizard should not see Fighter-only choices; Fighter should not see Wizard-only choices.
+8. **Flag gates**: "Use the postern key" choice must only appear after a path that sets `has_postern_key`.
+9. **Play Again**: `startGame()` must fully reset state and return cleanly to setup with no leftover text or flags.
 
-Verify in at least Chrome and Firefox. Check animations, fonts, and layout at ≤ 420 px viewport width.
+Verify in at least Chrome and Firefox. Check layout at ≤ 420 px viewport width.
