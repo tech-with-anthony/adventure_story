@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var state = { name: "", charClass: "", flags: {}, history: [] };
+  var state = { name: "", charClass: "", flags: {}, history: [], story: null };
 
   var setupContentEl  = document.getElementById("setup-content");
   var sceneChapterEl  = document.getElementById("scene-chapter");
@@ -10,6 +10,8 @@
   var classBadgeEl    = document.getElementById("class-badge");
   var sceneTextEl     = document.getElementById("scene-text");
   var sceneInteractEl = document.getElementById("scene-interact");
+  var storyGridEl  = document.getElementById("story-grid");
+  var setupTitleEl = document.getElementById("setup-title");
 
   /* ---- DOM UTILITIES (same patterns as original) ---- */
 
@@ -53,14 +55,61 @@
     btn.focus();
   }
 
+  /* ---- LIBRARY FLOW ---- */
+
+  function showLibrary() {
+    storyGridEl.innerHTML = "";
+    var stories = window.STORIES || [];
+    stories.forEach(function (entry) {
+      var card = document.createElement("button");
+      card.type = "button";
+      card.className = "story-card";
+      card.setAttribute("role", "listitem");
+      card.setAttribute("aria-label", entry.title);
+
+      var titleEl = document.createElement("div");
+      titleEl.className = "story-card-title";
+      titleEl.textContent = entry.title;
+
+      var blurbEl = document.createElement("div");
+      blurbEl.className = "story-card-blurb";
+      blurbEl.textContent = entry.blurb;
+
+      var chipsEl = document.createElement("div");
+      chipsEl.className = "story-card-classes";
+      (entry.classes || []).forEach(function (cls) {
+        var chip = document.createElement("span");
+        chip.className = "story-class-chip " + (cls.id || "unknown");
+        chip.textContent = cls.name;
+        chipsEl.appendChild(chip);
+      });
+
+      card.appendChild(titleEl);
+      card.appendChild(blurbEl);
+      card.appendChild(chipsEl);
+      card.addEventListener("click", function () { selectStory(entry); });
+      storyGridEl.appendChild(card);
+    });
+
+    showPage("page-library");
+    var firstCard = storyGridEl.querySelector("button");
+    if (firstCard) firstCard.focus();
+  }
+
+  function selectStory(entry) {
+    state.story = entry;
+    setupTitleEl.textContent = entry.title;
+    showPage("page-setup");
+    showSetupIntro();
+  }
+
   /* ---- SETUP FLOW ---- */
 
   function startGame() {
-    state = { name: "", charClass: "", flags: {}, history: [] };
+    state = { name: "", charClass: "", flags: {}, history: [], story: null };
     classBadgeEl.textContent = "";
     classBadgeEl.className = "class-badge";
-    showPage("page-setup");
-    showSetupIntro();
+    showLibrary();
   }
 
   function showSetupIntro() {
@@ -68,7 +117,7 @@
 
     var intro = document.createElement("p");
     intro.className = "setup-intro-text";
-    intro.textContent = "Dark clouds hang over the city of Thornwall. An ancient evil stirs within Valdrath's Keep, and the dead walk once more. A desperate lord needs a hero — and that hero is you.";
+    intro.textContent = state.story ? state.story.blurb : "";
 
     var row = document.createElement("div");
     row.className = "btn-row";
@@ -139,13 +188,6 @@
     input.focus();
   }
 
-  var CLASS_DEFS = [
-    { id: "fighter", name: "Fighter", tag: "Strength & Steel",  desc: "Master of arms and armor. Your combat prowess gives you an edge in direct confrontations." },
-    { id: "wizard",  name: "Wizard",  tag: "Arcane Mastery",    desc: "Scholar of the arcane arts. Your knowledge opens doors — and minds — closed to others." },
-    { id: "rogue",   name: "Rogue",   tag: "Shadow & Cunning",  desc: "A creature of shadow. Locks, traps, and going unnoticed are your greatest weapons." },
-    { id: "cleric",  name: "Cleric",  tag: "Divine Favor",      desc: "Bearer of holy power. Your faith grants healing, light, and dominion over the undead." }
-  ];
-
   function askClass() {
     setupContentEl.innerHTML = "";
 
@@ -159,7 +201,7 @@
     grid.setAttribute("role", "group");
     grid.setAttribute("aria-label", "Choose your class");
 
-    CLASS_DEFS.forEach(function (cls) {
+    state.story.classes.forEach(function (cls) {
       var card = document.createElement("button");
       card.type = "button";
       card.className = "class-card " + cls.id;
@@ -192,16 +234,15 @@
 
   /* ---- SCENE ENGINE ---- */
 
-  var BADGE_LABELS = { fighter: "⚔ Fighter", wizard: "✦ Wizard", rogue: "◆ Rogue", cleric: "✧ Cleric" };
-
   function beginStory() {
-    classBadgeEl.textContent = BADGE_LABELS[state.charClass] || state.charClass;
+    var cls = state.story.classes.find(function (c) { return c.id === state.charClass; });
+    classBadgeEl.textContent = cls ? cls.name : state.charClass;
     classBadgeEl.className = "class-badge " + state.charClass;
-    loadScene(window.STORY.start);
+    loadScene(state.story.story.start);
   }
 
   function loadScene(id) {
-    var scene = window.STORY.scenes[id];
+    var scene = state.story.story.scenes[id];
     if (!scene) { console.error("Missing scene:", id); return; }
 
     state.history.push(id);

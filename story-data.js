@@ -1,7 +1,18 @@
-/* story-data.js — The Curse of Valdrath's Keep: complete scene graph */
-window.STORY = {
-  start: "tavern",
-  scenes: {
+/* story-data.js — The Curse of Valdrath's Keep */
+window.STORIES = window.STORIES || [];
+window.STORIES.push({
+  id: "valdrath",
+  title: "The Curse of Valdrath’s Keep",
+  blurb: "Dark clouds hang over the city of Thornwall. An ancient evil stirs within Valdrath’s Keep, and the dead walk once more. A desperate lord needs a hero — and that hero is you.",
+  classes: [
+    { id: "fighter", name: "Fighter", tag: "Strength & Steel",  desc: "Master of arms and armor. Your combat prowess gives you an edge in direct confrontations." },
+    { id: "wizard",  name: "Wizard",  tag: "Arcane Mastery",    desc: "Scholar of the arcane arts. Your knowledge opens doors — and minds — closed to others." },
+    { id: "rogue",   name: "Rogue",   tag: "Shadow & Cunning",  desc: "A creature of shadow. Locks, traps, and going unnoticed are your greatest weapons." },
+    { id: "cleric",  name: "Cleric",  tag: "Divine Favor",      desc: "Bearer of holy power. Your faith grants healing, light, and dominion over the undead." }
+  ],
+  story: {
+    start: "tavern",
+    scenes: {
 
     "tavern": {
       chapter: "Prologue",
@@ -116,9 +127,9 @@ window.STORY = {
       title: "The Road North",
       location: "The Northern Road",
       paragraphs: [
-        "You've heard enough. More information means more time, and time is something the dead don't waste.",
-        "The road to Valdrath is quiet — unnaturally so. No birds. No insects. Just fog and the crunch of gravel under your boots.",
-        "By evening, the keep's silhouette breaks the treeline. Stone walls. A collapsed tower. And silence."
+        "You've heard enough. More information means more time, and the dead are already using every hour you're not moving.",
+        "The road north is wrong in a way that's hard to name. No birdsong. No insects. The fog off the Thornwood sits too low and moves against the wind. The road itself is dry despite the morning rain — as if nothing living has crossed it in days.",
+        "By evening, the keep's silhouette breaks the treeline. Stone walls. A collapsed tower. Every window dark. The silence presses on your ears like water pressure, and you understand for the first time why the messenger's hands were trembling."
       ],
       choices: [
         { text: "Approach the keep's main gate.", next: "keep_gate" }
@@ -354,9 +365,9 @@ window.STORY = {
       title: "The Light of Faith",
       location: "Valdrath's Keep — West Wing",
       paragraphs: [
-        "You raise your holy symbol and speak the words of turning. The skeletons hesitate — a visible shudder passes through them, like wind through paper.",
-        "Three of the six crumble where they stand, their animating force burned out by your faith. The remaining three advance, but they're slower now, fighting something they can't understand.",
-        "You finish them with blade and prayer. The room settles into silence."
+        "You raise your holy symbol and speak the words of turning. The effect is immediate — not the gentle flicker you might produce in a small consecrated space, but a wave of divine force that hits the room like a thrown stone hitting water.",
+        "Three of the six collapse mid-step, their animating force extinguished. The remaining three stagger, fighting the compulsion, burning what is left of the power that holds them together just to keep moving toward you.",
+        "By the time they reach you, they are already coming apart. A prayer and two blows is all it takes. The room settles into something almost like peace."
       ],
       choices: [
         { text: "Investigate the chapel beyond.", next: "keep_altar" },
@@ -524,7 +535,7 @@ window.STORY = {
       location: "Valdrath's Keep — Armory",
       paragraphs: [
         "You find a serviceable short blade still wrapped in oiled cloth, a round shield with only one cracked boss, and a coil of rope that doesn't appear rotten.",
-        "The ghost watches you the whole time. It doesn't move or speak."
+        "The ghost watches you the whole time. Not the way a sentry watches — it doesn't track your movement, doesn't react when you look back. It watches the way the dead do: fixed on something overlaid on the present, something only it can see. You are furniture to it. You take what you need and go."
       ],
       choices: [
         { text: "Take what you can carry and head for the throne room.", next: "keep_throne", setsFlag: "has_rope" }
@@ -550,8 +561,8 @@ window.STORY = {
       title: "The Soldier's Ghost",
       location: "Valdrath's Keep — Armory",
       paragraphs: [
-        "You try to address the ghost — name yourself, explain why you've come. It stares through you. Not hostile. Simply unreachable, locked in whatever moment it's trapped in.",
-        "After a few minutes, you give up. The ghost has nothing for you today.",
+        "You try to address the ghost — name yourself, explain why you've come. It stares through you. Not hostile. Simply unreachable, locked in whatever moment claimed it, replaying something you'll never see.",
+        "After a while you stop trying. Some of the dead are too far gone for words. The ghost goes on staring at the empty rack, standing its last post.",
         "The armory's only other door leads back toward the main hall — or you could press on toward the throne room via the guard corridor."
       ],
       choices: [
@@ -683,9 +694,10 @@ window.STORY = {
       location: "Valdrath's Keep — Throne Room",
       paragraphs: [
         "You keep your hands in view and your voice measured. 'I'm not here to destroy the keep. I'm here to end what's wrong with it. Tell me what you know.'",
-        "The wight doesn't speak. But it doesn't advance, either. It tilts its head — listening to something you can't hear.",
-        "Then it steps aside.",
-        "Not all the way. Not permanently. But enough: a clear path to the throne's flagstone, and a window of seconds to use it."
+        "The wight doesn't speak. But it doesn't advance, either. It tilts its head — listening to something you can't hear, some signal passing between it and whatever presses down from above. A negotiation you're not party to.",
+        "Ten seconds. Twenty. The green light in its eyes dims slightly, then steadies.",
+        "It steps aside.",
+        "Not all the way. Not permanently. But enough: a clear path to the throne's flagstone, and a window of seconds to use it before whatever just happened changes its mind."
       ],
       choices: [
         { text: "Move fast — straight to the throne before it changes its mind.", next: "throne_flagstone", setsFlag: "know_weakness" }
@@ -913,7 +925,7 @@ window.STORY = {
       location: "Valdrath's Keep — The Seal Chamber",
       paragraphs: [
         "The seal doesn't move when you push at it. You attack it with everything you have — blade, shoulder, a running charge — and each time it simply refuses.",
-        "Finally you find the edges, wedge your fingers into a gap in the stone, and haul. Something gives — not the seal, but the floor plate beneath it. You've forced a mechanical bypass.",
+        "Finally you find the edges, wedge your fingers into a gap in the stone, and haul. Something gives — not the seal itself, but a hidden floor plate beneath it, ground down by a century of disuse until it barely holds. Brute insistence has found what patience might have missed.",
         "The seal rises just enough. You squeeze through sideways, scraping both shoulders, and emerge on the other side bruised and breathing hard."
       ],
       choices: [
@@ -1109,11 +1121,11 @@ window.STORY = {
       location: "Valdrath's Keep — Before Dawn",
       isEnding: true,
       paragraphs: [
-        function (s) { return s.name + " made it out. That counts for something."; },
-        "Malachar is weakened — driven back into the deep stone of his crypt, his power diminished, his undead scattered. He is not destroyed. He will return, someday, if no one goes back to finish what was started.",
-        "But not this year. Not next year. And Thornwall can breathe for now.",
-        "Lord Harwick pays a portion of the promised gold, his expression unreadable. You get the sense he understands, at least, what you walked into.",
-        "The road south is cold and long. But you are on it, which is not nothing."
+        function (s) { return s.name + " climbs back through the keep alone. The green light has dimmed — not gone, but banked, like coals after the fire is kicked apart."; },
+        "Malachar is weakened. Driven back into the bedrock of his crypt, his undead scattered to dust without his will to hold them. He is not destroyed. He will return, in years or decades, when his power has knit itself back together. Someone will have to come back and finish this.",
+        "But not tonight. Not this season. Thornwall will sleep without nightmares for a while.",
+        "Lord Harwick pays a portion of the promised gold without argument. His expression is unreadable, but he does not insult you by calling it a failure. You get the sense he understands, at least, what you walked into.",
+        "The road south is cold and long. But you are on it, and the keep is behind you, and the fog off the Thornwood is thinning. That will have to be enough."
       ]
     },
 
@@ -1131,5 +1143,6 @@ window.STORY = {
       ]
     }
 
+    }
   }
-};
+});
