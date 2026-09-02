@@ -314,5 +314,26 @@
     loadScene(resolveNext(choice.next));
   }
 
-  startGame();
+  /* ---- CATALOG LOADER ---- */
+
+  function loadCatalogStories() {
+    var catalog = window.STORY_CATALOG || [];
+    if (!catalog.length) { showLibrary(); return; }
+
+    var pending = catalog.length;
+    function onScriptDone() {
+      pending--;
+      if (pending === 0) showLibrary();
+    }
+
+    catalog.forEach(function (entry) {
+      var s = document.createElement("script");
+      s.src = entry.file;
+      s.onload = onScriptDone;
+      s.onerror = onScriptDone;
+      document.head.appendChild(s);
+    });
+  }
+
+  loadCatalogStories();
 })();
