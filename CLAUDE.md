@@ -6,7 +6,7 @@
 
 ## Current Status (as of last session)
 
-**Branch: `choices`** — this is where all current work lives. The branch is pushed to GitHub and up to date.
+**Branch: `main`** — all current work is on main and deployed to GitHub Pages.
 
 ### What was built
 
@@ -40,11 +40,16 @@ Two bugs found and fixed (commit `fbfbed3`):
 - **Capacitor Android** — Capacitor 8 wired up (`capacitor.config.json`, `android/` platform). `npm run build` copies game files to `www/`; `npm run sync` syncs to Android assets. Debug APK successfully built (4.9MB) via Android Studio.
 - **Credit line removed** — "Anthony Woodward — CIS110" removed from all HTML files and CSS.
 
+### What was completed (fourth session)
+
+- **GitHub Pages deployed** — game is live at `https://tech-with-anthony.github.io/adventure_story/adventure.html`.
+- **Root URL redirect** — `index.html` added with `<meta http-equiv="refresh">` so the root path redirects to `adventure.html`. The game is accessible at `https://tech-with-anthony.github.io/adventure_story/`.
+
 ### What still needs to happen — NEXT SESSION
 
 1. **Story quality pass** — read through at least two paths and note any scenes that feel too short, too long, tonally off, or awkwardly worded. The Rogue and Wizard paths have the most prose variety.
 2. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
-3. **README** — current `README.md` is a placeholder; needs a proper description.
+3. **README** — current `README.md` is a placeholder; needs a proper description with the live URL.
 4. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
 5. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).
 
@@ -60,17 +65,30 @@ xdg-open adventure.html    # Linux
 start adventure.html       # Windows
 ```
 
+The game is also available online at:
+`https://tech-with-anthony.github.io/adventure_story/`
+
 The only external resource is Google Fonts (Cinzel, EB Garamond) loaded from a CDN; the game functions without it if offline (system serif fonts are used as fallback).
 
 ## Repository Structure
 
 ```
 adventure_story/
-├── adventure.html   # HTML shell + all CSS
-├── engine.js        # Game engine: setup, scene rendering, state, class gates
-├── story-data.js    # All scene definitions (window.STORY)
-├── CLAUDE.md        # This file
-└── README.md        # Placeholder title
+├── adventure.html           # HTML shell + all CSS
+├── adventure_standalone.html# Self-contained single-file bundle (~84KB)
+├── engine.js                # Game engine: setup, scene rendering, state, class gates
+├── story-data.js            # All scene definitions (window.STORY)
+├── index.html               # Root redirect → adventure.html (for GitHub Pages)
+├── manifest.json            # PWA manifest
+├── sw.js                    # Service worker (offline cache)
+├── icon-1024.png            # App icon source
+├── icon-512.png             # PWA icon (512×512)
+├── icon-192.png             # PWA icon (192×192)
+├── capacitor.config.json    # Capacitor Android config
+├── package.json             # npm scripts for Capacitor sync
+├── android/                 # Capacitor Android project
+├── CLAUDE.md                # This file
+└── README.md                # Placeholder title
 ```
 
 `adventure.html` loads the scripts in dependency order:
