@@ -1004,6 +1004,15 @@ window.STORIES.push({
         "He is not made of bone and void alone. There is something still physical about him — and physical things can be broken. You discover this by breaking several of them in quick succession.",
         "He falls. Slowly. Still fighting until the last second, green fire fading from his eyes.",
         function (s) {
+          switch (s.charClass) {
+            case "fighter": return "You have stood over men who fell in battle before. This is different. The fear does not leave all at once — it drains out slowly, like water from a wound, and you realize only now how much of it you were carrying.";
+            case "wizard": return "There is something in the way his power dissipates — not at once but in cascading intervals, each subsystem of his binding collapsing in sequence — that your mind, even now, cannot help but catalog.";
+            case "rogue": return "You note the angle of his fall, the position of his hands, the silence that has replaced the lightning. You are already thinking about the exit. Force of habit. It has kept you alive.";
+            case "cleric": return "You have ended things before — undead reduced to dust by the word of your god. This is not the same. There is a difference between destruction and release, and you felt it in the last moment of the green light.";
+            default: return "";
+          }
+        },
+        function (s) {
           return s.flags.has_phylactery
             ? "The phylactery in your pocket shatters on its own as the binding breaks."
             : s.flags.seal_solved
@@ -1026,6 +1035,15 @@ window.STORIES.push({
       paragraphs: [
         "You charge and Malachar rises to meet you. He is stronger than anything you have faced — black lightning, cold hands that drain warmth on contact, a body that shrugs off blows that would kill a living man.",
         "You fight for a long time. Longer than you thought you could. You take damage that will take weeks to heal.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "A trained soldier knows the difference between a fight they can win and one they are simply refusing to lose. This is the second kind. You made your peace with it somewhere around the fourth time he knocked you down.";
+            case "wizard": return "You have calculated — despite everything — that he is expending more energy than you are to produce each attack. The calculus will not save you. You keep fighting anyway, because the alternative has already been ruled out.";
+            case "rogue": return "The smart move would have been to run ten minutes ago. You are aware of this. You are also aware that running was never actually on the table, which is an annoying thing to discover about yourself.";
+            case "cleric": return "You stopped asking your god for strength after the second time it didn't come. You keep fighting on your own, which is all that's left, which turns out to be enough to matter.";
+            default: return "";
+          }
+        },
         "Eventually, through sheer refusal to stop, you drive him back. He does not fall — but he retreats, pulling his power inward.",
         function (s) {
           if (s.flags.has_phylactery) return "The phylactery explodes in your pocket. The binding shatters. Malachar screams and comes apart at the seams.";
@@ -1075,6 +1093,15 @@ window.STORIES.push({
       location: "Valdrath's Keep — Malachar's Chamber",
       paragraphs: [
         "You uncork the ritual oil and cross the chamber in a dead run, sliding the last ten feet and slamming your shoulder against the throne. Malachar's lightning misses by a hand's width.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "Lightning hits the stone beside your hand and you do not move. You have been under fire before. The hand that uncorks the vial is steady — not because you are not afraid, but because fear has never been a reason to stop.";
+            case "wizard": return "You recite the preparation clause from memory — you read it three times in the library and once is usually enough for you. The throne hums under your palm as if it recognizes what is coming.";
+            case "rogue": return "You have exactly one chance and no margin. You are comfortable with this. Most of your best work has happened in exactly these conditions.";
+            case "cleric": return "You press your palm to the cracked stone and feel the wrongness of it — a century of corruption, a soul held in bondage, the weight of every year Malachar should not have had. You hold onto that. You speak the word with that weight behind it.";
+            default: return "";
+          }
+        },
         "You anoint the throne with the oil and speak the word from the torn page.",
         "Malachar howls. The throne cracks from base to top, green light hemorrhaging through the fractures. 'What — how did you — '",
         "He never finishes the sentence. The binding unravels. The soul he trapped in this place is finally free — free to pass, free to end. The green flames go out all at once."
@@ -1092,6 +1119,15 @@ window.STORIES.push({
         "You pull the phylactery from your pocket. Malachar's reaction is immediate and total — he lunges from the throne with a speed his frame shouldn't be capable of, all composure gone.",
         "He crashes into you before you can act. You go down hard, stone floor, his hands at your throat, cold burning through your skin.",
         "You close your fist and squeeze.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "You have broken things under pressure before — locks, shackles, a man's grip at a critical moment. The body knows what to do with resistance. You give it everything.";
+            case "wizard": return "You feel the containment matrix inside the stone give way — layers of protection carved into the mineral structure, unraveling in the correct sequence. You understand, in this instant, what it cost him to make it. It is the last thought that will ever be directly about him.";
+            case "rogue": return "You've carried it since the throne room. The whole way through the crypt. An ugly little stone that wanted to be somewhere else. You think: not anymore.";
+            case "cleric": return "Somewhere in there, under a hundred years of his shaping, is the man he was before he made the choice that brought him here. You say his name — his real name, the one carved on the altar stone before he defaced it — and then you close your hand.";
+            default: return "";
+          }
+        },
         "The phylactery shatters. Black light pours through your fingers. Malachar's grip vanishes. He flies backward — pulled apart from the inside — and the green flames guttering in every brazier go out as he comes undone."
       ],
       choices: [
@@ -1106,6 +1142,15 @@ window.STORIES.push({
       paragraphs: [
         "You know what the wight told you: where the binding is anchored. Not the throne, not the phylactery — the line of power that runs between them, visible to the right kind of attention.",
         "You don't fight Malachar. You move around him, forcing him to turn, keeping him reactive while you trace that line of power to its narrowest point — a place where the binding is thinnest, where the chain linking his soul to the phylactery is exposed.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "There — an overextension in his guard, the same gap you'd exploit in a sparring match, except it runs through the air itself and tastes of iron filings. You've read that gap a thousand times. You close on it.";
+            case "wizard": return "The lattice of his binding has a flaw in the fourth anchoring layer — not a mistake, exactly, but a compromise made under duress when he laid the original working. A knot tied too tight in one direction, which means it is too loose in another. You mark it.";
+            case "rogue": return "Every lock has a shear point — the place where the mechanism is thinnest, where one precise force in the right direction makes the whole thing give. You found it in the wight's instructions. You find it again now with your eyes.";
+            case "cleric": return "The sacred order does not break cleanly, but it reasserts. Here — a place where the corruption has thinned, where Malachar's will has grown old and brittle, where the light that was here before him has started, without any help, to come back. You put your hand on it.";
+            default: return "";
+          }
+        },
         "You hit it. Hard. With everything you have.",
         "The line snaps. Malachar staggers, looks at his hands as the green fades from them, and speaks one word in a language you don't understand. It might have been the word for home.",
         "Then he is gone."
