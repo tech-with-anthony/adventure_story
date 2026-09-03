@@ -142,7 +142,21 @@ window.STORIES.push({
       paragraphs: [
         "Ewen is a broken man — hollow-eyed, wrapped in a blanket despite the summer heat. But he talks.",
         "He tells you about the Lich: an ancient court wizard named Malachar who served Valdrath's lords centuries ago. His soul was bound to the keep rather than allowed to pass. He's been waiting, growing stronger, for a hundred years.",
-        "Ewen presses a cold iron key into your hand. 'Postern gate. East wall. Don't use the front — they'll hear you coming.' He won't say who 'they' are. He doesn't have to."
+        "Ewen presses a cold iron key into your hand. 'Postern gate. East wall. Don't use the front — they'll hear you coming.' He won't say who 'they' are. He doesn't have to.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "Ewen looks at you the way a drowning man looks at a thrown rope — not with hope, exactly, but with the first recognition that the problem has a shape that can be struck. He doesn't believe you'll make it. But you are the first thing he has seen in days that looks like it could.";
+            case "wizard":
+              return "His eyes move to your hands once — to whatever you carry that marks you as what you are — and something closes behind them. He gives you the key. But there is a moment before he does where he looks at you the way he looked at the keep.";
+            case "rogue":
+              return "He has been watching you watch him since you sat down — the mill door, the shadows in the corner, the exits he never named. He holds the key out but doesn't release it immediately. Old survival, wired deep: he needs another beat to decide whether giving you this makes him safer or less safe.";
+            case "cleric":
+              return "He has been praying since he crawled out of the keep — small, wordless prayers to anyone still listening. When he looks at you, something behind his eyes simply gives way. He presses the key into your hand harder than he needs to, both hands wrapped around yours, and cannot speak.";
+            default:
+              return "";
+          }
+        }
       ],
       choices: [
         { text: "Thank Ewen and head for the keep.", next: "keep_gate_informed", setsFlag: "has_postern_key" }
@@ -672,6 +686,18 @@ window.STORIES.push({
       location: "Valdrath's Keep — Armory",
       paragraphs: [
         "You try to address the ghost — name yourself, explain why you've come. It stares through you. Not hostile. Simply unreachable, locked in whatever moment claimed it, replaying something you'll never see.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "Then, for just a moment, the ghost's gaze drops — not to your face, but to your weapon arm. A soldier's reflex, worn into the body over years until it outlasted the body itself. The almost-recognition dissolves before it can become anything.";
+            case "wizard":
+              return "As you speak, the ghost flinches — not toward you, but away, a small involuntary recoil you nearly miss. Malachar's craft has been in these walls for a century; whatever you carry that resembles it earns a different kind of nothing. Not absence. Aversion.";
+            case "rogue":
+              return "You wait for the almost-recognition you half-expected — the attention that doesn't quite land, the soldier's reflex outlasting its owner. It doesn't come. The ghost simply does not register you at all, and somehow that is worse than being stared through.";
+            default:
+              return "";
+          }
+        },
         "After a while you stop trying. Some of the dead are too far gone for words. The ghost goes on staring at the empty rack, standing its last post.",
         "The armory's only other door leads back toward the main hall — or you could press on toward the throne room via the guard corridor."
       ],
