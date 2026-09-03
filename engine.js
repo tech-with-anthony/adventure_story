@@ -283,8 +283,12 @@
 
     sceneInteractEl.hidden = false;
 
+    function resolveText(choice) {
+      return typeof choice.text === "function" ? choice.text(state) : choice.text;
+    }
+
     if (visible.length === 1) {
-      renderContinue(sceneInteractEl, visible[0].text, function () { applyChoice(visible[0]); });
+      renderContinue(sceneInteractEl, resolveText(visible[0]), function () { applyChoice(visible[0]); });
       return;
     }
 
@@ -299,7 +303,7 @@
     visible.forEach(function (choice) {
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.textContent = choice.text;
+      btn.textContent = resolveText(choice);
       btn.addEventListener("click", function () { applyChoice(choice); });
       row.appendChild(btn);
     });
