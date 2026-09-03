@@ -97,7 +97,16 @@ window.STORIES.push({
       paragraphs: [
         "You bolt off the road and into the trees. The bandits give chase for a hundred yards before giving up — not worth it for one traveler.",
         "You've lost the road, though. It takes an hour of stumbling through fog and briars before you find it again.",
-        "By the time Valdrath's Keep appears ahead, your boots are soaked and your nerves are frayed. Not the arrival you imagined."
+        "By the time Valdrath's Keep appears ahead, your boots are soaked and your nerves are frayed. Not the arrival you imagined.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "You lost your sight lines two hundred yards back; whatever is in this wood, you will not see it until it is already on you.";
+            case "wizard":  return "The fog does not move the way fog moves — it pools against the air like a held thing, displaced by nothing, sustained by intention.";
+            case "rogue":   return "The silence has weight; even your own footsteps are absorbed before they reach you, and something in the stillness is distinctly listening.";
+            case "cleric":  return "Every creature fled this forest before whatever came to fill it arrived — you can feel the replacement pressing outward from between the trees.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Approach the keep's main gate.", next: "keep_gate_wounded" }
@@ -147,7 +156,16 @@ window.STORIES.push({
       paragraphs: [
         "You've heard enough. More information means more time, and the dead are already using every hour you're not moving.",
         "The road north is wrong in a way that's hard to name. No birdsong. No insects. The fog off the Thornwood sits too low and moves against the wind. The road itself is dry despite the morning rain — as if nothing living has crossed it in days.",
-        "By evening, the keep's silhouette breaks the treeline. Stone walls. A collapsed tower. Every window dark. The silence presses on your ears like water pressure, and you understand for the first time why the messenger's hands were trembling."
+        "By evening, the keep's silhouette breaks the treeline. Stone walls. A collapsed tower. Every window dark. The silence presses on your ears like water pressure, and you understand for the first time why the messenger's hands were trembling.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "You count the towers, estimate the approach angles, and note that a frontal assault on walls that height would cost more than you have to spend.";
+            case "wizard":  return "The light in the upper windows is consistent in wavelength with sustained necromantic workings — not firelight, not torchlight, but something feeding on itself indefinitely.";
+            case "rogue":   return "No sentries on the walls, no lantern movement, no patrol pattern — either the keep is empty or it does not need guards, and you distrust both answers equally.";
+            case "cleric":  return "The wrongness reaches you before the smell does — a visible rupture in the consecrated order of things, radiating outward from those green-lit windows like heat from a wound.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Approach the keep's main gate.", next: "keep_gate" }
@@ -184,7 +202,16 @@ window.STORIES.push({
       paragraphs: [
         "The keep squats against the hillside like something wounded. Its stone walls are ancient — older than the Harwick family, older than the city behind you. The portcullis is up, but the courtyard beyond is dark.",
         "Two skeletal guards flank the gate. They're not moving. They may not have noticed you yet.",
-        "You study the gatehouse. The main door is heavy oak, barred from the inside. A narrow window sits above the portcullis — reachable if you climbed. The east wall, just visible around the corner, might have other options."
+        "You study the gatehouse. The main door is heavy oak, barred from the inside. A narrow window sits above the portcullis — reachable if you climbed. The east wall, just visible around the corner, might have other options.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "The gate stands half-open, which means either no one remained to close it or someone wanted you to walk through — you have learned to distrust both explanations equally.";
+            case "wizard":  return "Beneath the smell of old rot there is a secondary signature, chemical and specific — the byproduct of preservation workings sustained past the point of natural decay.";
+            case "rogue":   return "A gate left open is an invitation, and you have yet to encounter an invitation issued by the dead that was ever in your favor.";
+            case "cleric":  return "The smell is not only death — it is desecration, the particular corruption of ground that was once consecrated and was then deliberately turned.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Rush the gate. Take out the skeleton guards before they raise an alarm.", next: { fighter: "gate_rush_clean", default: "gate_rush_hard" } },
@@ -305,7 +332,16 @@ window.STORIES.push({
       paragraphs: [
         "The postern door is set deep into the east wall, half-hidden behind a growth of dead ivy. The iron lock is old but functional.",
         "The key turns smoothly. The door swings inward without a sound — the hinges were oiled recently, which is unsettling.",
-        "You step into a stone passage that smells of rot and cold earth. Somewhere ahead, a faint green light flickers."
+        "You step into a stone passage that smells of rot and cold earth. Somewhere ahead, a faint green light flickers.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "You keep one hand on the wall and count your paces — if you have to leave quickly, you will not have time to think, and thinking will already have cost you.";
+            case "wizard":  return "The stones hold a faint warmth that has nothing to do with temperature; something has been worked in this corridor recently enough that the residue has not fully dissipated.";
+            case "rogue":   return "You note two branch-points and file them against the possibility of running — the exit map you are building in your head already matters more than the destination.";
+            case "cleric":  return "The darkness here is not absence of light; it has texture and density, the weight of things that have forgotten what they were and are no longer certain they are nothing.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Follow the passage toward the light.", next: "keep_hall" }
@@ -856,7 +892,16 @@ window.STORIES.push({
       paragraphs: [
         "The stairs go down a long way. The cold intensifies with every step, and the green light — source unknown — grows stronger as you descend.",
         "At the base, a stone door stands ajar. Beyond it: the sound of something moving in deliberate circles, like a mind pacing.",
-        "You pause on the landing. The door is ahead. You will not be able to come back this way once you push through."
+        "You pause on the landing. The door is ahead. You will not be able to come back this way once you push through.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "The stairs are narrow enough that you cannot swing freely — whatever waits below has already calculated that, and has been waiting for someone who hasn't.";
+            case "wizard":  return "The light below does not flicker; a lich-fire sustained for decades finds nothing alive nearby to disturb the air, and that stillness is a kind of answer about what you will find.";
+            case "rogue":   return "Stairs descending are always the worst geometry — one exit, and whoever holds the top of them when you want to leave holds everything that comes after.";
+            case "cleric":  return "The cold deepens with each step and it is not the cold of stone — it is the cold that accumulates where the dead have displaced the living for long enough that warmth has stopped trying.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Check the door for traps before entering.", next: { rogue: "crypt_check_rogue", default: "crypt_check_default" } },
