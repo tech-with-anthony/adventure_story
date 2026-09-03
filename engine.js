@@ -13,6 +13,42 @@
   var storyGridEl  = document.getElementById("story-grid");
   var setupTitleEl = document.getElementById("setup-title");
 
+  /* ---- PERSISTENCE ---- */
+
+  function saveKey(id) { return "adv_save_" + id; }
+  function endsKey(id) { return "adv_ends_" + id; }
+
+  function getSave(id) {
+    try { var r = localStorage.getItem(saveKey(id)); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+  }
+  function getEndings(id) {
+    try { var r = localStorage.getItem(endsKey(id)); return r ? JSON.parse(r) : {}; } catch(e) { return {}; }
+  }
+  function saveProgress(sceneId) {
+    if (!state.story || !state.story.id) return;
+    try {
+      localStorage.setItem(saveKey(state.story.id), JSON.stringify({
+        name: state.name, charClass: state.charClass,
+        flags: state.flags, history: state.history, sceneId: sceneId
+      }));
+    } catch(e) {}
+  }
+  function recordEnding(sceneId, title) {
+    if (!state.story || !state.story.id) return;
+    try {
+      var ends = getEndings(state.story.id);
+      ends[sceneId] = title || sceneId;
+      localStorage.setItem(endsKey(state.story.id), JSON.stringify(ends));
+      localStorage.removeItem(saveKey(state.story.id));
+    } catch(e) {}
+  }
+  function clearSave(id) {
+    try { localStorage.removeItem(saveKey(id)); } catch(e) {}
+  }
+  function countEndingScenes(scenes) {
+    return Object.keys(scenes).filter(function(id) { return scenes[id].isEnding; }).length;
+  }
+
   /* ---- DOM UTILITIES (same patterns as original) ---- */
 
   function showPage(id) {
@@ -61,8 +97,7 @@
     storyGridEl.innerHTML = "";
     var stories = window.STORIES || [];
     stories.forEach(function (entry) {
-      var card = document.createElement("button");
-      card.type = "button";
+      var card = document.createElement("div");
       card.className = "story-card";
       card.setAttribute("role", "listitem");
       card.setAttribute("aria-label", entry.title);
@@ -87,13 +122,65 @@
       card.appendChild(titleEl);
       card.appendChild(blurbEl);
       card.appendChild(chipsEl);
-      card.addEventListener("click", function () { selectStory(entry); });
+
+      var actionsEl = document.createElement("div");
+      actionsEl.className = "story-card-actions";
+
+      var save = entry.id ? getSave(entry.id) : null;
+      if (save) {
+        var contBtn = document.createElement("button");
+        contBtn.type = "button";
+        contBtn.className = "primary";
+        contBtn.textContent = "Continue";
+        contBtn.addEventListener("click", function () { resumeStory(entry, save); });
+        actionsEl.appendChild(contBtn);
+
+        var newBtn = document.createElement("button");
+        newBtn.type = "button";
+        newBtn.textContent = "New Game";
+        newBtn.addEventListener("click", function () { selectStory(entry); });
+        actionsEl.appendChild(newBtn);
+      } else {
+        var playBtn = document.createElement("button");
+        playBtn.type = "button";
+        playBtn.className = "primary";
+        playBtn.textContent = "Begin Adventure";
+        playBtn.addEventListener("click", function () { selectStory(entry); });
+        actionsEl.appendChild(playBtn);
+      }
+
+      card.appendChild(actionsEl);
+
+      if (entry.id) {
+        var ends = getEndings(entry.id);
+        var endCount = Object.keys(ends).length;
+        if (endCount > 0) {
+          var totalEnds = countEndingScenes(entry.story.scenes);
+          var endsEl = document.createElement("div");
+          endsEl.className = "story-card-endings";
+          endsEl.textContent = endCount + " of " + totalEnds + " endings discovered";
+          card.appendChild(endsEl);
+        }
+      }
+
       storyGridEl.appendChild(card);
     });
 
     showPage("page-library");
-    var firstCard = storyGridEl.querySelector("button");
-    if (firstCard) firstCard.focus();
+    var firstBtn = storyGridEl.querySelector("button");
+    if (firstBtn) firstBtn.focus();
+  }
+
+  function resumeStory(entry, save) {
+    state.story = entry;
+    state.name = save.name;
+    state.charClass = save.charClass;
+    state.flags = save.flags || {};
+    state.history = save.history || [];
+    var cls = entry.classes.find(function (c) { return c.id === state.charClass; });
+    classBadgeEl.textContent = cls ? cls.name : state.charClass;
+    classBadgeEl.className = "class-badge " + state.charClass;
+    loadScene(save.sceneId);
   }
 
   function selectStory(entry) {
@@ -106,6 +193,7 @@
   /* ---- SETUP FLOW ---- */
 
   function startGame() {
+    if (state.story && state.story.id) clearSave(state.story.id);
     state = { name: "", charClass: "", flags: {}, history: [], story: null };
     classBadgeEl.textContent = "";
     classBadgeEl.className = "class-badge";
@@ -260,8 +348,10 @@
     clearInteract(sceneInteractEl);
 
     if (scene.isEnding) {
+      recordEnding(id, scene.title);
       renderContinue(sceneInteractEl, "Play Again", startGame);
     } else {
+      saveProgress(id);
       renderChoices(scene.choices || [], scene.choicePrompt);
     }
   }
