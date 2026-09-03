@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-`adventure_story` is a DnD-themed "Choose Your Own Adventure" interactive story game. It is a static browser application (no build step, no server). The story is "The Curse of Valdrath's Keep" — a fully branching adventure with class-mechanical choices, flag-based state, and four distinct endings.
+`adventure_story` is a DnD-themed "Choose Your Own Adventure" interactive story game. It is a static browser application (no build step, no server). It currently has two stories — "The Curse of Valdrath's Keep" (dark fantasy, 4 classes) and "The Court of Stolen Hours" (fae fantasy, 4 classes) — each with class-mechanical choices, flag-based state, and four distinct endings. New stories can be added to GitHub Pages without an app update via the remote catalog system.
 
 ## Current Status (as of last session)
 
@@ -83,6 +83,33 @@ Full class-differentiation pass across the entire story. Goal: every class shoul
 - `road_wise_help` (Ewen the survivor) — after pressing the key into the player's hands: fighter gets a rope-thrown-to-drowning look, wizard gets a look of unease (they look like the keep), rogue gets the key held a moment longer than necessary, cleric gets wordless relief with both hands around theirs
 - `keep_ghost_default` — the ghost's reaction on first sight: fighter's weapon arm almost fires before processing what they're seeing, wizard flinches away (aversion, not absence), rogue gets complete non-registration (worse than being stared through); the cleric version was already class-specific and left intact
 
+### What was completed (seventh session)
+
+- **Save / resume** — `localStorage`-backed progress save on every scene transition. Library card shows **Continue** + **New Game** when a save exists, or **Begin Adventure** for fresh starts. "Play Again" clears the save via `startGame()`.
+  - `saveKey(id)` / `endsKey(id)` — localStorage key helpers
+  - `getSave(id)` / `getEndings(id)` — read helpers (try/catch for private-mode safety)
+  - `saveProgress(sceneId)` — writes name, charClass, flags, history, sceneId to localStorage
+  - `resumeStory(entry, save)` — restores state and jumps directly to the saved scene
+  - `clearSave(id)` — removes the save key; called by `startGame()`
+- **Ending gallery** — `recordEnding(sceneId, title)` tracks which `isEnding` scenes have been reached per story (stored under `endsKey`). Library card shows "N of M endings discovered" below the action buttons. `countEndingScenes(scenes)` counts total ending scenes.
+- **Library card restructure** — card changed from `<button>` to `<div>` (nested `<button>` inside `<button>` is invalid HTML). Action buttons moved into `.story-card-actions`. CSS additions in `adventure.html`: `.story-card-actions`, `.story-card-endings`.
+- **Remote catalog (Option 2)** — engine now fetches `catalog.json` from GitHub Pages at launch and loads story scripts from absolute URLs. Falls back to bundled `catalog.js` offline.
+  - `catalog.json` — remote catalog with absolute GitHub Pages URLs (new root-level file)
+  - `injectStoryScripts(catalog)` — extracted from old `loadCatalogStories()`; injects `<script>` tags, calls `showLibrary()` when all loaded
+  - `loadCatalogStories()` — fetches remote `catalog.json` first; on network failure falls back to `window.STORY_CATALOG` (bundled `catalog.js`)
+  - `sw.js` — bumped to `adventure-stories-v3` + `adventure-stories-dynamic-v1`; network-first for `catalog.json`; cache-first + store for remote story scripts
+- **New custom agents**
+  - `.claude/agents/fantasy-storyteller.md` — specialist for DnD/fantasy interactive fiction; covers fae/dark-fantasy voice, class differentiation rules, engine format conventions, choice writing, NPC dialogue, and scene writing checklist
+  - `.claude/agents/content-editor.md` — grammar and coherence reviewer for stories, papers, and essays; preserves author voice; adapts focus for fiction vs. academic writing
+- **Second story: "The Court of Stolen Hours"** (`stories/fae_court.js`, id `fae_court`)
+  - Fae fantasy: sibling stolen by the Thornweave, Lord of the Twilight Court
+  - 4 classes: Knight (Iron & Will), Bard (Song & Story), Witch (Old Pacts), Changeling (Twilight Blood)
+  - ~68 scenes across 3 acts, 4 endings (`end_heroic`, `end_bargain`, `end_partial`, `end_lost`)
+  - 29 `function(s)` paragraphs — same density as valdrath.js (~1/3 of scenes); class differentiation at boss approach, all endings, NPC reactions, hub choices
+  - Written via pipeline: game-developer (draft) → fantasy-storyteller (class differentiation pass) → content-editor (grammar + coherence) → manual coherence fixes
+  - `test_story.js` removed (was used to verify remote catalog; no longer needed)
+  - `catalog.json` updated with `fae_court` entry pointing to GitHub Pages URL
+
 ### What still needs to happen — NEXT SESSION
 
 1. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
@@ -112,14 +139,20 @@ The only external resource is Google Fonts (Cinzel, EB Garamond) loaded from a C
 adventure_story/
 ├── adventure.html           # HTML shell + all CSS
 ├── adventure_standalone.html# Self-contained single-file bundle (~84KB)
-├── catalog.js               # Story registry (window.STORY_CATALOG)
-├── engine.js                # Game engine: setup, scene rendering, state, class gates
+├── catalog.js               # Bundled story registry (window.STORY_CATALOG) — offline fallback
+├── catalog.json             # Remote story registry with absolute GitHub Pages URLs
+├── engine.js                # Game engine: setup, scene rendering, state, persistence, class gates
 ├── stories/
-│   └── valdrath.js          # "The Curse of Valdrath's Keep" — 71 scenes, 3 acts, 4 endings
+│   ├── valdrath.js          # "The Curse of Valdrath's Keep" — 71 scenes, 3 acts, 4 endings
+│   └── fae_court.js         # "The Court of Stolen Hours" — ~68 scenes, 3 acts, 4 endings
 ├── story-data.js            # Legacy single-story file (superseded by stories/valdrath.js)
+├── .claude/
+│   └── agents/
+│       ├── fantasy-storyteller.md  # DnD/fantasy interactive fiction specialist
+│       └── content-editor.md       # Grammar and coherence reviewer
 ├── index.html               # Root redirect → adventure.html (for GitHub Pages)
 ├── manifest.json            # PWA manifest
-├── sw.js                    # Service worker (offline cache, v2)
+├── sw.js                    # Service worker (offline cache, v3 + dynamic cache)
 ├── icon-1024.png            # App icon source
 ├── icon-512.png             # PWA icon (512×512)
 ├── icon-192.png             # PWA icon (192×192)
@@ -154,7 +187,9 @@ CSS highlights:
 - `.class-badge` chips show the player's class throughout the game
 - `.class-card` / `.class-grid` styles the 2×2 class picker in setup
 - `.choices-col` stacks story choice buttons vertically with left-aligned text
-- `.story-card` / `.story-grid` styles the library picker
+- `.story-card` / `.story-grid` styles the library picker (card is a `<div>`, not `<button>`)
+- `.story-card-actions` — flex row of Continue/New Game or Begin Adventure buttons
+- `.story-card-endings` — gold italic "N of M endings discovered" line
 - `@media (prefers-reduced-motion)` disables animations
 
 ### Game Engine (`engine.js`)
@@ -175,22 +210,38 @@ var state = {
 
 | Function | Purpose |
 |----------|---------|
-| `loadCatalogStories()` | Injects `<script>` tags from `window.STORY_CATALOG`; calls `showLibrary()` when all loaded |
+| `loadCatalogStories()` | Fetches remote `catalog.json`; falls back to `window.STORY_CATALOG` on failure; calls `injectStoryScripts()` |
+| `injectStoryScripts(catalog)` | Injects `<script>` tags from catalog entries; calls `showLibrary()` when all loaded |
 | `showLibrary()` | Renders the story-picker grid from `window.STORIES` |
 | `selectStory(entry)` | Stores `state.story`, shows setup page |
-| `startGame()` | Resets state, returns to library |
+| `resumeStory(entry, save)` | Restores saved state (name, class, flags, history) and jumps to saved scene |
+| `startGame()` | Clears save for current story, resets state, returns to library |
 | `showSetupIntro()` → `askName()` → `askClass()` | Sequential setup flow |
 | `beginStory()` | Sets class badge, calls `loadScene(state.story.story.start)` |
-| `loadScene(id)` | Looks up scene in `state.story.story.scenes`, renders header + paragraphs + choices |
+| `loadScene(id)` | Looks up scene in `state.story.story.scenes`, renders header + paragraphs + choices; saves progress or records ending |
 | `renderChoices(choices, prompt)` | Filters visible choices, renders buttons or a Continue button |
 | `resolveText(choice)` | Resolves `choice.text` as string or `fn(state)→string` |
 | `resolveNext(next)` | Resolves `next` as string, `{class: id, default: id}` object, or `fn(state)→id` |
 | `applyChoice(choice)` | Sets `setsFlag` if present, then calls `loadScene(resolveNext(...))` |
+| `saveProgress(sceneId)` | Writes current state to localStorage under `adv_save_<id>` |
+| `recordEnding(sceneId, title)` | Adds ending to `adv_ends_<id>` in localStorage; removes save key |
+| `getSave(id)` / `getEndings(id)` | Read localStorage; return null/`{}` on error (private-mode safe) |
+| `clearSave(id)` | Removes save key from localStorage |
+| `countEndingScenes(scenes)` | Counts scenes with `isEnding: true` for the "N of M endings" display |
 | `addP` / `addPs` / `clearInteract` / `renderContinue` | DOM utility helpers |
 
-### Story Registry (`catalog.js` + `stories/*.js`)
+### Story Registry (`catalog.json` + `catalog.js` + `stories/*.js`)
 
-`catalog.js` defines the list of available stories:
+`catalog.json` (root) is the **remote catalog** fetched by the engine at launch. It uses absolute GitHub Pages URLs so the app loads story scripts from the web even when running from an APK WebView:
+
+```json
+[
+  { "id": "valdrath", "file": "https://tech-with-anthony.github.io/adventure_story/stories/valdrath.js", "category": "Dark Fantasy", "difficulty": 3 },
+  { "id": "fae_court", "file": "https://tech-with-anthony.github.io/adventure_story/stories/fae_court.js", "category": "Fae / Fantasy", "difficulty": 2 }
+]
+```
+
+`catalog.js` is the **offline fallback** — still loaded by `adventure.html` before `engine.js`. If the remote fetch fails, `loadCatalogStories()` uses `window.STORY_CATALOG` instead:
 
 ```js
 window.STORY_CATALOG = [
@@ -245,14 +296,17 @@ window.STORIES.push({
 ## Game Flow
 
 ```
-loadCatalogStories()
-  └─ showLibrary() → selectStory()
-       └─ showSetupIntro() → askName() → askClass()
-            └─ beginStory() → loadScene("tavern")
-                 └─ renderChoices() → applyChoice()
-                      └─ loadScene(nextId)   [repeat until isEnding]
-                           └─ renderContinue("Play Again", startGame)
-                                └─ startGame() → showLibrary()
+loadCatalogStories()  ← fetches catalog.json (GitHub Pages); fallback: window.STORY_CATALOG
+  └─ injectStoryScripts(catalog)
+       └─ showLibrary() → selectStory()  OR  resumeStory() [if save exists]
+            └─ showSetupIntro() → askName() → askClass()
+                 └─ beginStory() → loadScene(story.story.start)
+                      └─ saveProgress(sceneId)
+                      └─ renderChoices() → applyChoice()
+                           └─ loadScene(nextId)   [repeat until isEnding]
+                                └─ recordEnding(sceneId, title)
+                                └─ renderContinue("Play Again", startGame)
+                                     └─ startGame() → clearSave() → showLibrary()
 ```
 
 ## Class System
