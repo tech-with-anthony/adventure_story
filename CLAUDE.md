@@ -45,13 +45,49 @@ Two bugs found and fixed (commit `fbfbed3`):
 - **GitHub Pages deployed** — game is live at `https://tech-with-anthony.github.io/adventure_story/adventure.html`.
 - **Root URL redirect** — `index.html` added with `<meta http-equiv="refresh">` so the root path redirects to `adventure.html`. The game is accessible at `https://tech-with-anthony.github.io/adventure_story/`.
 
+### What was completed (fifth session)
+
+- **README written** — `README.md` fully written with game description, live URL, how to run locally, project layout, and class descriptions.
+- **Catalog system built** — story loading refactored from a single `window.STORY` global to a dynamic catalog:
+  - `catalog.js` — defines `window.STORY_CATALOG` (array of `{ id, file, category, difficulty }` entries) and is the only registry of available stories
+  - `stories/valdrath.js` — the Valdrath's Keep story, now registered via `window.STORIES` (plural) by pushing an entry with `title`, `blurb`, `classes`, and `story` fields
+  - `engine.js` — `loadCatalogStories()` replaces the direct `startGame()` call; dynamically injects `<script>` tags from the catalog; `window.STORIES` drives the library picker; `state.story` holds the selected story; all scene/class lookups go through `state.story.story` and `state.story.classes`
+  - `adventure.html` — now loads `catalog.js` then `engine.js` (not `story-data.js`)
+  - `sw.js` — cache bumped to `adventure-stories-v2`; assets updated to include `/catalog.js` and `/stories/valdrath.js` instead of `/story-data.js`
+- **First class prose pass** — 9 scenes in `stories/valdrath.js` received `function(s)` paragraphs to differentiate class experience: `boss_fighter`, `boss_direct`, `boss_ritual`, `boss_phylactery`, `boss_cunning` (all five boss approach scenes), plus selected Act I/II scenes.
+
+### What was completed (sixth session)
+
+Full class-differentiation pass across the entire story. Goal: every class should *feel* different, not just route differently.
+
+**Dramatic peaks** — `function(s)` paragraphs inserted at the two most important observation moments:
+- `keep_hall` — after the green-light paragraph, each class reads the space differently: fighter maps choke points, wizard identifies a binding lattice in the stonework, rogue counts exits, cleric feels the weight of the denied dead
+- `crypt_descent` — as first paragraph (strongest position): fighter knows the wrong silence, wizard dates the construction, rogue realizes the defenses all face *inward*, cleric feels the original blessing underneath the corruption
+- `boss_approach` — second paragraph: Malachar's opening address is class-specific (bored scorn at the fighter, evaluating curiosity at the wizard, amused theatrics at the rogue, visible unease at the cleric)
+- `end_heroic` — final paragraph replaced with 4 class variants: fighter reflects on the soldier's cost; wizard goes back for the library; rogue counts a reward that turns out not to matter; cleric stays to speak burial rites over those who never received them
+
+**Choice label text** — `engine.js` extended to support `function(s)` for `choice.text` (via `resolveText()` helper in `renderChoices`). Four choices updated:
+- `keep_hall` wing choices — all three destination choices (library, armory/chapel, throne approach) now show class-specific action labels
+- `boss_approach` attack choice — each class names their signature action (fighter: charges; wizard: drives a lance of force; rogue: goes for the throat; cleric: raises the holy symbol)
+
+**Corridor one-liners** — brief atmospheric paragraphs appended to five transitional scenes to ground each moment in physical detail:
+- `road_bold_flee` — the Thornwood fog swallowing the road behind you
+- `road_wise_ignore` — first sight of the keep against the darkening sky
+- `keep_gate` — the smell of the approach, what the gate looks like up close
+- `keep_side_entry` — the dark of the servant's corridor, what the silence sounds like
+- `crypt_entrance` — the cold that rises before the stairs do
+
+**Boss fight prose** — all five boss approach scenes had class-specific `function(s)` paragraphs (confirmed already written in the fifth-session pass). Scenes: `boss_fighter`, `boss_direct`, `boss_ritual`, `boss_phylactery`, `boss_cunning`.
+
+**NPC reactions** — the three named NPCs now respond differently by class:
+- `road_wise_help` (Ewen the survivor) — after pressing the key into the player's hands: fighter gets a rope-thrown-to-drowning look, wizard gets a look of unease (they look like the keep), rogue gets the key held a moment longer than necessary, cleric gets wordless relief with both hands around theirs
+- `keep_ghost_default` — the ghost's reaction on first sight: fighter's weapon arm almost fires before processing what they're seeing, wizard flinches away (aversion, not absence), rogue gets complete non-registration (worse than being stared through); the cleric version was already class-specific and left intact
+
 ### What still needs to happen — NEXT SESSION
 
-1. **Story quality pass** — read through at least two paths and note any scenes that feel too short, too long, tonally off, or awkwardly worded. The Rogue and Wizard paths have the most prose variety.
-2. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
-3. **README** — current `README.md` is a placeholder; needs a proper description with the live URL.
-4. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
-5. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).
+1. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
+2. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
+3. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).
 
 ---
 
@@ -76,11 +112,14 @@ The only external resource is Google Fonts (Cinzel, EB Garamond) loaded from a C
 adventure_story/
 ├── adventure.html           # HTML shell + all CSS
 ├── adventure_standalone.html# Self-contained single-file bundle (~84KB)
+├── catalog.js               # Story registry (window.STORY_CATALOG)
 ├── engine.js                # Game engine: setup, scene rendering, state, class gates
-├── story-data.js            # All scene definitions (window.STORY)
+├── stories/
+│   └── valdrath.js          # "The Curse of Valdrath's Keep" — 71 scenes, 3 acts, 4 endings
+├── story-data.js            # Legacy single-story file (superseded by stories/valdrath.js)
 ├── index.html               # Root redirect → adventure.html (for GitHub Pages)
 ├── manifest.json            # PWA manifest
-├── sw.js                    # Service worker (offline cache)
+├── sw.js                    # Service worker (offline cache, v2)
 ├── icon-1024.png            # App icon source
 ├── icon-512.png             # PWA icon (512×512)
 ├── icon-192.png             # PWA icon (192×192)
@@ -88,23 +127,24 @@ adventure_story/
 ├── package.json             # npm scripts for Capacitor sync
 ├── android/                 # Capacitor Android project
 ├── CLAUDE.md                # This file
-└── README.md                # Placeholder title
+└── README.md                # Project description with live URL
 ```
 
 `adventure.html` loads the scripts in dependency order:
 ```html
-<script src="story-data.js"></script>  <!-- defines window.STORY -->
-<script src="engine.js"></script>       <!-- starts the game -->
+<script src="catalog.js"></script>   <!-- defines window.STORY_CATALOG -->
+<script src="engine.js"></script>    <!-- starts the game, loads stories from catalog -->
 ```
 
 ## Architecture
 
 ### HTML + CSS (`adventure.html`)
 
-Two `<section>` elements; only one is visible at a time via `.page.active`:
+Three `<section>` elements; only one is visible at a time via `.page.active`:
 
 | ID | Purpose |
 |----|---------|
+| `#page-library` | Story picker — grid of story cards |
 | `#page-setup` | Character creation (name + class picker) |
 | `#page-scene` | All story content — populated dynamically by the engine |
 
@@ -114,6 +154,7 @@ CSS highlights:
 - `.class-badge` chips show the player's class throughout the game
 - `.class-card` / `.class-grid` styles the 2×2 class picker in setup
 - `.choices-col` stacks story choice buttons vertically with left-aligned text
+- `.story-card` / `.story-grid` styles the library picker
 - `@media (prefers-reduced-motion)` disables animations
 
 ### Game Engine (`engine.js`)
@@ -125,7 +166,8 @@ var state = {
   name: "",          // player name from setup
   charClass: "",     // "fighter" | "wizard" | "rogue" | "cleric"
   flags: {},         // persistent boolean flags set by choices
-  history: []        // visited scene IDs
+  history: [],       // visited scene IDs
+  story: null        // selected story entry from window.STORIES
 };
 ```
 
@@ -133,24 +175,39 @@ var state = {
 
 | Function | Purpose |
 |----------|---------|
-| `startGame()` | Resets state, returns to setup page |
+| `loadCatalogStories()` | Injects `<script>` tags from `window.STORY_CATALOG`; calls `showLibrary()` when all loaded |
+| `showLibrary()` | Renders the story-picker grid from `window.STORIES` |
+| `selectStory(entry)` | Stores `state.story`, shows setup page |
+| `startGame()` | Resets state, returns to library |
 | `showSetupIntro()` → `askName()` → `askClass()` | Sequential setup flow |
-| `beginStory()` | Sets class badge, calls `loadScene(STORY.start)` |
-| `loadScene(id)` | Looks up scene, renders header + paragraphs + choices |
+| `beginStory()` | Sets class badge, calls `loadScene(state.story.story.start)` |
+| `loadScene(id)` | Looks up scene in `state.story.story.scenes`, renders header + paragraphs + choices |
 | `renderChoices(choices, prompt)` | Filters visible choices, renders buttons or a Continue button |
+| `resolveText(choice)` | Resolves `choice.text` as string or `fn(state)→string` |
 | `resolveNext(next)` | Resolves `next` as string, `{class: id, default: id}` object, or `fn(state)→id` |
 | `applyChoice(choice)` | Sets `setsFlag` if present, then calls `loadScene(resolveNext(...))` |
 | `addP` / `addPs` / `clearInteract` / `renderContinue` | DOM utility helpers |
 
-### Scene Data (`story-data.js`)
+### Story Registry (`catalog.js` + `stories/*.js`)
 
-Exports `window.STORY`:
+`catalog.js` defines the list of available stories:
 
 ```js
-window.STORY = {
-  start: "tavern",       // first scene ID
-  scenes: { ... }        // keyed by scene ID
-};
+window.STORY_CATALOG = [
+  { id: "valdrath", file: "stories/valdrath.js", category: "Dark Fantasy", difficulty: 3 }
+];
+```
+
+Each story file pushes an entry onto `window.STORIES` (which the engine reads to build the library):
+
+```js
+window.STORIES = window.STORIES || [];
+window.STORIES.push({
+  title:   "The Curse of Valdrath's Keep",
+  blurb:   "...",
+  classes: [ { id, name, tag, desc }, ... ],
+  story:   { start: "tavern", scenes: { ... } }
+});
 ```
 
 **Scene object shape:**
@@ -175,6 +232,7 @@ window.STORY = {
 ```js
 {
   text:         "Draw your weapon and stand your ground.",
+  // text:      function(s) { return s.charClass === "fighter" ? "Charge." : "Attack."; },
   next:         "scene_id",               // string, or...
   // next:      { fighter: "scene_a", default: "scene_b" },  // class-branch
   // next:      function(s) { return s.flags.has_key ? "scene_a" : "scene_b"; }, // flag-branch
@@ -187,12 +245,14 @@ window.STORY = {
 ## Game Flow
 
 ```
-startGame()
-  └─ showSetupIntro() → askName() → askClass()
-       └─ beginStory() → loadScene("tavern")
-            └─ renderChoices() → applyChoice()
-                 └─ loadScene(nextId)   [repeat until isEnding]
-                      └─ renderContinue("Play Again", startGame)
+loadCatalogStories()
+  └─ showLibrary() → selectStory()
+       └─ showSetupIntro() → askName() → askClass()
+            └─ beginStory() → loadScene("tavern")
+                 └─ renderChoices() → applyChoice()
+                      └─ loadScene(nextId)   [repeat until isEnding]
+                           └─ renderContinue("Play Again", startGame)
+                                └─ startGame() → showLibrary()
 ```
 
 ## Class System
@@ -206,9 +266,10 @@ Four playable classes with mechanical effects:
 | **Rogue** | Exclusive trap detection and flank maneuver; throne room parley with better outcome |
 | **Cleric** | Can turn undead, reconsecrate the altar (boosts final boss fight), and communicate with the ghost |
 
-Class gating is implemented via:
-- `onlyFor: ["className"]` on choices — hides options from other classes
-- `next: { fighter: "scene_a", default: "scene_b" }` on choices — different outcomes for different classes
+Class differentiation is implemented at three levels:
+- **Routing**: `onlyFor: ["className"]` on choices hides options from other classes; `next: { fighter: "scene_a", default: "scene_b" }` routes different classes to different scenes
+- **Prose**: `function(s)` paragraphs in `paragraphs[]` return class-specific text at observation moments (keep hall, crypt descent, boss approach, all 5 boss scenes, endings, NPC reactions)
+- **Choice labels**: `function(s)` in `choice.text` names each class's action in their own idiom at decision points
 
 ## Key Flags
 
@@ -257,10 +318,10 @@ ENDINGS
 ## Conventions to Follow
 
 1. **Preserve the IIFE + `"use strict"`** — all engine JS must remain inside the IIFE in `engine.js`.
-2. **No globals** — `window.STORY` is the only intentional global; do not add others.
+2. **Intentional globals only** — `window.STORY_CATALOG` (catalog registry) and `window.STORIES` (runtime story list) are the only intentional globals. Story files push onto `window.STORIES`; do not add other globals.
 3. **No build tooling** — keep the project as static files with no bundlers or transpilers.
 4. **Use CSS variables** — extend colors through `:root` custom properties, not hardcoded values.
-5. **Scene data is pure data** — `story-data.js` must not reference DOM or engine functions. Paragraphs may be `fn(state)` but must return strings only.
+5. **Scene data is pure data** — story files must not reference DOM or engine functions. Paragraphs and choice text may be `fn(state)` but must return strings only.
 6. **Callback flow** — the engine uses click-handler callbacks, not promises or async/await.
 7. **Accessibility** — maintain `aria-live` on `.panel`, `aria-labelledby`/`aria-describedby` on inputs, and call `.focus()` on the first interactive element after rendering.
 
@@ -276,6 +337,8 @@ No automated test suite. Test manually by opening `adventure.html` in a browser 
 6. **Defeat ending**: Reach `boss_direct` without `has_phylactery` → `end_defeat`
 7. **Class gates**: Wizard should not see Fighter-only choices; Fighter should not see Wizard-only choices.
 8. **Flag gates**: "Use the postern key" choice must only appear after a path that sets `has_postern_key`.
-9. **Play Again**: `startGame()` must fully reset state and return cleanly to setup with no leftover text or flags.
+9. **Play Again**: `startGame()` must fully reset state and return cleanly to the library with no leftover text or flags.
+10. **Class prose**: At `keep_hall`, `crypt_descent`, `boss_approach`, and `end_heroic`, each class should receive distinct paragraph text — spot-check at least two classes per scene.
+11. **Choice labels**: At the `keep_hall` wing-selection and the `boss_approach` attack choice, button text should differ by class.
 
 Verify in at least Chrome and Firefox. Check layout at ≤ 420 px viewport width.
