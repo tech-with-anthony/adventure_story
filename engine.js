@@ -410,23 +410,25 @@
 
   /* ---- CATALOG LOADER ---- */
 
-  function loadCatalogStories() {
-    var catalog = window.STORY_CATALOG || [];
+  function injectStoryScripts(catalog) {
     if (!catalog.length) { showLibrary(); return; }
-
     var pending = catalog.length;
-    function onScriptDone() {
-      pending--;
-      if (pending === 0) showLibrary();
-    }
-
+    function onDone() { pending--; if (pending === 0) showLibrary(); }
     catalog.forEach(function (entry) {
       var s = document.createElement("script");
       s.src = entry.file;
-      s.onload = onScriptDone;
-      s.onerror = onScriptDone;
+      s.onload = onDone;
+      s.onerror = onDone;
       document.head.appendChild(s);
     });
+  }
+
+  function loadCatalogStories() {
+    var CATALOG_URL = "https://tech-with-anthony.github.io/adventure_story/catalog.json";
+    fetch(CATALOG_URL)
+      .then(function (r) { return r.json(); })
+      .then(function (catalog) { injectStoryScripts(catalog); })
+      .catch(function () { injectStoryScripts(window.STORY_CATALOG || []); });
   }
 
   loadCatalogStories();
