@@ -361,9 +361,33 @@ window.STORIES.push({
         }
       ],
       choices: [
-        { text: "Go left — toward the sound of movement. Face whatever waits.", next: "keep_hall_combat" },
-        { text: "Go straight — the library. Knowledge of what you're fighting.", next: { wizard: "keep_library_wizard", default: "keep_library" } },
-        { text: "Go right — the armory. Better equipped, better odds.", next: { fighter: "keep_armory_fighter", default: "keep_armory" } }
+        { text: function (s) {
+            switch (s.charClass) {
+              case "fighter": return "I was already heading that way.";
+              case "wizard":  return "Clear the hall. I need room to work.";
+              case "rogue":   return "Draw them here. Buy myself room elsewhere.";
+              case "cleric":  return "The dead deserve release, not servitude.";
+              default:        return "Go left — toward the sound of movement. Face whatever waits.";
+            }
+          }, next: "keep_hall_combat" },
+        { text: function (s) {
+            switch (s.charClass) {
+              case "fighter": return "I need to know what I'm killing.";
+              case "wizard":  return "The archive is mine to search.";
+              case "rogue":   return "Maps, weaknesses — the library has both.";
+              case "cleric":  return "The lich's original ritual will be recorded there.";
+              default:        return "Go straight — the library. Knowledge of what you're fighting.";
+            }
+          }, next: { wizard: "keep_library_wizard", default: "keep_library" } },
+        { text: function (s) {
+            switch (s.charClass) {
+              case "fighter": return "I know how to read an armory.";
+              case "wizard":  return "Better tools serve any wielder.";
+              case "rogue":   return "A good blade is a good blade.";
+              case "cleric":  return "Consecrated steel can harm what prayers alone cannot.";
+              default:        return "Go right — the armory. Better equipped, better odds.";
+            }
+          }, next: { fighter: "keep_armory_fighter", default: "keep_armory" } }
       ]
     },
 
@@ -1029,7 +1053,15 @@ window.STORIES.push({
         }
       ],
       choices: [
-        { text: "Attack immediately — drive him back before he can act.", next: { fighter: "boss_fighter", default: "boss_direct" } },
+        { text: function (s) {
+            switch (s.charClass) {
+              case "fighter": return "He doesn't get to speak first.";
+              case "wizard":  return "Force it now. Don't let him cast.";
+              case "rogue":   return "Hit first. Ask nothing.";
+              case "cleric":  return "Close the distance. The rite needs proximity.";
+              default:        return "Attack immediately — drive him back before he can act.";
+            }
+          }, next: { fighter: "boss_fighter", default: "boss_direct" } },
         { text: "Raise your holy symbol and invoke the rite of unmaking.", onlyFor: ["cleric"], next: { default: "boss_cleric" } },
         { text: "Use the ritual oil from the library to anoint the throne.", requiresFlag: "has_ritual_oil", next: "boss_ritual" },
         { text: "Destroy the phylactery — now, before he can stop you.", requiresFlag: "has_phylactery", next: "boss_phylactery" },
