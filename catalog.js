@@ -11,5 +11,11 @@ window.STORY_CATALOG = [
     file: "stories/valdrath.js",
     category: "Dark Fantasy",
     difficulty: 3
+  },
+  {
+    id: "fae_court",
+    file: "stories/fae_court.js",
+    category: "Fae Fantasy",
+    difficulty: 2
   }
 ];

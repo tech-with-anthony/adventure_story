@@ -1,4 +1,4 @@
 [
   { "id": "valdrath", "file": "https://tech-with-anthony.github.io/adventure_story/stories/valdrath.js", "category": "Dark Fantasy", "difficulty": 3 },
-  { "id": "test", "file": "https://tech-with-anthony.github.io/adventure_story/stories/test_story.js", "category": "Comedy", "difficulty": 1 }
+  { "id": "fae_court", "file": "https://tech-with-anthony.github.io/adventure_story/stories/fae_court.js", "category": "Fae / Fantasy", "difficulty": 2 }
 ]
