@@ -251,12 +251,12 @@ window.STORIES.push({
           if (s.charClass === "witch") return "You press your thumb to the post and feel the binding on the sign — it is a genuine compulsion, the post literally cannot say anything other than THE COURT. But two of those signs are technically true in a misdirecting way. The center sign points to the court gate. The others point to... aspects of the court. Places inside. Technically accurate. Deeply deceptive.";
           return "You look at all three roads with fae sight and let the glamour of each settle over you like light. The center road glows with honest intention. The left road glows with something sweet and hungry. The right road glows with very old intention — a tradition so calcified it has become compulsory. You have been on both trap-roads before, in your own way.";
         },
-        "The center road is the honest one."
+        "All three roads reach the court. The center road reaches it directly. The left road reaches it hungry — something in it wants to keep you. The right road reaches it slowly, through a tradition that predates the Thornweave's tenure and does not particularly care about your schedule."
       ],
       choices: [
-        { text: "Take the center road.", next: "arrive_court_gate" },
-        { text: "Try the left road anyway — curiosity wins.", next: "arrive_court_gate" },
-        { text: "Take the right road.", next: "arrive_court_gate" }
+        { text: "Take the center road — the honest one.", next: "arrive_court_gate" },
+        { text: "Take the left road anyway — you've handled hungry roads before.", next: "arrive_court_gate" },
+        { text: "Take the right road — tradition moves slowly but it moves.", next: "arrive_court_gate" }
       ]
     },
 
@@ -502,7 +502,7 @@ window.STORIES.push({
 
     "garden_ally_befriend_b": {
       chapter: "Act II — The Court",
-      title: "A Garden Compact",
+      title: "The Garden's Parting Gift",
       location: "The Twilight Garden — Deep Growth",
       paragraphs: [
         "The small fae's parting words settle into you as you leave the garden: endings. The Thornweave fears endings above all. You file that away alongside the fae ally you've gained."
@@ -549,7 +549,7 @@ window.STORIES.push({
     "garden_circle": {
       chapter: "Act II — The Court",
       title: "The Time Loop Circle",
-      location: "The Twilight Garden — The Danger Zone",
+      location: "The Twilight Garden — The Circling Path",
       paragraphs: [
         "The suspended fountain is beautiful. You walk toward it, and then you are walking toward it, and then you are walking toward it, and the distance is not changing.",
         "You stop. Look at your feet. The path beneath you is circular — you've been walking a loop fifteen feet in diameter without noticing the curve.",
@@ -966,7 +966,7 @@ window.STORIES.push({
       location: "The Great Hall",
       paragraphs: [
         "A courtier — the one who was finding it funny — slides next to you while the others are occupied and speaks quietly.",
-        "\"The deadline is the next solstice. In mortal terms, six days from now. If the captive hasn't made a compact by then, the Lord loses the legal basis for keeping them. Court law.\" A pause. \"He won't lose graciously. He'll accelerate the forgetting.\"",
+        "\"The deadline is the next Court Convening. In mortal terms, six days from now. If the captive hasn't made a compact by then, the Lord loses the legal basis for keeping them. Court law.\" A pause. \"He won't lose graciously. He'll accelerate the forgetting.\"",
         "\"Why are you telling me this?\" you ask.",
         "\"I find the whole situation tedious,\" the courtier says pleasantly. \"I've been at court for four ages. The Lord's methods have become repetitive. A mortal who fights back is at least novel.\" They drift away before you can ask anything else.",
         "Six days. You have time — not much, but real time."
@@ -1042,7 +1042,12 @@ window.STORIES.push({
             if (s.charClass === "witch") return "Speak his true name.";
             return "Invoke your fae heritage to challenge the court.";
           },
-          next: { knight: "boss_knight", bard: "boss_bard", witch: "boss_witch", changeling: "boss_changeling" }
+          next: function(s) {
+            if (s.charClass === "knight") return "boss_knight";
+            if (s.charClass === "bard") return "boss_bard";
+            if (s.charClass === "witch") return s.flags.has_true_name ? "boss_witch" : "boss_direct";
+            return "boss_changeling";
+          }
         },
         { text: "Attempt to bargain directly.", next: "boss_bargain_trap" },
         { text: "Call on your fae ally.", requiresFlag: "has_fae_ally", next: "boss_ally_assist" },
