@@ -97,7 +97,16 @@ window.STORIES.push({
       paragraphs: [
         "You bolt off the road and into the trees. The bandits give chase for a hundred yards before giving up — not worth it for one traveler.",
         "You've lost the road, though. It takes an hour of stumbling through fog and briars before you find it again.",
-        "By the time Valdrath's Keep appears ahead, your boots are soaked and your nerves are frayed. Not the arrival you imagined."
+        "By the time Valdrath's Keep appears ahead, your boots are soaked and your nerves are frayed. Not the arrival you imagined.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "You lost your sight lines two hundred yards back; whatever is in this wood, you will not see it until it is already on you.";
+            case "wizard":  return "The fog does not move the way fog moves — it pools against the air like a held thing, displaced by nothing, sustained by intention.";
+            case "rogue":   return "The silence has weight; even your own footsteps are absorbed before they reach you, and something in the stillness is distinctly listening.";
+            case "cleric":  return "Every creature fled this forest before whatever came to fill it arrived — you can feel the replacement pressing outward from between the trees.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Approach the keep's main gate.", next: "keep_gate_wounded" }
@@ -133,7 +142,21 @@ window.STORIES.push({
       paragraphs: [
         "Ewen is a broken man — hollow-eyed, wrapped in a blanket despite the summer heat. But he talks.",
         "He tells you about the Lich: an ancient court wizard named Malachar who served Valdrath's lords centuries ago. His soul was bound to the keep rather than allowed to pass. He's been waiting, growing stronger, for a hundred years.",
-        "Ewen presses a cold iron key into your hand. 'Postern gate. East wall. Don't use the front — they'll hear you coming.' He won't say who 'they' are. He doesn't have to."
+        "Ewen presses a cold iron key into your hand. 'Postern gate. East wall. Don't use the front — they'll hear you coming.' He won't say who 'they' are. He doesn't have to.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "Ewen looks at you the way a drowning man looks at a thrown rope — not with hope, exactly, but with the first recognition that the problem has a shape that can be struck. He doesn't believe you'll make it. But you are the first thing he has seen in days that looks like it could.";
+            case "wizard":
+              return "His eyes move to your hands once — to whatever you carry that marks you as what you are — and something closes behind them. He gives you the key. But there is a moment before he does where he looks at you the way he looked at the keep.";
+            case "rogue":
+              return "He has been watching you watch him since you sat down — the mill door, the shadows in the corner, the exits he never named. He holds the key out but doesn't release it immediately. Old survival, wired deep: he needs another beat to decide whether giving you this makes him safer or less safe.";
+            case "cleric":
+              return "He has been praying since he crawled out of the keep — small, wordless prayers to anyone still listening. When he looks at you, something behind his eyes simply gives way. He presses the key into your hand harder than he needs to, both hands wrapped around yours, and cannot speak.";
+            default:
+              return "";
+          }
+        }
       ],
       choices: [
         { text: "Thank Ewen and head for the keep.", next: "keep_gate_informed", setsFlag: "has_postern_key" }
@@ -147,7 +170,16 @@ window.STORIES.push({
       paragraphs: [
         "You've heard enough. More information means more time, and the dead are already using every hour you're not moving.",
         "The road north is wrong in a way that's hard to name. No birdsong. No insects. The fog off the Thornwood sits too low and moves against the wind. The road itself is dry despite the morning rain — as if nothing living has crossed it in days.",
-        "By evening, the keep's silhouette breaks the treeline. Stone walls. A collapsed tower. Every window dark. The silence presses on your ears like water pressure, and you understand for the first time why the messenger's hands were trembling."
+        "By evening, the keep's silhouette breaks the treeline. Stone walls. A collapsed tower. Every window dark. The silence presses on your ears like water pressure, and you understand for the first time why the messenger's hands were trembling.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "You count the towers, estimate the approach angles, and note that a frontal assault on walls that height would cost more than you have to spend.";
+            case "wizard":  return "The light in the upper windows is consistent in wavelength with sustained necromantic workings — not firelight, not torchlight, but something feeding on itself indefinitely.";
+            case "rogue":   return "No sentries on the walls, no lantern movement, no patrol pattern — either the keep is empty or it does not need guards, and you distrust both answers equally.";
+            case "cleric":  return "The wrongness reaches you before the smell does — a visible rupture in the consecrated order of things, radiating outward from those green-lit windows like heat from a wound.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Approach the keep's main gate.", next: "keep_gate" }
@@ -184,7 +216,16 @@ window.STORIES.push({
       paragraphs: [
         "The keep squats against the hillside like something wounded. Its stone walls are ancient — older than the Harwick family, older than the city behind you. The portcullis is up, but the courtyard beyond is dark.",
         "Two skeletal guards flank the gate. They're not moving. They may not have noticed you yet.",
-        "You study the gatehouse. The main door is heavy oak, barred from the inside. A narrow window sits above the portcullis — reachable if you climbed. The east wall, just visible around the corner, might have other options."
+        "You study the gatehouse. The main door is heavy oak, barred from the inside. A narrow window sits above the portcullis — reachable if you climbed. The east wall, just visible around the corner, might have other options.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "The gate stands half-open, which means either no one remained to close it or someone wanted you to walk through — you have learned to distrust both explanations equally.";
+            case "wizard":  return "Beneath the smell of old rot there is a secondary signature, chemical and specific — the byproduct of preservation workings sustained past the point of natural decay.";
+            case "rogue":   return "A gate left open is an invitation, and you have yet to encounter an invitation issued by the dead that was ever in your favor.";
+            case "cleric":  return "The smell is not only death — it is desecration, the particular corruption of ground that was once consecrated and was then deliberately turned.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Rush the gate. Take out the skeleton guards before they raise an alarm.", next: { fighter: "gate_rush_clean", default: "gate_rush_hard" } },
@@ -305,7 +346,16 @@ window.STORIES.push({
       paragraphs: [
         "The postern door is set deep into the east wall, half-hidden behind a growth of dead ivy. The iron lock is old but functional.",
         "The key turns smoothly. The door swings inward without a sound — the hinges were oiled recently, which is unsettling.",
-        "You step into a stone passage that smells of rot and cold earth. Somewhere ahead, a faint green light flickers."
+        "You step into a stone passage that smells of rot and cold earth. Somewhere ahead, a faint green light flickers.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "You keep one hand on the wall and count your paces — if you have to leave quickly, you will not have time to think, and thinking will already have cost you.";
+            case "wizard":  return "The stones hold a faint warmth that has nothing to do with temperature; something has been worked in this corridor recently enough that the residue has not fully dissipated.";
+            case "rogue":   return "You note two branch-points and file them against the possibility of running — the exit map you are building in your head already matters more than the destination.";
+            case "cleric":  return "The darkness here is not absence of light; it has texture and density, the weight of things that have forgotten what they were and are no longer certain they are nothing.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Follow the passage toward the light.", next: "keep_hall" }
@@ -344,12 +394,50 @@ window.STORIES.push({
           return prefix + " Whatever this place was in life, it is ruin now. Tapestries hang in rot. Overturned furniture lies in patterns that suggest something dragged it aside, looking for something.";
         },
         "Three passages lead deeper into the keep. To the left, a set of double doors hangs open — beyond them, the scrape and clatter of bone on stone. Straight ahead, a narrower corridor leads toward the old library wing, its entrance carved with a scholar's sigil. To the right, a heavy door bears the crossed-swords crest of Valdrath's house guard.",
-        "A green light pulses faintly from somewhere above — the keep's upper floors. It flickers in a rhythm that might be breathing, if light could breathe."
+        "A green light pulses faintly from somewhere above — the keep's upper floors. It flickers in a rhythm that might be breathing, if light could breathe.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "You read the room the way you read every room that might kill you. The furniture wasn't overturned at random — something drove people back against the far wall, and they didn't leave standing. The doorways are choke points, three of them, and whoever held this hall last made the wrong call on all three.";
+            case "wizard":
+              return "The green light above isn't ambient — it's structured, layered, a binding lattice stretched across the upper floors like a net drawn tight over the whole building. You can see the magical scarring on the stone where discharges hit the walls: not a battle, an execution, performed at range. Whatever happened here, the magic remembers it in the grain of the rock.";
+            case "rogue":
+              return "Three exits, two of them defensible, none of them watched right now. The dust along the left passage has been disturbed in a line — something moves through there often enough to leave a track. The valuables were stripped methodically, not in a hurry; whoever took them knew where to look and didn't waste time on the rest.";
+            case "cleric":
+              return "The wrongness hits you before anything else — a pressure behind your eyes, a room with no air in it. These people weren't just killed; they were denied. No rites spoken, no mercy passage, no final word said over them. The hall is a wound in the sacred order, and it has been left open for a very long time.";
+            default:
+              return "";
+          }
+        }
       ],
       choices: [
-        { text: "Go left — toward the sound of movement. Face whatever waits.", next: "keep_hall_combat" },
-        { text: "Go straight — the library. Knowledge of what you're fighting.", next: { wizard: "keep_library_wizard", default: "keep_library" } },
-        { text: "Go right — the armory. Better equipped, better odds.", next: { fighter: "keep_armory_fighter", default: "keep_armory" } }
+        { text: function (s) {
+            switch (s.charClass) {
+              case "fighter": return "I was already heading that way.";
+              case "wizard":  return "Clear the hall. I need room to work.";
+              case "rogue":   return "Draw them here. Buy myself room elsewhere.";
+              case "cleric":  return "The dead deserve release, not servitude.";
+              default:        return "Go left — toward the sound of movement. Face whatever waits.";
+            }
+          }, next: "keep_hall_combat" },
+        { text: function (s) {
+            switch (s.charClass) {
+              case "fighter": return "I need to know what I'm killing.";
+              case "wizard":  return "The archive is mine to search.";
+              case "rogue":   return "Maps, weaknesses — the library has both.";
+              case "cleric":  return "The lich's original ritual will be recorded there.";
+              default:        return "Go straight — the library. Knowledge of what you're fighting.";
+            }
+          }, next: { wizard: "keep_library_wizard", default: "keep_library" } },
+        { text: function (s) {
+            switch (s.charClass) {
+              case "fighter": return "I know how to read an armory.";
+              case "wizard":  return "Better tools serve any wielder.";
+              case "rogue":   return "A good blade is a good blade.";
+              case "cleric":  return "Consecrated steel can harm what prayers alone cannot.";
+              default:        return "Go right — the armory. Better equipped, better odds.";
+            }
+          }, next: { fighter: "keep_armory_fighter", default: "keep_armory" } }
       ]
     },
 
@@ -598,6 +686,18 @@ window.STORIES.push({
       location: "Valdrath's Keep — Armory",
       paragraphs: [
         "You try to address the ghost — name yourself, explain why you've come. It stares through you. Not hostile. Simply unreachable, locked in whatever moment claimed it, replaying something you'll never see.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "Then, for just a moment, the ghost's gaze drops — not to your face, but to your weapon arm. A soldier's reflex, worn into the body over years until it outlasted the body itself. The almost-recognition dissolves before it can become anything.";
+            case "wizard":
+              return "As you speak, the ghost flinches — not toward you, but away, a small involuntary recoil you nearly miss. Malachar's craft has been in these walls for a century; whatever you carry that resembles it earns a different kind of nothing. Not absence. Aversion.";
+            case "rogue":
+              return "You wait for the almost-recognition you half-expected — the attention that doesn't quite land, the soldier's reflex outlasting its owner. It doesn't come. The ghost simply does not register you at all, and somehow that is worse than being stared through.";
+            default:
+              return "";
+          }
+        },
         "After a while you stop trying. Some of the dead are too far gone for words. The ghost goes on staring at the empty rack, standing its last post.",
         "The armory's only other door leads back toward the main hall — or you could press on toward the throne room via the guard corridor."
       ],
@@ -818,7 +918,16 @@ window.STORIES.push({
       paragraphs: [
         "The stairs go down a long way. The cold intensifies with every step, and the green light — source unknown — grows stronger as you descend.",
         "At the base, a stone door stands ajar. Beyond it: the sound of something moving in deliberate circles, like a mind pacing.",
-        "You pause on the landing. The door is ahead. You will not be able to come back this way once you push through."
+        "You pause on the landing. The door is ahead. You will not be able to come back this way once you push through.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter": return "The stairs are narrow enough that you cannot swing freely — whatever waits below has already calculated that, and has been waiting for someone who hasn't.";
+            case "wizard":  return "The light below does not flicker; a lich-fire sustained for decades finds nothing alive nearby to disturb the air, and that stillness is a kind of answer about what you will find.";
+            case "rogue":   return "Stairs descending are always the worst geometry — one exit, and whoever holds the top of them when you want to leave holds everything that comes after.";
+            case "cleric":  return "The cold deepens with each step and it is not the cold of stone — it is the cold that accumulates where the dead have displaced the living for long enough that warmth has stopped trying.";
+            default:        return "";
+          }
+        }
       ],
       choices: [
         { text: "Check the door for traps before entering.", next: { rogue: "crypt_check_rogue", default: "crypt_check_default" } },
@@ -863,6 +972,20 @@ window.STORIES.push({
       title: "Into the Dark Below",
       location: "Valdrath's Keep — The Crypt",
       paragraphs: [
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "The smell doesn't touch you — you've been in siege tunnels, in barrow fields after bad winters, in places where the dead outnumbered the living by a factor you stopped counting. But the silence here is the wrong kind. It is not the silence of emptiness. It is the silence of something that already knows you are there.";
+            case "wizard":
+              return "The stonework is pre-Imperial — third century at the latest, possibly older, the alcove seals cut in a burial symbology that predates the unified calendar by at least two hundred years. You are cataloging this automatically, the academic reflex stronger than the fear. Whoever built this crypt built it to last forever, which means they expected what they were containing to last just as long.";
+            case "rogue":
+              return "Your hand drops to wire-check position before you've consciously decided to look, fingers sweeping at knee height across the threshold, then ankle height. Nothing. You straighten slowly, and then the realization settles in: there are no tripwires because there was never anything here to protect from the living. The defenses face the other direction. This place was built to contain, not to exclude.";
+            case "cleric":
+              return "This place was consecrated, once. You can feel it the way you feel a scar — not what it was, but the shape of what it left behind. Beneath the cold, beneath the green light, beneath everything Malachar has made of this, there is an older thing: a blessing laid down by hands long since turned to dust. It is still here. It has not given up.";
+            default:
+              return "";
+          }
+        },
         "The crypt is older than the keep above it. The stone here was cut before Valdrath's family ever claimed this land — older work, from builders whose names are not recorded.",
         "Alcoves line the walls, each sealed with an iron plaque. The dead here are old enough that they don't move. Whatever Malachar commands, he spares the oldest resting here — or perhaps he simply can't reach that far back.",
         "At the far end of the crypt, a passage opens into a lit chamber. The green light is constant now — not flickering. Waiting.",
@@ -984,10 +1107,32 @@ window.STORIES.push({
           if (s.flags.seal_solved) lines.push("You came through the trial intact. Whatever the old builders placed in that test, it recognized you as worthy.");
           if (s.flags.altar_restored) lines.push("Malachar's gaze flickers with something almost like unease when it passes over you — the chapel's restoration has weakened his reach into this place.");
           return lines.length > 0 ? lines.join(" ") : "You face him across the chamber.";
+        },
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "His gaze settles on you with the weight of absolute disinterest. 'A soldier,' he says. 'Harwick always sends soldiers first. They come through the gate, they make noise in the hall, they find the stairs.' He tilts his head, the motion a fraction too slow for a living neck. 'Tell me — did he explain to you what a sword accomplishes here? I am genuinely curious whether he told you that, or whether he simply hoped you wouldn't think to ask.'";
+            case "wizard":
+              return "He leans forward. Something moves in his expression — not warmth, but attention, which in him amounts to the same danger. 'A scholar,' he says, and his eyes narrow as if reading text too small to see. 'Which college. Speak.' He studies you for a long moment and the attention recedes back into cold. 'No. I can see it in how you stand. They sent a student. Harwick could not afford a master, so he sent a student, and hoped the gap wouldn't matter.' He says it the way someone states a proof.";
+            case "rogue":
+              return "The green light in his eyes shifts — something almost like amusement in a creature that has mostly forgotten the purpose of it. 'A thief,' he says, and does not make it a question. 'Harwick sent a thief to end a lich. I have considered many approaches this century, and that one did not occur to me.' His head tilts. 'Tell me — are you here because he convinced you there was something heroic in it, or are you here for the gold? Be precise. I have had a hundred years to lose patience for inexact answers.'";
+            case "cleric":
+              return "Something changes. It is small — the green flames in his eyes flare once, and his hands tighten on the arms of the throne — and he corrects it in less than a second, but you saw it. 'You will not speak that name in this place,' he says, and the precision in his voice has an edge in it now that was not there before. 'That power has no reach here. I have spent a century ensuring it.' He says it with the flatness of a man who has checked the same lock every morning for a hundred years, and has never once stopped checking.";
+            default:
+              return "";
+          }
         }
       ],
       choices: [
-        { text: "Attack immediately — drive him back before he can act.", next: { fighter: "boss_fighter", default: "boss_direct" } },
+        { text: function (s) {
+            switch (s.charClass) {
+              case "fighter": return "He doesn't get to speak first.";
+              case "wizard":  return "Force it now. Don't let him cast.";
+              case "rogue":   return "Hit first. Ask nothing.";
+              case "cleric":  return "Close the distance. The rite needs proximity.";
+              default:        return "Attack immediately — drive him back before he can act.";
+            }
+          }, next: { fighter: "boss_fighter", default: "boss_direct" } },
         { text: "Raise your holy symbol and invoke the rite of unmaking.", onlyFor: ["cleric"], next: { default: "boss_cleric" } },
         { text: "Use the ritual oil from the library to anoint the throne.", requiresFlag: "has_ritual_oil", next: "boss_ritual" },
         { text: "Destroy the phylactery — now, before he can stop you.", requiresFlag: "has_phylactery", next: "boss_phylactery" },
@@ -1006,10 +1151,10 @@ window.STORIES.push({
         function (s) {
           switch (s.charClass) {
             case "fighter": return "You have stood over men who fell in battle before. This is different. The fear does not leave all at once — it drains out slowly, like water from a wound, and you realize only now how much of it you were carrying.";
-            case "wizard": return "There is something in the way his power dissipates — not at once but in cascading intervals, each subsystem of his binding collapsing in sequence — that your mind, even now, cannot help but catalog.";
-            case "rogue": return "You note the angle of his fall, the position of his hands, the silence that has replaced the lightning. You are already thinking about the exit. Force of habit. It has kept you alive.";
-            case "cleric": return "You have ended things before — undead reduced to dust by the word of your god. This is not the same. There is a difference between destruction and release, and you felt it in the last moment of the green light.";
-            default: return "";
+            case "wizard":  return "There is something in the way his power dissipates — not at once but in cascading intervals, each subsystem of his binding collapsing in sequence — that your mind, even now, cannot help but catalog.";
+            case "rogue":   return "You note the angle of his fall, the position of his hands, the silence that has replaced the lightning. You are already thinking about the exit. Force of habit. It has kept you alive.";
+            case "cleric":  return "You have ended things before — undead reduced to dust by the word of your god. This is not the same. There is a difference between destruction and release, and you felt it in the last moment of the green light.";
+            default:        return "";
           }
         },
         function (s) {
@@ -1038,10 +1183,10 @@ window.STORIES.push({
         function (s) {
           switch (s.charClass) {
             case "fighter": return "A trained soldier knows the difference between a fight they can win and one they are simply refusing to lose. This is the second kind. You made your peace with it somewhere around the fourth time he knocked you down.";
-            case "wizard": return "You have calculated — despite everything — that he is expending more energy than you are to produce each attack. The calculus will not save you. You keep fighting anyway, because the alternative has already been ruled out.";
-            case "rogue": return "The smart move would have been to run ten minutes ago. You are aware of this. You are also aware that running was never actually on the table, which is an annoying thing to discover about yourself.";
-            case "cleric": return "You stopped asking your god for strength after the second time it didn't come. You keep fighting on your own, which is all that's left, which turns out to be enough to matter.";
-            default: return "";
+            case "wizard":  return "You have calculated — despite everything — that he is expending more energy than you are to produce each attack. The calculus will not save you. You keep fighting anyway, because the alternative has already been ruled out.";
+            case "rogue":   return "The smart move would have been to run ten minutes ago. You are aware of this. You are also aware that running was never actually on the table, which is an annoying thing to discover about yourself.";
+            case "cleric":  return "You stopped asking your god for strength after the second time it didn't come. You keep fighting on your own, which is all that's left, which turns out to be enough to matter.";
+            default:        return "";
           }
         },
         "Eventually, through sheer refusal to stop, you drive him back. He does not fall — but he retreats, pulling his power inward.",
@@ -1096,10 +1241,10 @@ window.STORIES.push({
         function (s) {
           switch (s.charClass) {
             case "fighter": return "Lightning hits the stone beside your hand and you do not move. You have been under fire before. The hand that uncorks the vial is steady — not because you are not afraid, but because fear has never been a reason to stop.";
-            case "wizard": return "You recite the preparation clause from memory — you read it three times in the library and once is usually enough for you. The throne hums under your palm as if it recognizes what is coming.";
-            case "rogue": return "You have exactly one chance and no margin. You are comfortable with this. Most of your best work has happened in exactly these conditions.";
-            case "cleric": return "You press your palm to the cracked stone and feel the wrongness of it — a century of corruption, a soul held in bondage, the weight of every year Malachar should not have had. You hold onto that. You speak the word with that weight behind it.";
-            default: return "";
+            case "wizard":  return "You recite the preparation clause from memory — you read it three times in the library and once is usually enough for you. The throne hums under your palm as if it recognizes what is coming.";
+            case "rogue":   return "You have exactly one chance and no margin. You are comfortable with this. Most of your best work has happened in exactly these conditions.";
+            case "cleric":  return "You press your palm to the cracked stone and feel the wrongness of it — a century of corruption, a soul held in bondage, the weight of every year Malachar should not have had. You hold onto that. You speak the word with that weight behind it.";
+            default:        return "";
           }
         },
         "You anoint the throne with the oil and speak the word from the torn page.",
@@ -1122,10 +1267,10 @@ window.STORIES.push({
         function (s) {
           switch (s.charClass) {
             case "fighter": return "You have broken things under pressure before — locks, shackles, a man's grip at a critical moment. The body knows what to do with resistance. You give it everything.";
-            case "wizard": return "You feel the containment matrix inside the stone give way — layers of protection carved into the mineral structure, unraveling in the correct sequence. You understand, in this instant, what it cost him to make it. It is the last thought that will ever be directly about him.";
-            case "rogue": return "You've carried it since the throne room. The whole way through the crypt. An ugly little stone that wanted to be somewhere else. You think: not anymore.";
-            case "cleric": return "Somewhere in there, under a hundred years of his shaping, is the man he was before he made the choice that brought him here. You say his name — his real name, the one carved on the altar stone before he defaced it — and then you close your hand.";
-            default: return "";
+            case "wizard":  return "You feel the containment matrix inside the stone give way — layers of protection carved into the mineral structure, unraveling in the correct sequence. You understand, in this instant, what it cost him to make it. It is the last thought that will ever be directly about him.";
+            case "rogue":   return "You've carried it since the throne room. The whole way through the crypt. An ugly little stone that wanted to be somewhere else. You think: not anymore.";
+            case "cleric":  return "Somewhere in there, under a hundred years of his shaping, is the man he was before he made the choice that brought him here. You say his name — his real name, the one carved on the altar stone before he defaced it — and then you close your hand.";
+            default:        return "";
           }
         },
         "The phylactery shatters. Black light pours through your fingers. Malachar's grip vanishes. He flies backward — pulled apart from the inside — and the green flames guttering in every brazier go out as he comes undone."
@@ -1145,10 +1290,10 @@ window.STORIES.push({
         function (s) {
           switch (s.charClass) {
             case "fighter": return "There — an overextension in his guard, the same gap you'd exploit in a sparring match, except it runs through the air itself and tastes of iron filings. You've read that gap a thousand times. You close on it.";
-            case "wizard": return "The lattice of his binding has a flaw in the fourth anchoring layer — not a mistake, exactly, but a compromise made under duress when he laid the original working. A knot tied too tight in one direction, which means it is too loose in another. You mark it.";
-            case "rogue": return "Every lock has a shear point — the place where the mechanism is thinnest, where one precise force in the right direction makes the whole thing give. You found it in the wight's instructions. You find it again now with your eyes.";
-            case "cleric": return "The sacred order does not break cleanly, but it reasserts. Here — a place where the corruption has thinned, where Malachar's will has grown old and brittle, where the light that was here before him has started, without any help, to come back. You put your hand on it.";
-            default: return "";
+            case "wizard":  return "The lattice of his binding has a flaw in the fourth anchoring layer — not a mistake, exactly, but a compromise made under duress when he laid the original working. A knot tied too tight in one direction, which means it is too loose in another. You mark it.";
+            case "rogue":   return "Every lock has a shear point — the place where the mechanism is thinnest, where one precise force in the right direction makes the whole thing give. You found it in the wight's instructions. You find it again now with your eyes.";
+            case "cleric":  return "The sacred order does not break cleanly, but it reasserts. Here — a place where the corruption has thinned, where Malachar's will has grown old and brittle, where the light that was here before him has started, without any help, to come back. You put your hand on it.";
+            default:        return "";
           }
         },
         "You hit it. Hard. With everything you have.",
@@ -1175,7 +1320,18 @@ window.STORIES.push({
         "When you climb back through the keep, the undead are gone — not fled, not hiding, but simply ended, their animating force released. Bones lie in scattered piles. The green light is gone from every window.",
         "Lord Harwick meets you at the gate at sunrise. He pays without hesitation and adds a third more. You get the sense he expected to be paying someone else — or paying no one.",
         function (s) {
-          return "The city of Thornwall will tell this story for a generation. The name of " + s.name + " the " + s.charClass + " will be spoken in the same breath as the name of Malachar — the thing undone by the thing that was not afraid of it.";
+          switch (s.charClass) {
+            case "fighter":
+              return "You think of the three Harwick mentioned in passing, the ones who came before you and didn't come out. They found the same hall, the same stairs, the same green light. " + s.name + " found all of it too, and came back through it, just barely, at a price that only makes sense because the alternative was worse. That's how these things balance. It's enough. It usually has to be.";
+            case "wizard":
+              return "You go back for the library before you leave. The binding's collapse has brought down sections of shelving, but there are texts in the rubble that Malachar kept nowhere else in the world, and " + s.name + " is not going to walk away from that. You spend three hours with a satchel before the light gets too low. The work of understanding what he did — and why it failed — hasn't started yet. It will take years. You find you don't mind that.";
+            case "rogue":
+              return "You count the coin on the gatehouse steps in the first good light, the way you always do, because that is the whole point. The number is right. The number is more than right. " + s.name + " sits with the number and notices, after a moment, that the number isn't what you're thinking about — you're thinking about the bones in the hall, and the way they went still. You hadn't come here to feel anything about that. Apparently that didn't hold.";
+            case "cleric":
+              return s.name + " does not leave with the others. You go back down to the crypt — the oldest part, where the blessing still breathes beneath the stone — and you kneel, and you speak the burial rites for every name carved on every sealed alcove, and for the nameless ones in the hall above who received nothing. It takes the better part of an hour. Lord Harwick sends someone to find you when you don't appear at the gate. You are not finished. You finish when you are finished.";
+            default:
+              return "The city of Thornwall will tell this story for a generation. The name of " + s.name + " the " + s.charClass + " will be spoken in the same breath as the name of Malachar — the thing undone by the thing that was not afraid of it.";
+          }
         }
       ]
     },
