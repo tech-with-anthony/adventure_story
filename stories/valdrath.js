@@ -344,7 +344,21 @@ window.STORIES.push({
           return prefix + " Whatever this place was in life, it is ruin now. Tapestries hang in rot. Overturned furniture lies in patterns that suggest something dragged it aside, looking for something.";
         },
         "Three passages lead deeper into the keep. To the left, a set of double doors hangs open — beyond them, the scrape and clatter of bone on stone. Straight ahead, a narrower corridor leads toward the old library wing, its entrance carved with a scholar's sigil. To the right, a heavy door bears the crossed-swords crest of Valdrath's house guard.",
-        "A green light pulses faintly from somewhere above — the keep's upper floors. It flickers in a rhythm that might be breathing, if light could breathe."
+        "A green light pulses faintly from somewhere above — the keep's upper floors. It flickers in a rhythm that might be breathing, if light could breathe.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "You read the room the way you read every room that might kill you. The furniture wasn't overturned at random — something drove people back against the far wall, and they didn't leave standing. The doorways are choke points, three of them, and whoever held this hall last made the wrong call on all three.";
+            case "wizard":
+              return "The green light above isn't ambient — it's structured, layered, a binding lattice stretched across the upper floors like a net drawn tight over the whole building. You can see the magical scarring on the stone where discharges hit the walls: not a battle, an execution, performed at range. Whatever happened here, the magic remembers it in the grain of the rock.";
+            case "rogue":
+              return "Three exits, two of them defensible, none of them watched right now. The dust along the left passage has been disturbed in a line — something moves through there often enough to leave a track. The valuables were stripped methodically, not in a hurry; whoever took them knew where to look and didn't waste time on the rest.";
+            case "cleric":
+              return "The wrongness hits you before anything else — a pressure behind your eyes, a room with no air in it. These people weren't just killed; they were denied. No rites spoken, no mercy passage, no final word said over them. The hall is a wound in the sacred order, and it has been left open for a very long time.";
+            default:
+              return "";
+          }
+        }
       ],
       choices: [
         { text: "Go left — toward the sound of movement. Face whatever waits.", next: "keep_hall_combat" },
@@ -863,6 +877,20 @@ window.STORIES.push({
       title: "Into the Dark Below",
       location: "Valdrath's Keep — The Crypt",
       paragraphs: [
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "The smell doesn't touch you — you've been in siege tunnels, in barrow fields after bad winters, in places where the dead outnumbered the living by a factor you stopped counting. But the silence here is the wrong kind. It is not the silence of emptiness. It is the silence of something that already knows you are there.";
+            case "wizard":
+              return "The stonework is pre-Imperial — third century at the latest, possibly older, the alcove seals cut in a burial symbology that predates the unified calendar by at least two hundred years. You are cataloging this automatically, the academic reflex stronger than the fear. Whoever built this crypt built it to last forever, which means they expected what they were containing to last just as long.";
+            case "rogue":
+              return "Your hand drops to wire-check position before you've consciously decided to look, fingers sweeping at knee height across the threshold, then ankle height. Nothing. You straighten slowly, and then the realization settles in: there are no tripwires because there was never anything here to protect from the living. The defenses face the other direction. This place was built to contain, not to exclude.";
+            case "cleric":
+              return "This place was consecrated, once. You can feel it the way you feel a scar — not what it was, but the shape of what it left behind. Beneath the cold, beneath the green light, beneath everything Malachar has made of this, there is an older thing: a blessing laid down by hands long since turned to dust. It is still here. It has not given up.";
+            default:
+              return "";
+          }
+        },
         "The crypt is older than the keep above it. The stone here was cut before Valdrath's family ever claimed this land — older work, from builders whose names are not recorded.",
         "Alcoves line the walls, each sealed with an iron plaque. The dead here are old enough that they don't move. Whatever Malachar commands, he spares the oldest resting here — or perhaps he simply can't reach that far back.",
         "At the far end of the crypt, a passage opens into a lit chamber. The green light is constant now — not flickering. Waiting.",
@@ -984,6 +1012,20 @@ window.STORIES.push({
           if (s.flags.seal_solved) lines.push("You came through the trial intact. Whatever the old builders placed in that test, it recognized you as worthy.");
           if (s.flags.altar_restored) lines.push("Malachar's gaze flickers with something almost like unease when it passes over you — the chapel's restoration has weakened his reach into this place.");
           return lines.length > 0 ? lines.join(" ") : "You face him across the chamber.";
+        },
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "His gaze settles on you with the weight of absolute disinterest. 'A soldier,' he says. 'Harwick always sends soldiers first. They come through the gate, they make noise in the hall, they find the stairs.' He tilts his head, the motion a fraction too slow for a living neck. 'Tell me — did he explain to you what a sword accomplishes here? I am genuinely curious whether he told you that, or whether he simply hoped you wouldn't think to ask.'";
+            case "wizard":
+              return "He leans forward. Something moves in his expression — not warmth, but attention, which in him amounts to the same danger. 'A scholar,' he says, and his eyes narrow as if reading text too small to see. 'Which college. Speak.' He studies you for a long moment and the attention recedes back into cold. 'No. I can see it in how you stand. They sent a student. Harwick could not afford a master, so he sent a student, and hoped the gap wouldn't matter.' He says it the way someone states a proof.";
+            case "rogue":
+              return "The green light in his eyes shifts — something almost like amusement in a creature that has mostly forgotten the purpose of it. 'A thief,' he says, and does not make it a question. 'Harwick sent a thief to end a lich. I have considered many approaches this century, and that one did not occur to me.' His head tilts. 'Tell me — are you here because he convinced you there was something heroic in it, or are you here for the gold? Be precise. I have had a hundred years to lose patience for inexact answers.'";
+            case "cleric":
+              return "Something changes. It is small — the green flames in his eyes flare once, and his hands tighten on the arms of the throne — and he corrects it in less than a second, but you saw it. 'You will not speak that name in this place,' he says, and the precision in his voice has an edge in it now that was not there before. 'That power has no reach here. I have spent a century ensuring it.' He says it with the flatness of a man who has checked the same lock every morning for a hundred years, and has never once stopped checking.";
+            default:
+              return "";
+          }
         }
       ],
       choices: [
@@ -1130,7 +1172,18 @@ window.STORIES.push({
         "When you climb back through the keep, the undead are gone — not fled, not hiding, but simply ended, their animating force released. Bones lie in scattered piles. The green light is gone from every window.",
         "Lord Harwick meets you at the gate at sunrise. He pays without hesitation and adds a third more. You get the sense he expected to be paying someone else — or paying no one.",
         function (s) {
-          return "The city of Thornwall will tell this story for a generation. The name of " + s.name + " the " + s.charClass + " will be spoken in the same breath as the name of Malachar — the thing undone by the thing that was not afraid of it.";
+          switch (s.charClass) {
+            case "fighter":
+              return "You think of the three Harwick mentioned in passing, the ones who came before you and didn't come out. They found the same hall, the same stairs, the same green light. " + s.name + " found all of it too, and came back through it, just barely, at a price that only makes sense because the alternative was worse. That's how these things balance. It's enough. It usually has to be.";
+            case "wizard":
+              return "You go back for the library before you leave. The binding's collapse has brought down sections of shelving, but there are texts in the rubble that Malachar kept nowhere else in the world, and " + s.name + " is not going to walk away from that. You spend three hours with a satchel before the light gets too low. The work of understanding what he did — and why it failed — hasn't started yet. It will take years. You find you don't mind that.";
+            case "rogue":
+              return "You count the coin on the gatehouse steps in the first good light, the way you always do, because that is the whole point. The number is right. The number is more than right. " + s.name + " sits with the number and notices, after a moment, that the number isn't what you're thinking about — you're thinking about the bones in the hall, and the way they went still. You hadn't come here to feel anything about that. Apparently that didn't hold.";
+            case "cleric":
+              return s.name + " does not leave with the others. You go back down to the crypt — the oldest part, where the blessing still breathes beneath the stone — and you kneel, and you speak the burial rites for every name carved on every sealed alcove, and for the nameless ones in the hall above who received nothing. It takes the better part of an hour. Lord Harwick sends someone to find you when you don't appear at the gate. You are not finished. You finish when you are finished.";
+            default:
+              return "The city of Thornwall will tell this story for a generation. The name of " + s.name + " the " + s.charClass + " will be spoken in the same breath as the name of Malachar — the thing undone by the thing that was not afraid of it.";
+          }
         }
       ]
     },
