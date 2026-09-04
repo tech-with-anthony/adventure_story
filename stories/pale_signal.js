@@ -519,7 +519,7 @@ window.STORIES.push({
         location: "Dursey Rock — sea cave, deep end",
         paragraphs: [
           "The fissure descends at perhaps forty degrees, wide enough to fit a person if they go sideways. The sound is unmistakable here — not heard with the ears alone but felt in the chest, in the teeth, in the marrow. Forty-seven seconds. Sixteen elements. Then silence for one cycle. Then again.",
-          "And in the silence: a seventeenth element, as you already knew there would be. The pattern has been speaking to whoever is listening. It knows you are here.",
+          "And in the silence: a seventeenth element. The pattern has been speaking to whoever is listening. It knows you are here.",
           "Below, in the fissure, the darkness is not complete. There is a pale luminescence — very faint, blue-white, coming from deeper than your torch can reach."
         ],
         choices: [
@@ -581,8 +581,17 @@ window.STORIES.push({
         choicePrompt: "What is your course of action?",
         paragraphs: [
           "There is something 340 fathoms below this rock that has been surveying the surface of the Earth since before humans had a word for the deep. It has noticed that something noticed it. It is now including that something in its survey.",
-          "Two men are in the chamber below: one willingly, one not. Nine people died because a ship ran aground on a rock whose warning light was being used to send a different message entirely.",
-          "The signal continues. Forty-seven seconds. Sixteen elements. Your element, the eighteenth, is in there now."
+          function(s) {
+            return s.flags.found_keeper
+              ? "Two men are in the chamber below: one willingly, one not. Nine people died because a ship ran aground on a rock whose warning light was being used to send a different message entirely."
+              : "Below the rock, in the fissure, something waits. Nine people died because a ship ran aground on a rock whose warning light was being used to send a different message entirely. Whatever is down there was the reason.";
+          },
+          function(s) {
+            if (s.charClass === "radioman" || s.flags.found_keeper) {
+              return "The signal continues. Forty-seven seconds. Sixteen elements. Your element, the eighteenth, is in there now.";
+            }
+            return "The signal continues. Forty-seven seconds. Sixteen elements. It knows you are here now. That much is certain.";
+          }
         ],
         choices: [
           { text: "Destroy the signal source. Whatever it costs.", next: "plan_destroy" },
@@ -789,7 +798,12 @@ window.STORIES.push({
         location: "Dursey Rock — engine room",
         paragraphs: [
           "The signal horn is on the west face of the lighthouse, angled at the shipping lane. You can't move the horn, but you can add a deflector: sheet metal from the equipment store, bolted at an angle to redirect the output further west and upward.",
-          "The engine is already running. You configure the output, redirect the horn, and set the pattern to transmit on the sixteen-element cycle, timed to the natural period of the source.",
+          function(s) {
+            if (s.flags.engine_running) {
+              return "The engine is already running. You configure the output, redirect the horn, and set the pattern to transmit on the sixteen-element cycle, timed to the natural period of the source.";
+            }
+            return "The boiler is cold, pressure gauge flat at zero. Getting steam up takes twenty minutes and coal you barely have, but without pressure there is no mechanism. When the gauge finally moves, you configure the output, redirect the horn, and set the pattern.";
+          },
           "When you activate it, the lighthouse is speaking to the signal source in its own language, and the conversation is being directed into open water."
         ],
         choices: [
