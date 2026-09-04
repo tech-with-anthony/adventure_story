@@ -48,8 +48,9 @@ async function setupRoutes(page) {
     status: 200,
     contentType: 'application/json',
     body: JSON.stringify([
-      { id: 'valdrath',  file: `${BASE}/stories/valdrath.js`,  category: 'Dark Fantasy',   difficulty: 3 },
-      { id: 'fae_court', file: `${BASE}/stories/fae_court.js`, category: 'Fae / Fantasy',  difficulty: 2 }
+      { id: 'valdrath',    file: `${BASE}/stories/valdrath.js`,    category: 'Dark Fantasy',    difficulty: 3 },
+      { id: 'fae_court',  file: `${BASE}/stories/fae_court.js`,   category: 'Fae / Fantasy',   difficulty: 2 },
+      { id: 'pale_signal', file: `${BASE}/stories/pale_signal.js`, category: 'Cosmic Horror',  difficulty: 4 }
     ])
   }));
 }
@@ -68,8 +69,8 @@ async function clickPrimary(page) {
   await page.locator('#page-setup .primary').first().click();
 }
 
-/* Valdrath story card uses a curly apostrophe (’) in its title */
-const VALDRATH_TEXT = 'Valdrath’s Keep';
+/* Valdrath story card uses a curly apostrophe (') in its title */
+const VALDRATH_TEXT = "Valdrath’s Keep";
 
 /* ---- Story walk: Valdrath Fighter → ending ---- */
 async function walkValdrath(page) {
@@ -149,6 +150,35 @@ async function walkFaeCourt(page) {
   return onEnding;
 }
 
+/* ---- Story walk: Pale Signal Captain → ending ---- */
+async function walkPaleSignal(page) {
+  await waitForLibrary(page);
+  const signal = page.locator('.story-card').filter({ hasText: 'Pale Signal' });
+  await signal.locator('.slot-btn').first().click();
+
+  await waitForSetup(page);
+  await clickPrimary(page);
+  await page.locator('input[type=text]').fill('Tester');
+  await clickPrimary(page);
+  await page.locator('.class-card.captain').click();
+  await waitForScene(page);
+
+  for (let i = 0; i < 50; i++) {
+    const ending = await page.locator('#scene-interact button', { hasText: 'Play Again' })
+      .isVisible().catch(() => false);
+    if (ending) break;
+    const btn = page.locator('#scene-interact button').first();
+    if (!await btn.isVisible({ timeout: 2000 }).catch(() => false)) break;
+    await btn.click();
+    await page.waitForTimeout(250);
+  }
+
+  const onEnding = await page.locator('#scene-interact button', { hasText: 'Play Again' })
+    .isVisible().catch(() => false);
+  ok('Pale Signal: captain path reaches an ending (Play Again shown)', onEnding);
+  return onEnding;
+}
+
 /* ---- Main ---- */
 (async () => {
   const server = startServer();
@@ -161,8 +191,8 @@ async function walkFaeCourt(page) {
   const errors = [];
 
   try {
-    /* [1] Library renders both stories */
-    console.log('\n[1] Library renders both stories');
+    /* [1] Library renders all three stories */
+    console.log('\n[1] Library renders all three stories');
     {
       const page = await browser.newPage();
       await setupRoutes(page);
@@ -170,11 +200,13 @@ async function walkFaeCourt(page) {
       await page.goto(BASE + '/adventure.html');
       await waitForLibrary(page);
 
-      ok('Two story cards visible', await page.locator('.story-card').count() >= 2);
-      ok("Valdrath’s Keep card present",
+      ok('Three story cards visible', await page.locator('.story-card').count() >= 3);
+      ok("Valdrath's Keep card present",
         await page.locator('.story-card', { hasText: VALDRATH_TEXT }).count() > 0);
       ok('Stolen Hours card present',
         await page.locator('.story-card', { hasText: 'Stolen Hours' }).count() > 0);
+      ok('Pale Signal card present',
+        await page.locator('.story-card', { hasText: 'Pale Signal' }).count() > 0);
       await page.close();
     }
 
@@ -338,8 +370,57 @@ async function walkFaeCourt(page) {
       await page.close();
     }
 
-    /* [8] No JS console errors */
-    console.log('\n[8] No JS console errors');
+    /* [9] Go-Back button */
+    console.log('\n[9] Go-Back button (one-step undo)');
+    {
+      const page = await browser.newPage();
+      await setupRoutes(page);
+      page.on('pageerror', e => errors.push(e.message));
+      await page.goto(BASE + '/adventure.html');
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+      await waitForLibrary(page);
+
+      const card = page.locator('.story-card', { hasText: VALDRATH_TEXT });
+      await card.locator('.slot-btn').first().click();
+      await waitForSetup(page);
+      await clickPrimary(page);
+      await page.locator('input[type=text]').fill('BackTest');
+      await clickPrimary(page);
+      await page.locator('.class-card.fighter').click();
+      await waitForScene(page);
+
+      // Make one choice; back button should now appear
+      await page.locator('#scene-interact button').first().click();
+      await page.waitForTimeout(300);
+      const backBtn = page.locator('#scene-interact button.back-btn');
+      ok('Go-Back button appears after first choice', await backBtn.isVisible().catch(() => false));
+
+      // Record scene title before going back
+      const titleAfter = await page.locator('#scene-title').textContent().catch(() => '');
+      await backBtn.click();
+      await page.waitForTimeout(300);
+      const titleRestored = await page.locator('#scene-title').textContent().catch(() => '');
+      ok('Go-Back restores previous scene', titleRestored !== titleAfter && titleRestored !== '');
+
+      await page.close();
+    }
+
+    /* [10] Pale Signal: Captain path */
+    console.log('\n[10] Pale Signal: Captain → ending');
+    {
+      const page = await browser.newPage();
+      await setupRoutes(page);
+      page.on('pageerror', e => errors.push(e.message));
+      await page.goto(BASE + '/adventure.html');
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+      await walkPaleSignal(page);
+      await page.close();
+    }
+
+    /* [11] No JS console errors */
+    console.log('\n[11] No JS console errors');
     ok('No uncaught JS errors across all tests', errors.length === 0);
     if (errors.length) errors.forEach(e => console.error('   Error:', e));
 

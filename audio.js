@@ -187,9 +187,73 @@ window.AudioEngine = (function () {
     timers.push(setTimeout(bellTone, 4000 + Math.random() * 6000));
   }
 
+  /* ================================================================
+     THE PALE SIGNAL — coastal horror ambience
+     Layers: deep ocean drone (breathing LFO) · AM radio static · signal pulses
+     ================================================================ */
+  function startPaleSignal(c) {
+    var master = makeGain(c, 0);
+    master.connect(c.destination);
+    nodes.push(master);
+
+    master.gain.setValueAtTime(0, c.currentTime);
+    master.gain.linearRampToValueAtTime(1, c.currentTime + 6);
+
+    /* Layer 1: deep ocean drone — two low sines through lowpass, slow LFO "breathing" */
+    var droneFilter = makeFilter(c, 'lowpass', 80);
+    var droneGain   = makeGain(c, 0.07);
+    droneFilter.connect(droneGain);
+    droneGain.connect(master);
+
+    var osc1 = makeOsc(c, 'sine', 28);
+    var osc2 = makeOsc(c, 'sine', 42);
+    [osc1, osc2].forEach(function (o) {
+      o.connect(droneFilter);
+      o.start();
+      nodes.push(o);
+    });
+
+    /* Slow LFO on drone — 0.04Hz, gives a 25-second breath cycle */
+    var lfo     = makeOsc(c, 'sine', 0.04);
+    var lfoGain = makeGain(c, 0.04);
+    lfo.connect(lfoGain);
+    lfoGain.connect(droneGain.gain);
+    lfo.start();
+    nodes.push(lfo);
+
+    /* Layer 2: AM radio static — noise through bandpass at voice frequencies */
+    var staticFilter = makeFilter(c, 'bandpass', 1800, 2.0);
+    var staticGain   = makeGain(c, 0.025);
+    chain(c, [makeNoise(c), staticFilter, staticGain], master);
+
+    /* Layer 3: signal pulses — periodic low sine bursts, the entity's pattern */
+    function signalPulse() {
+      if (!nodes.length) return;
+      var a = c.currentTime;
+      var g = makeGain(c, 0);
+      g.connect(master);
+      nodes.push(g);
+
+      var o = makeOsc(c, 'sine', 47); /* ~47Hz: echoes the story's 47-second cycle */
+      o.connect(g);
+      o.start(a);
+      o.stop(a + 1.8);
+      nodes.push(o);
+
+      g.gain.setValueAtTime(0, a);
+      g.gain.linearRampToValueAtTime(0.055, a + 0.3);
+      g.gain.exponentialRampToValueAtTime(0.0001, a + 1.8);
+
+      var delay = 15000 + Math.random() * 20000;
+      timers.push(setTimeout(signalPulse, delay));
+    }
+    timers.push(setTimeout(signalPulse, 8000 + Math.random() * 10000));
+  }
+
   var STARTERS = {
-    valdrath:  startValdrath,
-    fae_court: startFaeCourt
+    valdrath:    startValdrath,
+    fae_court:   startFaeCourt,
+    pale_signal: startPaleSignal
   };
 
   /* ---- Stop all active audio ---- */
