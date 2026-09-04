@@ -22,6 +22,7 @@ window.STORIES.push({
     { id: "fae_ally",          icon: "🧚", title: "A Friend Among Foes",   desc: "Earn the loyalty of a fae ally.",                              condition: { type: "flag_set",     flag: "has_fae_ally" } },
     { id: "true_name",         icon: "🔮", title: "The Name of Power",      desc: "Learn the Thornweave's true name.",                            condition: { type: "flag_set",     flag: "has_true_name" } },
     { id: "reunion",           icon: "💛", title: "Found You",              desc: "Find your missing sibling within the court.",                  condition: { type: "flag_set",     flag: "sibling_found" } },
+    { id: "court_claim",       icon: "👑", title: "Twilight Sovereign",    desc: "Find the hidden ending — claim the Thornweave's court as a Changeling.", condition: { type: "any_ending", ending: "end_court_claim" } },
     { id: "all_endings",       icon: "📜", title: "Chronicler of Courts",   desc: "Discover all four endings.",                                   condition: { type: "all_endings" } }
   ],
   story: {
@@ -1242,6 +1243,12 @@ window.STORIES.push({
           next: "end_partial"
         },
         {
+          text: "Claim the court. You were born for this.",
+          onlyFor: ["changeling"],
+          requiresFlag: "has_true_name",
+          next: "end_court_claim"
+        },
+        {
           text: "Hesitate too long.",
           next: "end_lost"
         }
@@ -1251,6 +1258,35 @@ window.STORIES.push({
     /* ═══════════════════════════════════════════════════════════════
        ENDINGS
     ═══════════════════════════════════════════════════════════════ */
+
+    "end_court_claim": {
+      chapter: "Ending — Hidden",
+      title: "Twilight Sovereign",
+      location: "The Throne Room — The Court Holds Its Breath",
+      isEnding: true,
+      paragraphs: [
+        "You speak his name. Not to banish. Not to bind. You speak it as a claim.",
+        "Eravel. Old tongue: he who holds the dusk. The court goes perfectly still.",
+        "The Thornweave rises from his throne — not in anger, you realize, but in recognition. He looks at you the way a dying man looks at his heir. Something in him has always known it would come to this. Something in him has always wanted it to.",
+        "'You cannot,' he says. And then: 'You can.'",
+        function (s) {
+          if (s.flags.has_fae_ally) {
+            return "Your ally steps into sight at the edge of the court — among their own kind at last, steady in the way that only the genuinely comfortable can be. They do not speak. They do not need to. Their presence is a vote.";
+          }
+          return "The court stirs around you. Not in opposition. They have lived under the Thornweave's rule since before your grandparents' grandparents drew breath. Changeless, lightless, waiting. A new sovereign is not a threat. It is something they have not dared to want until this moment.";
+        },
+        "The Thornweave dissolves. Not destroyed — dispersed, returning to the dusk that made him, as all sovereign fae do when their time ends. His power settles over you like a cloak that was always meant for your shoulders.",
+        function (s) {
+          return s.name + " sits in the throne of the Twilight Court. The twilight blood that was always yours to claim has claimed you back.";
+        },
+        "Your sibling crosses the floor and stands at your side. They do not ask if you are alright. They can see that you are different. They reach out and take your hand, and your hand is cooler than it was.",
+        "'You can still come home,' they say.",
+        "'I know,' you tell them. 'That's not the same thing as being able to stay.'",
+        "You let them through the gate. You watch it close.",
+        "The court waits. You were born for this. You were born for exactly this.",
+        "Whether that is a gift or a sentence is a question the Twilight Court has never found it useful to answer."
+      ]
+    },
 
     "end_heroic": {
       chapter: "Ending — Full Victory",

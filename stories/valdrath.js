@@ -22,6 +22,7 @@ window.STORIES.push({
     { id: "consecrated",     icon: "🕯️", title: "Consecrated Ground",  desc: "Restore the chapel altar as a Cleric.",                  condition: { type: "flag_set",     flag: "altar_restored" } },
     { id: "know_weakness",   icon: "📖", title: "Know Thine Enemy",    desc: "Uncover Malachar's weakness through parley or study.",   condition: { type: "flag_set",     flag: "know_weakness" } },
     { id: "quiet_way",       icon: "🗝️", title: "The Quiet Way",       desc: "Find a way into the keep without alerting the guards.",  condition: { type: "flag_set",     flag: "entered_quietly" } },
+    { id: "eternal_bind",    icon: "🔒", title: "Sealed in Stone",     desc: "Find the hidden ending — bind Malachar rather than destroy him.", condition: { type: "any_ending", ending: "end_bound" } },
     { id: "all_endings",     icon: "📜", title: "Historian of Ruin",   desc: "Discover all four endings.",                             condition: { type: "all_endings" } }
   ],
   story: {
@@ -1235,12 +1236,18 @@ window.STORIES.push({
         "You raise your holy symbol and speak the rite — the full version, not the shortened battlefield prayer. The words are old and they cost something to say correctly.",
         "Malachar raises his hands and the green flames surge. But the rite is not aimed at the fire — it is aimed at the binding itself. At the hundred-year-old chain that holds his soul to this place.",
         function (s) {
+          if (s.flags.has_phylactery && s.flags.altar_restored) {
+            return "The phylactery in your hand goes incandescent — not breaking, but filling. The restored altar and the rite work in concert: not unmaking, but sealing. Malachar's scream is different from what you expected. Not dissolution. Compression.";
+          }
           if (s.flags.altar_restored) {
             return "The chapel above answers. The reconsecrated altar amplifies the rite across the keep's foundations. Malachar screams — a sound that has been waiting a century to happen.";
           }
           return "The rite lands and holds. Malachar convulses, green light fragmenting at the edges of him.";
         },
         function (s) {
+          if (s.flags.has_phylactery && s.flags.altar_restored) {
+            return "The phylactery cools in your hand. When you look down it has changed — the grey stone veined with gold now, its internal light no longer green but white. He is inside it. All of him. And he cannot come out.";
+          }
           if (s.flags.has_phylactery || s.flags.altar_restored) {
             return "The binding breaks. The phylactery dissolves. Malachar comes apart into cold green sparks and is gone.";
           }
@@ -1249,6 +1256,7 @@ window.STORIES.push({
       ],
       choices: [
         { text: "Witness the end.", next: function (s) {
+          if (s.flags.has_phylactery && s.flags.altar_restored) return "end_bound";
           return (s.flags.has_phylactery || s.flags.altar_restored) ? "end_heroic" : "end_partial";
         }}
       ]
@@ -1398,6 +1406,28 @@ window.STORIES.push({
           if (s.charClass === "rogue") return "You walked into the lion's mouth and walked out again. The lion is still there. " + s.name + " is already thinking about the second trip — what to bring, what to do differently.";
           return "The road south is a long prayer. Not for the wounds — those will mend. For the dead still held in Malachar's grip. Someone will come back for them. " + s.name + " carries that weight all the way home.";
         }
+      ]
+    },
+
+    "end_bound": {
+      chapter: "The End",
+      title: "Sealed in Stone",
+      location: "Valdrath's Keep — The Long Road South",
+      isEnding: true,
+      paragraphs: [
+        "The phylactery fits in your palm. You carry it out of the keep as the green flames die behind you, one by one, as if someone is walking ahead of you closing each door.",
+        "The undead in the halls do not move. They are already falling — joints seizing, the animation going out of them like heat from cooling stone. Without Malachar's will to hold them they are only what they always were: the dead.",
+        "You walk the keep from dungeon to gate without fighting a single step.",
+        function (s) {
+          return "You bury the phylactery three miles south of the keep, at the old crossroads shrine that predates Thornwall by two centuries. You speak no word over it. You have already said everything that needed saying. " + s.name + " knows what is inside that stone, and knows it will not get out.";
+        },
+        "Lord Harwick stares at the altered stone when you set it on his table. He starts to ask what it is and stops himself. Some part of him already knows, or suspects.",
+        "'Is it over?' he says.",
+        "'For now,' you tell him. 'Keep that stone in your deepest vault. Never touch it.'",
+        "He never does. The keep stands empty, its curse broken. Thornwall sleeps without nightmares, and Malachar's name passes slowly from memory to legend to rumor to silence.",
+        "Inside the stone, the white light does not go out.",
+        "It simply waits.",
+        "But some imprisonments are strong enough that waiting is all there is left to do."
       ]
     },
 
