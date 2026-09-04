@@ -6,6 +6,7 @@ window.AudioEngine = (function () {
   var timers = [];      // setTimeout IDs for scheduled events
   var muted = false;
   var currentStory = null;
+  var masterGain = null;
 
   /* ---- Restore mute preference ---- */
   try { muted = localStorage.getItem('adv_audio_muted') === '1'; } catch (e) {}
@@ -74,6 +75,7 @@ window.AudioEngine = (function () {
     var master = makeGain(c, 0);
     master.connect(c.destination);
     nodes.push(master);
+    masterGain = master;
 
     /* Ramp master in gently */
     master.gain.setValueAtTime(0, c.currentTime);
@@ -130,6 +132,7 @@ window.AudioEngine = (function () {
     var master = makeGain(c, 0);
     master.connect(c.destination);
     nodes.push(master);
+    masterGain = master;
 
     master.gain.setValueAtTime(0, c.currentTime);
     master.gain.linearRampToValueAtTime(1, c.currentTime + 5);
@@ -195,6 +198,7 @@ window.AudioEngine = (function () {
     var master = makeGain(c, 0);
     master.connect(c.destination);
     nodes.push(master);
+    masterGain = master;
 
     master.gain.setValueAtTime(0, c.currentTime);
     master.gain.linearRampToValueAtTime(1, c.currentTime + 6);
@@ -278,6 +282,7 @@ window.AudioEngine = (function () {
     /* Clear the list after the fade */
     var captured = nodes;
     nodes = [];
+    masterGain = null;
     setTimeout(function () {
       captured.forEach(function (n) {
         try { n.disconnect(); } catch (e) {}
@@ -305,8 +310,24 @@ window.AudioEngine = (function () {
     currentStory = null;
   }
 
+  var TENSION_KEYWORDS = ['boss', 'confront', 'climax', 'signal_source', 'keeper_fate', 'destroy_climax', 'final_ritual', 'boss_final'];
+
   function onSceneLoad(id, scene) {
-    /* Future: scene-level audio variation (e.g. boss filter shift) */
+    if (!ctx || muted || !masterGain) return;
+    var now = ctx.currentTime;
+
+    if (scene && scene.isEnding) {
+      /* Fade ambient out as the story resolves */
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+      masterGain.gain.linearRampToValueAtTime(0, now + 4);
+      return;
+    }
+
+    var isTense = TENSION_KEYWORDS.some(function (kw) { return id.indexOf(kw) !== -1; });
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+    masterGain.gain.linearRampToValueAtTime(isTense ? 0.45 : 1, now + 2.5);
   }
 
   function toggleMute() {

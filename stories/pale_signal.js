@@ -28,6 +28,20 @@ window.STORIES.push({
       desc: "You document what you observe. You resist interpretation. You have seen stranger things than most and you have never flinched from writing them down. You will write this down too."
     }
   ],
+  achievements: [
+    { id: "first_signal",      icon: "🚨", title: "Dark Shore",           desc: "Set foot inside Morrow Light.",                              condition: { type: "scene_visit",  scene: "lighthouse_exterior" } },
+    { id: "captain_victor",    icon: "⚓", title: "Clear Harbour",        desc: "Seal the signal and get everyone out as a Captain.",         condition: { type: "class_ending", charClass: "captain",    ending: "end_sealed" } },
+    { id: "engineer_victor",   icon: "⚙️", title: "Engine Room",          desc: "Destroy the source with grit and machinery as an Engineer.", condition: { type: "class_ending", charClass: "engineer",   ending: "end_sealed" } },
+    { id: "radioman_victor",   icon: "📡", title: "Signal Locked",        desc: "Decode and survive the signal as a Radioman.",               condition: { type: "class_ending", charClass: "radioman",   ending: "end_sealed" } },
+    { id: "naturalist_victor", icon: "🔭", title: "Field Notes",          desc: "Observe, record, and return alive as a Naturalist.",         condition: { type: "class_ending", charClass: "naturalist", ending: "end_sealed" } },
+    { id: "consumed",          icon: "🌊", title: "Below the Threshold",  desc: "Be consumed by the signal.",                                condition: { type: "any_ending",   ending: "end_consumed" } },
+    { id: "broadcast",         icon: "📻", title: "Open Channel",         desc: "Broadcast the signal outward.",                             condition: { type: "any_ending",   ending: "end_broadcast" } },
+    { id: "keeper_found",      icon: "🕯️", title: "Keeper's Fate",        desc: "Discover what happened to Keeper Morrow.",                  condition: { type: "flag_set",     flag: "found_keeper" } },
+    { id: "journal_read",      icon: "📓", title: "Descent in Ink",       desc: "Read the keeper's journal entries.",                        condition: { type: "flag_set",     flag: "has_journal" } },
+    { id: "cave_reached",      icon: "🌀", title: "The Source",           desc: "Descend to the origin of the signal.",                      condition: { type: "flag_set",     flag: "cave_reached" } },
+    { id: "engine_running",    icon: "⚡", title: "Turning Again",        desc: "Restore the lighthouse engine to operation.",               condition: { type: "flag_set",     flag: "engine_running" } },
+    { id: "all_endings",       icon: "📜", title: "Full Spectrum",        desc: "Discover all four endings of The Pale Signal.",             condition: { type: "all_endings" } }
+  ],
   story: {
     start: "harbor",
     scenes: {
