@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1 };
+  var state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1, snapshots: [] };
 
   var setupContentEl  = document.getElementById("setup-content");
   var sceneChapterEl  = document.getElementById("scene-chapter");
@@ -447,6 +447,7 @@
     state.charClass = save.charClass;
     state.flags = save.flags || {};
     state.history = save.history || [];
+    state.snapshots = [];
     var cls = entry.classes.find(function (c) { return c.id === state.charClass; });
     classBadgeEl.textContent = cls ? cls.name : state.charClass;
     classBadgeEl.className = "class-badge " + state.charClass;
@@ -468,7 +469,7 @@
   function startGame() {
     if (state.story && state.story.id) clearSave(state.story.id, state.slot);
     cancelTypewriter();
-    state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1 };
+    state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1, snapshots: [] };
     if (window.AudioEngine) AudioEngine.stop();
     classBadgeEl.textContent = "";
     classBadgeEl.className = "class-badge";
@@ -622,7 +623,7 @@
     updateHistoryPanel();
 
     var paras = scene.paragraphs || [];
-    var lines = paras.map(function (p) { return typeof p === "function" ? p(state) : p; });
+    var lines = paras.map(function (p) { return typeof p === "function" ? p(state) : p; }).filter(function (l) { return l != null && l !== ""; });
 
     function afterParagraphs() {
       if (scene.isEnding) {
@@ -633,6 +634,18 @@
         saveProgress(id);
         checkAchievements(id);
         renderChoices(scene.choices || [], scene.choicePrompt);
+        if (state.snapshots.length > 0) {
+          var backBtn = document.createElement("button");
+          backBtn.className = "choice-btn back-btn";
+          backBtn.textContent = "← Go Back";
+          backBtn.addEventListener("click", function () {
+            var snap = state.snapshots.pop();
+            state.flags = snap.flags;
+            state.history = snap.history;
+            loadScene(snap.sceneId);
+          });
+          sceneInteractEl.appendChild(backBtn);
+        }
       }
     }
 
@@ -692,6 +705,11 @@
   }
 
   function applyChoice(choice) {
+    state.snapshots.push({
+      sceneId: state.history[state.history.length - 1],
+      flags: Object.assign({}, state.flags),
+      history: state.history.slice(0, -1)
+    });
     if (choice.setsFlag) state.flags[choice.setsFlag] = true;
     loadScene(resolveNext(choice.next));
   }

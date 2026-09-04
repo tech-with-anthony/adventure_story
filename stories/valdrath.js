@@ -255,7 +255,7 @@ window.STORIES.push({
       location: "Valdrath's Keep — Main Approach",
       choicePrompt: "How do you get inside?",
       paragraphs: [
-        "You arrive at the keep's gate in worse shape than you'd like. Your wound has stiffened, and exhaustion pulls at you. The portcullis gapes open above a dark courtyard.",
+        "You arrive at the keep's gate in worse shape than you'd like. Exhaustion pulls at you — and more than exhaustion. The portcullis gapes open above a dark courtyard.",
         "Two skeletal guards stand at the gate. They haven't moved — yet.",
         "You're in no condition for a frontal fight. You need a smarter way in."
       ],
@@ -358,8 +358,16 @@ window.STORIES.push({
       title: "The Postern Door",
       location: "Valdrath's Keep — East Wall",
       paragraphs: [
-        "The postern door is set deep into the east wall, half-hidden behind a growth of dead ivy. The iron lock is old but functional.",
-        "The key turns smoothly. The door swings inward without a sound — the hinges were oiled recently, which is unsettling.",
+        function (s) {
+          if (s.flags.knows_wards) {
+            return "The drain grate drops you into a low stone channel beneath the east wall. You pull yourself through in the dark, the stone slick and close, following the sound of air moving until the channel widens into a passage.";
+          }
+          return "The postern door is set deep into the east wall, half-hidden behind a growth of dead ivy. The iron lock is old but functional.";
+        },
+        function (s) {
+          if (s.flags.knows_wards) return null;
+          return "The key turns smoothly. The door swings inward without a sound — the hinges were oiled recently, which is unsettling.";
+        },
         "You step into a stone passage that smells of rot and cold earth. Somewhere ahead, a faint green light flickers.",
         function (s) {
           switch (s.charClass) {
@@ -1299,13 +1307,18 @@ window.STORIES.push({
       title: "Finding the Weakness",
       location: "Valdrath's Keep — Malachar's Chamber",
       paragraphs: [
-        "You know what the wight told you: where the binding is anchored. Not the throne, not the phylactery — the line of power that runs between them, visible to the right kind of attention.",
+        function (s) {
+          if (s.charClass === "rogue") {
+            return "You know what the wight showed you — the moment it stepped aside and let you through, the geometry of the room made sense. Not the throne, not the phylactery alone — the line of power running between them, the place where the chain is thinnest.";
+          }
+          return "You know what the wight told you: where the binding is anchored. Not the throne, not the phylactery — the line of power that runs between them, visible to the right kind of attention.";
+        },
         "You don't fight Malachar. You move around him, forcing him to turn, keeping him reactive while you trace that line of power to its narrowest point — a place where the binding is thinnest, where the chain linking his soul to the phylactery is exposed.",
         function (s) {
           switch (s.charClass) {
             case "fighter": return "There — an overextension in his guard, the same gap you'd exploit in a sparring match, except it runs through the air itself and tastes of iron filings. You've read that gap a thousand times. You close on it.";
             case "wizard":  return "The lattice of his binding has a flaw in the fourth anchoring layer — not a mistake, exactly, but a compromise made under duress when he laid the original working. A knot tied too tight in one direction, which means it is too loose in another. You mark it.";
-            case "rogue":   return "Every lock has a shear point — the place where the mechanism is thinnest, where one precise force in the right direction makes the whole thing give. You found it in the wight's instructions. You find it again now with your eyes.";
+            case "rogue":   return "Every lock has a shear point — the place where the mechanism is thinnest, where one precise force in the right direction makes the whole thing give. You found it in the wight's silence — the specific angle of its attention when it stepped back told you more than words would have. You find it again now with your eyes.";
             case "cleric":  return "The sacred order does not break cleanly, but it reasserts. Here — a place where the corruption has thinned, where Malachar's will has grown old and brittle, where the light that was here before him has started, without any help, to come back. You put your hand on it.";
             default:        return "";
           }

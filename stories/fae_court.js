@@ -228,7 +228,7 @@ window.STORIES.push({
       title: "Eyes Forward",
       location: "The Twilight Road",
       paragraphs: [
-        "You walk past without slowing. The fae watches you go with what might be approval.",
+        "You end the exchange without ceremony and walk on. The fae watches you go with what might be approval.",
         "\"Practical,\" they call after you. \"You'll do well here.\"",
         "You do not look back at the man in the old clothes. You cannot afford to carry anything that isn't your sibling home."
       ],
@@ -625,7 +625,7 @@ window.STORIES.push({
       title: "The Name beneath the Title",
       location: "The Archive",
       paragraphs: [
-        "True names are the most jealously guarded fae secrets. You go to the section the librarian grimly points you toward — a small cabinet, locked, which the librarian opens without expression.",
+        "True names are the most jealously guarded fae secrets. The section is a small locked cabinet set into the archive's north wall — the one corner where even the librarian's expression shifts — and it is open now.",
         "Inside, a single folded mica sheet. \"Titles of the Court's Lord, Historical Record.\"",
         "Most of the titles are public. But at the bottom, in handwriting different from the rest — smaller, as if written in haste or in concealment — is a single line in the old language.",
         function(s) {
@@ -820,7 +820,7 @@ window.STORIES.push({
         "You move through the court looking for signs of your sibling. Fae courtiers watch you with polite interest and volunteer nothing.",
         "The court is larger inside than its exterior suggests. Passages lead to rooms that have no corresponding space in the outer plan. Time slips — you lose a few minutes somewhere in a corridor, then find them again in a room that's ahead of where you expected to be.",
         "A passing courtier mentions, without being asked, that the Thornweave's guests are typically housed in comfort in the east wing. They gesture vaguely downward.",
-        "Below the hall. You've had that confirmed twice now."
+        "Below the hall. Now you have a direction."
       ],
       choices: [
         { text: "Find a way down to the east wing.", next: "vault" },
@@ -1206,8 +1206,18 @@ window.STORIES.push({
       location: "The Throne Room",
       choicePrompt: "What do you do with the advantage?",
       paragraphs: [
-        "You have the Thornweave in a position he has not occupied in seven ages: disadvantaged.",
-        "He knows it. You know it. The whole court knows it — you can feel the weight of their attention as if they are collectively holding their breath.",
+        function(s) {
+          if (s.flags.knows_weakness || s.flags.has_true_name || s.flags.has_fae_ally) {
+            return "You have the Thornweave in a position he has not occupied in seven ages: disadvantaged.";
+          }
+          return "You are still standing. That is not nothing. The Thornweave watches you with the particular attention of someone reassessing an obstacle that has not yet fallen.";
+        },
+        function(s) {
+          if (s.flags.knows_weakness || s.flags.has_true_name || s.flags.has_fae_ally) {
+            return "He knows it. You know it. The whole court knows it — you can feel the weight of their attention as if they are collectively holding their breath.";
+          }
+          return null;
+        },
         "Your sibling stands behind you, found and present and afraid and trying not to show it. The Thornweave looks at you across the length of the throne room with the expression of someone calculating odds.",
         "You have the next move."
       ],
@@ -1248,10 +1258,26 @@ window.STORIES.push({
       location: "The Twilight Court — Dissolving",
       isEnding: true,
       paragraphs: [
-        "You tell him what he is afraid of.",
-        "Not as a threat — as a fact. As a gift, even, offered cleanly: \"Every court ends. Every age concludes. You have stolen all this time and you are still here, still afraid, and the ending is still waiting. It has infinite patience. You are the one who has been running.\"",
-        "The Thornweave is very still.",
-        "\"What if you stopped?\" you say. \"What if you simply let the ending come?\"",
+        function(s) {
+          if (s.flags.has_true_name && !s.flags.knows_weakness) {
+            return "You speak his name into the hall — not loudly. A true name is a key; you only have to place it in the lock. Eravel.";
+          }
+          return "You tell him what he is afraid of.";
+        },
+        function(s) {
+          if (s.flags.has_true_name && !s.flags.knows_weakness) {
+            return "The court stops. The Thornweave — Eravel — sits back in his throne, and in sitting back, he begins to diminish. Not painfully. Not dramatically. Simply: correctly. The name binds him to his ending, and the ending takes him at last.";
+          }
+          return "Not as a threat — as a fact. As a gift, even, offered cleanly: \"Every court ends. Every age concludes. You have stolen all this time and you are still here, still afraid, and the ending is still waiting. It has infinite patience. You are the one who has been running.\"";
+        },
+        function(s) {
+          if (s.flags.has_true_name && !s.flags.knows_weakness) return null;
+          return "The Thornweave is very still.";
+        },
+        function(s) {
+          if (s.flags.has_true_name && !s.flags.knows_weakness) return null;
+          return "\"What if you stopped?\" you say. \"What if you simply let the ending come?\"";
+        },
         "The court changes. The air changes. The stolen hours in their bottles and cases begin to glow brighter — not with age, but with release. The decades and afternoons and ordinary Tuesdays begin to move, flowing back toward the veil, returning to the world they were taken from.",
         "The Thornweave — Eravel — sits back in his throne. And something in his face changes — not fear, not defeat, but something that looks almost like relief. The relief of someone who has been standing very straight for a very long time and been given permission to stop.",
         function(s) {
