@@ -1,9 +1,10 @@
-const STATIC_CACHE = 'adventure-stories-v4';
+const STATIC_CACHE = 'adventure-stories-v5';
 const DYNAMIC_CACHE = 'adventure-stories-dynamic-v1';
 
 const STATIC_ASSETS = [
   '/adventure.html',
   '/engine.js',
+  '/audio.js',
   '/catalog.js',
   '/catalog.json',
   '/stories/valdrath.js',

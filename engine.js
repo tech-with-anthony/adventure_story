@@ -180,12 +180,14 @@
     var cls = entry.classes.find(function (c) { return c.id === state.charClass; });
     classBadgeEl.textContent = cls ? cls.name : state.charClass;
     classBadgeEl.className = "class-badge " + state.charClass;
+    if (window.AudioEngine) AudioEngine.setStory(entry.id);
     loadScene(save.sceneId);
   }
 
   function selectStory(entry) {
     state.story = entry;
     setupTitleEl.textContent = entry.title;
+    if (window.AudioEngine) AudioEngine.setStory(entry.id);
     showPage("page-setup");
     showSetupIntro();
   }
@@ -195,6 +197,7 @@
   function startGame() {
     if (state.story && state.story.id) clearSave(state.story.id);
     state = { name: "", charClass: "", flags: {}, history: [], story: null };
+    if (window.AudioEngine) AudioEngine.stop();
     classBadgeEl.textContent = "";
     classBadgeEl.className = "class-badge";
     showLibrary();
@@ -335,6 +338,7 @@
 
     state.history.push(id);
     showPage("page-scene");
+    if (window.AudioEngine) AudioEngine.onSceneLoad(id, scene);
 
     sceneChapterEl.textContent  = scene.chapter  || "";
     sceneTitleEl.textContent    = scene.title     || "";
