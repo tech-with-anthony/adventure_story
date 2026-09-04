@@ -9,6 +9,7 @@ const STATIC_ASSETS = [
   '/catalog.json',
   '/stories/valdrath.js',
   '/stories/fae_court.js',
+  '/stories/pale_signal.js',
   '/icon-192.png',
   '/icon-512.png'
 ];
