@@ -17,5 +17,11 @@ window.STORY_CATALOG = [
     file: "stories/fae_court.js",
     category: "Fae Fantasy",
     difficulty: 2
+  },
+  {
+    id: "pale_signal",
+    file: "stories/pale_signal.js",
+    category: "Cosmic Horror",
+    difficulty: 4
   }
 ];

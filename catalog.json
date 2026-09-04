@@ -1,4 +1,5 @@
 [
   { "id": "valdrath", "file": "https://tech-with-anthony.github.io/adventure_story/stories/valdrath.js", "category": "Dark Fantasy", "difficulty": 3 },
-  { "id": "fae_court", "file": "https://tech-with-anthony.github.io/adventure_story/stories/fae_court.js", "category": "Fae / Fantasy", "difficulty": 2 }
+  { "id": "fae_court", "file": "https://tech-with-anthony.github.io/adventure_story/stories/fae_court.js", "category": "Fae / Fantasy", "difficulty": 2 },
+  { "id": "pale_signal", "file": "https://tech-with-anthony.github.io/adventure_story/stories/pale_signal.js", "category": "Cosmic Horror", "difficulty": 4 }
 ]

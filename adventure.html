@@ -7,40 +7,127 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>Adventure Stories</title>
+<script>(function(){try{var t=localStorage.getItem('adv_theme'),f=localStorage.getItem('adv_fontsize');if(t)document.documentElement.dataset.theme=t;if(f)document.documentElement.dataset.fontsize=f;}catch(e){}}());</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
+  /* ---- CSS CUSTOM PROPERTIES — default: Valdrath dark theme ---- */
   :root {
-    --bg-panel: #16241b;
+    --bg-panel:      #16241b;
     --bg-panel-edge: #24382a;
-    --green: #3e6b48;
-    --green-bright: #6fae74;
-    --gold: #d9b25b;
-    --gold-bright: #f0cf82;
-    --text: #e7e2d4;
-    --text-dim: #b3ac98;
-    --shadow: rgba(0,0,0,0.55);
-    --arcane: #6a4d8a;
+    --panel-end:     #11201a;
+    --card-end:      #0f1c14;
+    --input-bg:      #0d1712;
+    --green:         #3e6b48;
+    --green-dark:    #2c4d34;
+    --green-bright:  #6fae74;
+    --gold:          #d9b25b;
+    --gold-bright:   #f0cf82;
+    --text:          #e7e2d4;
+    --text-dim:      #b3ac98;
+    --shadow:        rgba(0,0,0,0.55);
+    --arcane:        #6a4d8a;
     --arcane-bright: #b08ad4;
+    --neutral:       #4a4a3a;
+    --neutral-bright:#a0a090;
+    --body-bg:
+      radial-gradient(circle at 20% 0%, rgba(62,107,72,0.25), transparent 45%),
+      radial-gradient(circle at 80% 100%, rgba(74,53,38,0.35), transparent 50%),
+      linear-gradient(160deg, #0a110c 0%, #0c140f 50%, #090d0a 100%);
   }
+
+  /* ---- PARCHMENT THEME ---- */
+  html[data-theme="parchment"] {
+    --body-bg: linear-gradient(160deg, #f5eedd 0%, #ede0c4 50%, #e8d4b0 100%);
+    --bg-panel:      #e8d8be;
+    --bg-panel-edge: #c8b090;
+    --panel-end:     #dcc8a0;
+    --card-end:      #d8c09c;
+    --input-bg:      #f0e4cc;
+    --green:         #4a7c52;
+    --green-dark:    #3a6040;
+    --green-bright:  #2a5c34;
+    --gold:          #8a6520;
+    --gold-bright:   #6b4e10;
+    --text:          #2a1e0c;
+    --text-dim:      #6b5a3e;
+    --shadow:        rgba(0,0,0,0.18);
+    --arcane:        #5a3a78;
+    --arcane-bright: #3a2058;
+    --neutral:       #8a7a60;
+    --neutral-bright:#5a4a30;
+  }
+
+  /* ---- VOID THEME ---- */
+  html[data-theme="void"] {
+    --body-bg:
+      radial-gradient(circle at 20% 0%, rgba(26,96,112,0.28), transparent 45%),
+      radial-gradient(circle at 80% 100%, rgba(50,20,80,0.32), transparent 50%),
+      linear-gradient(160deg, #05050e 0%, #080810 50%, #04040c 100%);
+    --bg-panel:      #0c0c1a;
+    --bg-panel-edge: #1a1a30;
+    --panel-end:     #080818;
+    --card-end:      #0a0a18;
+    --input-bg:      #060610;
+    --green:         #1a6070;
+    --green-dark:    #104858;
+    --green-bright:  #30a0b8;
+    --gold:          #604080;
+    --gold-bright:   #a07bc8;
+    --text:          #c8dce8;
+    --text-dim:      #6888a0;
+    --shadow:        rgba(0,0,0,0.72);
+    --arcane:        #502878;
+    --arcane-bright: #9060c0;
+    --neutral:       #283848;
+    --neutral-bright:#5878a0;
+  }
+
+  /* ---- EMBER THEME ---- */
+  html[data-theme="ember"] {
+    --body-bg:
+      radial-gradient(circle at 20% 0%, rgba(160,60,20,0.28), transparent 45%),
+      radial-gradient(circle at 80% 100%, rgba(100,30,10,0.38), transparent 50%),
+      linear-gradient(160deg, #0c0804 0%, #100a04 50%, #0a0602 100%);
+    --bg-panel:      #1c1208;
+    --bg-panel-edge: #382210;
+    --panel-end:     #140e04;
+    --card-end:      #100c02;
+    --input-bg:      #0e0a04;
+    --green:         #6a2810;
+    --green-dark:    #501808;
+    --green-bright:  #b04020;
+    --gold:          #c07818;
+    --gold-bright:   #e8a830;
+    --text:          #e8d8c0;
+    --text-dim:      #a09070;
+    --shadow:        rgba(0,0,0,0.65);
+    --arcane:        #6a3820;
+    --arcane-bright: #c07040;
+    --neutral:       #4a3828;
+    --neutral-bright:#907060;
+  }
+
+  /* ---- FONT SIZE SCALE ---- */
+  html                        { font-size: 19px; }
+  html[data-fontsize="small"]  { font-size: 16px; }
+  html[data-fontsize="medium"] { font-size: 19px; }
+  html[data-fontsize="large"]  { font-size: 22px; }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     min-height: 100vh;
-    background:
-      radial-gradient(circle at 20% 0%, rgba(62,107,72,0.25), transparent 45%),
-      radial-gradient(circle at 80% 100%, rgba(74,53,38,0.35), transparent 50%),
-      linear-gradient(160deg, #0a110c 0%, #0c140f 50%, #090d0a 100%);
+    background: var(--body-bg);
     background-attachment: fixed;
     color: var(--text);
     font-family: 'EB Garamond', Georgia, serif;
-    font-size: 19px;
+    font-size: 1rem;
     line-height: 1.75;
   }
 
-  /* PAGE SYSTEM */
+  /* ---- PAGE SYSTEM ---- */
   .page { display: none; min-height: 100vh; }
   .page.active { display: flex; }
 
@@ -54,14 +141,14 @@
   }
 
   .panel {
-    background: linear-gradient(180deg, var(--bg-panel) 0%, #11201a 100%);
+    background: linear-gradient(180deg, var(--bg-panel) 0%, var(--panel-end) 100%);
     border: 1px solid var(--bg-panel-edge);
     border-radius: 14px;
     padding: clamp(1.25rem, 4vw, 2.25rem);
     box-shadow: 0 18px 40px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.03);
   }
 
-  /* SCENE HEADER */
+  /* ---- SCENE HEADER ---- */
   .scene-header { text-align: center; margin-bottom: 0.85rem; }
   .chapter-label {
     font-family: 'Cinzel', serif;
@@ -80,9 +167,10 @@
     text-shadow: 0 2px 12px rgba(217,178,91,0.25), 0 1px 2px #000;
     letter-spacing: 0.04em;
   }
+  html[data-theme="parchment"] .scene-header h1 { text-shadow: none; }
   .scene-location { font-style: italic; color: var(--text-dim); font-size: 0.95rem; margin-top: 0.3rem; }
 
-  /* CLASS BADGE */
+  /* ---- CLASS BADGE ---- */
   .class-badge-wrap { text-align: center; margin-bottom: 1rem; }
   .class-badge {
     display: inline-block;
@@ -94,13 +182,19 @@
     border-radius: 20px;
     border: 1px solid;
   }
+  /* Valdrath's Keep classes */
   .class-badge.fighter { color: var(--green-bright); border-color: var(--green); }
   .class-badge.wizard  { color: var(--arcane-bright); border-color: var(--arcane); }
-  .class-badge.rogue   { color: var(--text-dim); border-color: #4a4a3a; }
+  .class-badge.rogue   { color: var(--neutral-bright); border-color: var(--neutral); }
   .class-badge.cleric  { color: var(--gold-bright); border-color: var(--gold); }
+  /* Court of Stolen Hours classes */
+  .class-badge.knight     { color: var(--green-bright); border-color: var(--green); }
+  .class-badge.bard       { color: var(--gold-bright); border-color: var(--gold); }
+  .class-badge.witch      { color: var(--arcane-bright); border-color: var(--arcane); }
+  .class-badge.changeling { color: var(--neutral-bright); border-color: var(--neutral); }
 
-  /* STORY TEXT */
-  .story-text { display: flex; flex-direction: column; gap: 1.5rem; }
+  /* ---- STORY TEXT ---- */
+  .story-text { display: flex; flex-direction: column; gap: 1.5rem; cursor: default; }
   .passage {
     margin: 0;
     opacity: 0;
@@ -119,7 +213,7 @@
     .passage { animation: none; opacity: 1; transform: none; }
   }
 
-  /* INTERACTION */
+  /* ---- INTERACTION ---- */
   .interaction {
     margin-top: 1.75rem;
     padding-top: 1.5rem;
@@ -138,7 +232,7 @@
     line-height: 1.35;
   }
 
-  /* BUTTONS */
+  /* ---- BUTTONS ---- */
   .btn-row { display: flex; flex-wrap: wrap; gap: 0.85rem; justify-content: center; }
   button {
     font-family: 'Cinzel', serif;
@@ -146,7 +240,7 @@
     font-size: 1.05rem;
     letter-spacing: 0.04em;
     color: var(--text);
-    background: linear-gradient(180deg, var(--green) 0%, #2c4d34 100%);
+    background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
     border: 1px solid var(--green-bright);
     border-radius: 10px;
     padding: 0.7rem 1.6rem;
@@ -170,18 +264,18 @@
   button.primary:hover:not(:disabled) {
     background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
   }
+  html[data-theme="void"] button.primary { color: var(--text); }
   button:disabled { opacity: 0.45; cursor: not-allowed; }
   button:focus-visible, input[type="text"]:focus-visible {
     outline: 3px solid var(--gold-bright);
     outline-offset: 2px;
   }
 
-  /* STORY CHOICE BUTTONS — stacked column */
+  /* STORY CHOICE BUTTONS */
   .choices-col { flex-direction: column; align-items: stretch; }
   .choices-col button { flex: none; width: 100%; text-align: left; font-size: 0.97rem; }
 
-
-  /* SETUP PAGE */
+  /* ---- SETUP PAGE ---- */
   #page-setup { align-items: center; justify-content: center; }
   #page-setup .page-col { align-items: center; text-align: center; max-width: 580px; }
   #page-setup > .page-col > h1 {
@@ -194,10 +288,11 @@
     letter-spacing: 0.04em;
     margin-bottom: 0.3rem;
   }
+  html[data-theme="parchment"] #page-setup > .page-col > h1 { text-shadow: none; }
   .subtitle { color: var(--green-bright); font-style: italic; font-size: 1.05rem; letter-spacing: 0.03em; margin-bottom: 1.75rem; }
   #setup-box {
     width: 100%;
-    background: linear-gradient(180deg, var(--bg-panel) 0%, #11201a 100%);
+    background: linear-gradient(180deg, var(--bg-panel) 0%, var(--panel-end) 100%);
     border: 1px solid var(--bg-panel-edge);
     border-radius: 14px;
     padding: clamp(1.5rem, 5vw, 2.5rem);
@@ -218,7 +313,7 @@
     font-family: inherit;
     font-size: 1.1rem;
     color: var(--text);
-    background: #0d1712;
+    background: var(--input-bg);
     border: 1px solid var(--green);
     border-radius: 10px;
     padding: 0.75rem 0.95rem;
@@ -226,12 +321,13 @@
     text-align: center;
   }
   input[type="text"]::placeholder { color: #6f7a6c; font-style: italic; }
+  html[data-theme="parchment"] input[type="text"]::placeholder { color: #8a7a68; }
   .error-msg { color: #e89b7d; font-size: 0.95rem; font-style: italic; min-height: 1.2rem; }
 
-  /* CLASS PICKER */
+  /* ---- CLASS PICKER ---- */
   .class-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-top: 1.25rem; }
   .class-card {
-    background: linear-gradient(180deg, var(--bg-panel) 0%, #0f1c14 100%);
+    background: linear-gradient(180deg, var(--bg-panel) 0%, var(--card-end) 100%);
     border: 1px solid var(--bg-panel-edge);
     border-radius: 10px;
     padding: 1.1rem 0.85rem;
@@ -245,29 +341,37 @@
   }
   .class-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--shadow); }
   .class-card:focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 2px; }
+  /* Valdrath classes */
   .class-card.fighter { border-color: var(--green); }
-  .class-card.fighter:hover { border-color: var(--green-bright); }
-  .class-card.wizard  { border-color: var(--arcane); }
-  .class-card.wizard:hover  { border-color: var(--arcane-bright); }
-  .class-card.rogue   { border-color: #4a4a3a; }
-  .class-card.rogue:hover   { border-color: var(--text-dim); }
-  .class-card.cleric  { border-color: var(--gold); }
-  .class-card.cleric:hover  { border-color: var(--gold-bright); }
-  .class-card-name { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em; }
+  .class-card.fighter:hover, .class-card.fighter:focus-visible { border-color: var(--green-bright); }
   .class-card.fighter .class-card-name { color: var(--green-bright); }
+  .class-card.wizard  { border-color: var(--arcane); }
+  .class-card.wizard:hover, .class-card.wizard:focus-visible   { border-color: var(--arcane-bright); }
   .class-card.wizard  .class-card-name { color: var(--arcane-bright); }
-  .class-card.rogue   .class-card-name { color: var(--text-dim); }
+  .class-card.rogue   { border-color: var(--neutral); }
+  .class-card.rogue:hover, .class-card.rogue:focus-visible     { border-color: var(--neutral-bright); }
+  .class-card.rogue   .class-card-name { color: var(--neutral-bright); }
+  .class-card.cleric  { border-color: var(--gold); }
+  .class-card.cleric:hover, .class-card.cleric:focus-visible   { border-color: var(--gold-bright); }
   .class-card.cleric  .class-card-name { color: var(--gold-bright); }
-  .class-card-tag { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
+  /* Court of Stolen Hours classes */
+  .class-card.knight  { border-color: var(--green); }
+  .class-card.knight:hover, .class-card.knight:focus-visible   { border-color: var(--green-bright); }
+  .class-card.knight  .class-card-name { color: var(--green-bright); }
+  .class-card.bard    { border-color: var(--gold); }
+  .class-card.bard:hover, .class-card.bard:focus-visible       { border-color: var(--gold-bright); }
+  .class-card.bard    .class-card-name { color: var(--gold-bright); }
+  .class-card.witch   { border-color: var(--arcane); }
+  .class-card.witch:hover, .class-card.witch:focus-visible     { border-color: var(--arcane-bright); }
+  .class-card.witch   .class-card-name { color: var(--arcane-bright); }
+  .class-card.changeling { border-color: var(--neutral); }
+  .class-card.changeling:hover, .class-card.changeling:focus-visible { border-color: var(--neutral-bright); }
+  .class-card.changeling .class-card-name { color: var(--neutral-bright); }
+  .class-card-name { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.08em; }
+  .class-card-tag  { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); }
   .class-card-desc { font-size: 0.83rem; color: var(--text-dim); font-style: italic; line-height: 1.4; margin-top: 0.2rem; }
 
-  @media (max-width: 480px) {
-    body { font-size: 18px; }
-    .btn-row button { flex: 1 1 100%; }
-    .class-grid { grid-template-columns: 1fr; }
-  }
-
-  /* LIBRARY PAGE */
+  /* ---- LIBRARY PAGE ---- */
   #page-library { align-items: flex-start; }
   .library-col { max-width: 800px; }
 
@@ -282,16 +386,129 @@
     letter-spacing: 0.04em;
     margin-bottom: 0.3rem;
   }
+  html[data-theme="parchment"] .library-title { text-shadow: none; }
 
+  /* Display controls row */
+  .library-controls {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    justify-content: center;
+    margin-top: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .lib-ctrl-group { display: flex; align-items: center; gap: 0.38rem; }
+
+  /* Theme swatches */
+  .swatch {
+    width: 22px;
+    height: 22px;
+    min-height: unset;
+    flex: none;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.12);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .swatch:hover:not(:disabled) {
+    transform: scale(1.18);
+    background-color: inherit !important;
+    box-shadow: none;
+  }
+  .swatch[aria-pressed="true"] { border-color: var(--gold-bright); transform: scale(1.12); }
+  .swatch-valdrath  { background: #16241b !important; }
+  .swatch-parchment { background: #e0c898 !important; border-color: rgba(200,168,112,0.7); }
+  .swatch-void      { background: #0c0c1a !important; }
+  .swatch-ember     { background: #1c1208 !important; }
+
+  /* Font size buttons */
+  .font-btn {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-weight: 700;
+    min-height: unset;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid var(--bg-panel-edge);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .font-btn.sm { font-size: 0.78rem; }
+  .font-btn.md { font-size: 1rem; }
+  .font-btn.lg { font-size: 1.22rem; }
+  .font-btn:hover:not(:disabled) {
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+  .font-btn[aria-pressed="true"] {
+    background: linear-gradient(180deg, var(--gold) 0%, #b88f3c 100%);
+    border-color: var(--gold-bright);
+    color: #2a1f0c;
+  }
+  html[data-theme="void"] .font-btn[aria-pressed="true"] { color: var(--text); }
+  .font-btn[aria-pressed="true"]:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    transform: none;
+    box-shadow: none;
+    color: #2a1f0c;
+  }
+  html[data-theme="void"] .font-btn[aria-pressed="true"]:hover:not(:disabled) { color: var(--text); }
+
+  /* Typewriter toggle */
+  .tw-btn {
+    font-family: 'Cinzel', serif;
+    font-weight: 500;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    min-height: unset;
+    flex: none;
+    padding: 0.28rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--bg-panel-edge);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+  .tw-btn:hover:not(:disabled) {
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+  .tw-btn[aria-pressed="true"] {
+    background: linear-gradient(180deg, var(--gold) 0%, #b88f3c 100%);
+    border-color: var(--gold-bright);
+    color: #2a1f0c;
+  }
+  html[data-theme="void"] .tw-btn[aria-pressed="true"] { color: var(--text); }
+  .tw-btn[aria-pressed="true"]:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    transform: none;
+    box-shadow: none;
+    color: #2a1f0c;
+  }
+  html[data-theme="void"] .tw-btn[aria-pressed="true"]:hover:not(:disabled) { color: var(--text); }
+
+  /* ---- STORY GRID ---- */
   .story-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.25rem;
     width: 100%;
   }
-
   .story-card {
-    background: linear-gradient(180deg, var(--bg-panel) 0%, #0f1c14 100%);
+    background: linear-gradient(180deg, var(--bg-panel) 0%, var(--card-end) 100%);
     border: 1px solid var(--bg-panel-edge);
     border-radius: 14px;
     padding: clamp(1.25rem, 4vw, 1.75rem);
@@ -309,25 +526,6 @@
     transform: translateY(-2px);
     box-shadow: 0 10px 28px var(--shadow);
   }
-
-  .story-card-actions {
-    display: flex;
-    gap: 0.65rem;
-    margin-top: 0.25rem;
-  }
-  .story-card-actions button {
-    flex: 1;
-    font-size: 0.88rem;
-    padding: 0.55rem 1rem;
-    min-height: 42px;
-  }
-  .story-card-endings {
-    font-size: 0.78rem;
-    color: var(--gold);
-    font-style: italic;
-    letter-spacing: 0.02em;
-  }
-
   .story-card-title {
     font-family: 'Cinzel', serif;
     font-weight: 700;
@@ -342,12 +540,67 @@
     font-style: italic;
     line-height: 1.55;
   }
-  .story-card-classes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
+  .story-card-classes { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.25rem; }
+
+  /* Save slot buttons */
+  .slot-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
     margin-top: 0.25rem;
   }
+  .slot-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.55rem 0.5rem;
+    min-height: 52px;
+    gap: 0.12rem;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+  }
+  .slot-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .slot-info { font-size: 0.75rem; letter-spacing: 0.02em; }
+  .slot-btn.slot-empty {
+    background: transparent;
+    border: 1px dashed var(--bg-panel-edge);
+    color: var(--text-dim);
+    font-weight: 400;
+  }
+  .slot-btn.slot-empty .slot-label { color: var(--text-dim); opacity: 0.7; }
+  .slot-btn.slot-empty:hover:not(:disabled) {
+    background: transparent;
+    transform: translateY(-1px);
+    box-shadow: none;
+    border-color: var(--green-bright);
+    color: var(--text);
+  }
+  .slot-btn.slot-filled {
+    background: linear-gradient(180deg, var(--gold) 0%, #b88f3c 100%);
+    border-color: var(--gold-bright);
+    color: #2a1f0c;
+    font-weight: 600;
+  }
+  .slot-btn.slot-filled .slot-label { color: rgba(42,31,12,0.65); }
+  .slot-btn.slot-filled:hover:not(:disabled) {
+    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+  }
+  html[data-theme="void"] .slot-btn.slot-filled { color: var(--text); }
+  html[data-theme="void"] .slot-btn.slot-filled .slot-label { color: rgba(200,220,232,0.65); }
+
+  .story-card-endings {
+    font-size: 0.78rem;
+    color: var(--gold);
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+
+  /* Class chips */
   .story-class-chip {
     font-family: 'Cinzel', serif;
     font-size: 0.65rem;
@@ -357,17 +610,62 @@
     border-radius: 20px;
     border: 1px solid;
   }
+  /* Valdrath */
   .story-class-chip.fighter { color: var(--green-bright); border-color: var(--green); }
   .story-class-chip.wizard  { color: var(--arcane-bright); border-color: var(--arcane); }
-  .story-class-chip.rogue   { color: var(--text-dim); border-color: #4a4a3a; }
+  .story-class-chip.rogue   { color: var(--neutral-bright); border-color: var(--neutral); }
   .story-class-chip.cleric  { color: var(--gold-bright); border-color: var(--gold); }
-  .story-class-chip.unknown { color: var(--text-dim); border-color: #4a4a3a; }
+  /* Fae Court */
+  .story-class-chip.knight     { color: var(--green-bright); border-color: var(--green); }
+  .story-class-chip.bard       { color: var(--gold-bright); border-color: var(--gold); }
+  .story-class-chip.witch      { color: var(--arcane-bright); border-color: var(--arcane); }
+  .story-class-chip.changeling { color: var(--neutral-bright); border-color: var(--neutral); }
+  .story-class-chip.unknown    { color: var(--neutral-bright); border-color: var(--neutral); }
 
-  @media (max-width: 480px) {
-    .story-grid { grid-template-columns: 1fr; }
+  /* ---- HISTORY PANEL ---- */
+  .history-panel {
+    margin-top: 0.85rem;
+    border-top: 1px solid var(--bg-panel-edge);
+    padding-top: 0.6rem;
   }
+  .history-panel[hidden] { display: none; }
+  .history-toggle {
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    box-sizing: border-box;
+    padding: 0.15rem 0;
+  }
+  .history-toggle:focus-visible { outline: 2px solid var(--gold); border-radius: 2px; }
+  .history-chevron { margin-left: 0.5rem; }
+  .history-list {
+    margin-top: 0.45rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  .history-list[hidden] { display: none; }
+  .history-item {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    padding: 0.15rem 0.5rem;
+    border-left: 2px solid transparent;
+    letter-spacing: 0.04em;
+  }
+  .history-item.current { color: var(--gold); border-left-color: var(--gold); }
 
-  /* ---- Mute toggle (fixed, always visible) ---- */
+  /* ---- MUTE TOGGLE (fixed, always visible) ---- */
   #mute-toggle {
     position: fixed;
     bottom: 1.25rem;
@@ -389,9 +687,9 @@
     opacity: 0.75;
     transition: opacity 0.2s;
   }
-  #mute-toggle:hover { opacity: 1; }
+  #mute-toggle:hover { opacity: 1; transform: none; box-shadow: none; background: var(--bg-panel); }
 
-  /* ---- Achievement panel on library cards ---- */
+  /* ---- ACHIEVEMENT PANEL ---- */
   .story-card-achievements {
     border-top: 1px solid var(--bg-panel-edge);
     margin-top: 0.5rem;
@@ -412,25 +710,15 @@
   }
   .achievements-toggle:focus-visible { outline: 2px solid var(--gold); border-radius: 2px; }
   .achievements-chevron { margin-left: 0.5rem; font-style: normal; }
-  .achievements-list {
-    margin-top: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .achievement-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.55rem;
-    font-size: 0.8rem;
-  }
+  .achievements-list { margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  .achievement-item { display: flex; align-items: flex-start; gap: 0.55rem; font-size: 0.8rem; }
   .achievement-item-icon { font-size: 1rem; line-height: 1.3; flex-shrink: 0; }
   .achievement-item.locked .achievement-item-icon { filter: grayscale(1); opacity: 0.35; }
   .achievement-item-title { font-weight: 600; color: var(--text); }
   .achievement-item.locked .achievement-item-title { color: var(--text-dim); }
   .achievement-item-desc { color: var(--text-dim); font-size: 0.75rem; }
 
-  /* ---- Achievement unlock toast ---- */
+  /* ---- ACHIEVEMENT TOAST ---- */
   .achievement-toast {
     position: fixed;
     bottom: 5rem;
@@ -450,10 +738,7 @@
     transition: opacity 0.35s, transform 0.35s;
     pointer-events: none;
   }
-  .achievement-toast.achievement-toast-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  .achievement-toast.achievement-toast-visible { opacity: 1; transform: translateY(0); }
   .achievement-toast-icon { font-size: 1.5rem; flex-shrink: 0; }
   .achievement-toast-label {
     font-size: 0.65rem;
@@ -462,11 +747,14 @@
     color: var(--gold);
     font-family: 'Cinzel', serif;
   }
-  .achievement-toast-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-top: 0.1rem;
+  .achievement-toast-title { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-top: 0.1rem; }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 480px) {
+    .btn-row button { flex: 1 1 100%; }
+    .class-grid { grid-template-columns: 1fr; }
+    .story-grid { grid-template-columns: 1fr; }
+    .library-controls { gap: 0.85rem; }
   }
 </style>
 </head>
@@ -480,6 +768,20 @@
     <header class="library-header">
       <h1 class="library-title">Adventure Stories</h1>
       <p class="subtitle">Choose your tale</p>
+      <div class="library-controls" aria-label="Display settings">
+        <div class="lib-ctrl-group" aria-label="Colour theme">
+          <button class="swatch swatch-valdrath" data-theme-set="valdrath" aria-label="Valdrath theme" aria-pressed="true" title="Valdrath — Dark Forest"></button>
+          <button class="swatch swatch-parchment" data-theme-set="parchment" aria-label="Parchment theme" aria-pressed="false" title="Parchment — Warm Light"></button>
+          <button class="swatch swatch-void" data-theme-set="void" aria-label="Void theme" aria-pressed="false" title="Void — Deep Dark"></button>
+          <button class="swatch swatch-ember" data-theme-set="ember" aria-label="Ember theme" aria-pressed="false" title="Ember — Volcanic"></button>
+        </div>
+        <div class="lib-ctrl-group" aria-label="Text size">
+          <button class="font-btn sm" data-fontsize-set="small" aria-label="Small text" aria-pressed="false" title="Small text">A</button>
+          <button class="font-btn md" data-fontsize-set="medium" aria-label="Medium text" aria-pressed="true" title="Medium text">A</button>
+          <button class="font-btn lg" data-fontsize-set="large" aria-label="Large text" aria-pressed="false" title="Large text">A</button>
+        </div>
+        <button class="tw-btn" id="tw-toggle" aria-label="Typewriter mode" aria-pressed="false" title="Typewriter mode: OFF">✦ Typewriter</button>
+      </div>
     </header>
     <div id="story-grid" class="story-grid" role="list"></div>
   </div>
@@ -510,6 +812,13 @@
     <div class="panel" aria-live="polite">
       <div id="scene-text" class="story-text"></div>
       <div id="scene-interact" class="interaction" hidden></div>
+    </div>
+    <div id="history-panel" class="history-panel" hidden>
+      <button type="button" class="history-toggle" id="history-toggle"
+              aria-expanded="false" aria-controls="history-list">
+        <span>Journey So Far</span><span class="history-chevron">▾</span>
+      </button>
+      <div id="history-list" class="history-list" hidden></div>
     </div>
   </div>
 </section>

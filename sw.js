@@ -1,4 +1,4 @@
-const STATIC_CACHE = 'adventure-stories-v6';
+const STATIC_CACHE = 'adventure-stories-v7';
 const DYNAMIC_CACHE = 'adventure-stories-dynamic-v1';
 
 const STATIC_ASSETS = [
@@ -9,6 +9,7 @@ const STATIC_ASSETS = [
   '/catalog.json',
   '/stories/valdrath.js',
   '/stories/fae_court.js',
+  '/stories/pale_signal.js',
   '/icon-192.png',
   '/icon-512.png'
 ];

@@ -75,7 +75,7 @@ const VALDRATH_TEXT = 'Valdrath’s Keep';
 async function walkValdrath(page) {
   await waitForLibrary(page);
   const valdrath = page.locator('.story-card').filter({ hasText: VALDRATH_TEXT });
-  await valdrath.locator('button.primary').click();
+  await valdrath.locator('.slot-btn').first().click();
 
   await waitForSetup(page);
   await clickPrimary(page);
@@ -124,7 +124,7 @@ async function walkValdrath(page) {
 async function walkFaeCourt(page) {
   await waitForLibrary(page);
   const fae = page.locator('.story-card').filter({ hasText: 'Stolen Hours' });
-  await fae.locator('button.primary').click();
+  await fae.locator('.slot-btn').first().click();
 
   await waitForSetup(page);
   await clickPrimary(page);
@@ -188,7 +188,7 @@ async function walkFaeCourt(page) {
       await waitForLibrary(page);
 
       const card = page.locator('.story-card', { hasText: VALDRATH_TEXT });
-      await card.locator('button.primary').click();
+      await card.locator('.slot-btn').first().click();
       await waitForSetup(page);
       ok('Setup page shown after Begin Adventure', true);
 
@@ -237,7 +237,7 @@ async function walkFaeCourt(page) {
       await waitForLibrary(page);
 
       const card = page.locator('.story-card', { hasText: VALDRATH_TEXT });
-      await card.locator('button.primary').click();
+      await card.locator('.slot-btn').first().click();
       await waitForSetup(page);
       await clickPrimary(page);
       await page.locator('input[type=text]').fill('SaveTest');
@@ -259,7 +259,7 @@ async function walkFaeCourt(page) {
       await waitForLibrary(page);
 
       const continueBtn = page.locator('.story-card', { hasText: VALDRATH_TEXT })
-        .locator('button', { hasText: 'Continue' });
+        .locator('.slot-btn.slot-filled').first();
       ok('Continue button appears after reload', await continueBtn.isVisible());
 
       await continueBtn.click();
