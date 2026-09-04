@@ -274,6 +274,8 @@
   /* STORY CHOICE BUTTONS */
   .choices-col { flex-direction: column; align-items: stretch; }
   .choices-col button { flex: none; width: 100%; text-align: left; font-size: 0.97rem; }
+  .back-btn { opacity: 0.55; font-size: 0.85em; margin-top: 0.75rem; border-style: dashed; width: 100%; text-align: left; }
+  .back-btn:hover, .back-btn:focus { opacity: 1; }
 
   /* ---- SETUP PAGE ---- */
   #page-setup { align-items: center; justify-content: center; }
@@ -878,6 +880,7 @@ window.STORIES.push({
     { id: "consecrated",     icon: "🕯️", title: "Consecrated Ground",  desc: "Restore the chapel altar as a Cleric.",                  condition: { type: "flag_set",     flag: "altar_restored" } },
     { id: "know_weakness",   icon: "📖", title: "Know Thine Enemy",    desc: "Uncover Malachar's weakness through parley or study.",   condition: { type: "flag_set",     flag: "know_weakness" } },
     { id: "quiet_way",       icon: "🗝️", title: "The Quiet Way",       desc: "Find a way into the keep without alerting the guards.",  condition: { type: "flag_set",     flag: "entered_quietly" } },
+    { id: "eternal_bind",    icon: "🔒", title: "Sealed in Stone",     desc: "Find the hidden ending — bind Malachar rather than destroy him.", condition: { type: "any_ending", ending: "end_bound" } },
     { id: "all_endings",     icon: "📜", title: "Historian of Ruin",   desc: "Discover all four endings.",                             condition: { type: "all_endings" } }
   ],
   story: {
@@ -1111,7 +1114,7 @@ window.STORIES.push({
       location: "Valdrath's Keep — Main Approach",
       choicePrompt: "How do you get inside?",
       paragraphs: [
-        "You arrive at the keep's gate in worse shape than you'd like. Your wound has stiffened, and exhaustion pulls at you. The portcullis gapes open above a dark courtyard.",
+        "You arrive at the keep's gate in worse shape than you'd like. Exhaustion pulls at you — and more than exhaustion. The portcullis gapes open above a dark courtyard.",
         "Two skeletal guards stand at the gate. They haven't moved — yet.",
         "You're in no condition for a frontal fight. You need a smarter way in."
       ],
@@ -1214,8 +1217,16 @@ window.STORIES.push({
       title: "The Postern Door",
       location: "Valdrath's Keep — East Wall",
       paragraphs: [
-        "The postern door is set deep into the east wall, half-hidden behind a growth of dead ivy. The iron lock is old but functional.",
-        "The key turns smoothly. The door swings inward without a sound — the hinges were oiled recently, which is unsettling.",
+        function (s) {
+          if (s.flags.knows_wards) {
+            return "The drain grate drops you into a low stone channel beneath the east wall. You pull yourself through in the dark, the stone slick and close, following the sound of air moving until the channel widens into a passage.";
+          }
+          return "The postern door is set deep into the east wall, half-hidden behind a growth of dead ivy. The iron lock is old but functional.";
+        },
+        function (s) {
+          if (s.flags.knows_wards) return null;
+          return "The key turns smoothly. The door swings inward without a sound — the hinges were oiled recently, which is unsettling.";
+        },
         "You step into a stone passage that smells of rot and cold earth. Somewhere ahead, a faint green light flickers.",
         function (s) {
           switch (s.charClass) {
@@ -2083,12 +2094,18 @@ window.STORIES.push({
         "You raise your holy symbol and speak the rite — the full version, not the shortened battlefield prayer. The words are old and they cost something to say correctly.",
         "Malachar raises his hands and the green flames surge. But the rite is not aimed at the fire — it is aimed at the binding itself. At the hundred-year-old chain that holds his soul to this place.",
         function (s) {
+          if (s.flags.has_phylactery && s.flags.altar_restored) {
+            return "The phylactery in your hand goes incandescent — not breaking, but filling. The restored altar and the rite work in concert: not unmaking, but sealing. Malachar's scream is different from what you expected. Not dissolution. Compression.";
+          }
           if (s.flags.altar_restored) {
             return "The chapel above answers. The reconsecrated altar amplifies the rite across the keep's foundations. Malachar screams — a sound that has been waiting a century to happen.";
           }
           return "The rite lands and holds. Malachar convulses, green light fragmenting at the edges of him.";
         },
         function (s) {
+          if (s.flags.has_phylactery && s.flags.altar_restored) {
+            return "The phylactery cools in your hand. When you look down it has changed — the grey stone veined with gold now, its internal light no longer green but white. He is inside it. All of him. And he cannot come out.";
+          }
           if (s.flags.has_phylactery || s.flags.altar_restored) {
             return "The binding breaks. The phylactery dissolves. Malachar comes apart into cold green sparks and is gone.";
           }
@@ -2097,6 +2114,7 @@ window.STORIES.push({
       ],
       choices: [
         { text: "Witness the end.", next: function (s) {
+          if (s.flags.has_phylactery && s.flags.altar_restored) return "end_bound";
           return (s.flags.has_phylactery || s.flags.altar_restored) ? "end_heroic" : "end_partial";
         }}
       ]
@@ -2155,13 +2173,18 @@ window.STORIES.push({
       title: "Finding the Weakness",
       location: "Valdrath's Keep — Malachar's Chamber",
       paragraphs: [
-        "You know what the wight told you: where the binding is anchored. Not the throne, not the phylactery — the line of power that runs between them, visible to the right kind of attention.",
+        function (s) {
+          if (s.charClass === "rogue") {
+            return "You know what the wight showed you — the moment it stepped aside and let you through, the geometry of the room made sense. Not the throne, not the phylactery alone — the line of power running between them, the place where the chain is thinnest.";
+          }
+          return "You know what the wight told you: where the binding is anchored. Not the throne, not the phylactery — the line of power that runs between them, visible to the right kind of attention.";
+        },
         "You don't fight Malachar. You move around him, forcing him to turn, keeping him reactive while you trace that line of power to its narrowest point — a place where the binding is thinnest, where the chain linking his soul to the phylactery is exposed.",
         function (s) {
           switch (s.charClass) {
             case "fighter": return "There — an overextension in his guard, the same gap you'd exploit in a sparring match, except it runs through the air itself and tastes of iron filings. You've read that gap a thousand times. You close on it.";
             case "wizard":  return "The lattice of his binding has a flaw in the fourth anchoring layer — not a mistake, exactly, but a compromise made under duress when he laid the original working. A knot tied too tight in one direction, which means it is too loose in another. You mark it.";
-            case "rogue":   return "Every lock has a shear point — the place where the mechanism is thinnest, where one precise force in the right direction makes the whole thing give. You found it in the wight's instructions. You find it again now with your eyes.";
+            case "rogue":   return "Every lock has a shear point — the place where the mechanism is thinnest, where one precise force in the right direction makes the whole thing give. You found it in the wight's silence — the specific angle of its attention when it stepped back told you more than words would have. You find it again now with your eyes.";
             case "cleric":  return "The sacred order does not break cleanly, but it reasserts. Here — a place where the corruption has thinned, where Malachar's will has grown old and brittle, where the light that was here before him has started, without any help, to come back. You put your hand on it.";
             default:        return "";
           }
@@ -2244,6 +2267,28 @@ window.STORIES.push({
       ]
     },
 
+    "end_bound": {
+      chapter: "The End",
+      title: "Sealed in Stone",
+      location: "Valdrath's Keep — The Long Road South",
+      isEnding: true,
+      paragraphs: [
+        "The phylactery fits in your palm. You carry it out of the keep as the green flames die behind you, one by one, as if someone is walking ahead of you closing each door.",
+        "The undead in the halls do not move. They are already falling — joints seizing, the animation going out of them like heat from cooling stone. Without Malachar's will to hold them they are only what they always were: the dead.",
+        "You walk the keep from dungeon to gate without fighting a single step.",
+        function (s) {
+          return "You bury the phylactery three miles south of the keep, at the old crossroads shrine that predates Thornwall by two centuries. You speak no word over it. You have already said everything that needed saying. " + s.name + " knows what is inside that stone, and knows it will not get out.";
+        },
+        "Lord Harwick stares at the altered stone when you set it on his table. He starts to ask what it is and stops himself. Some part of him already knows, or suspects.",
+        "'Is it over?' he says.",
+        "'For now,' you tell him. 'Keep that stone in your deepest vault. Never touch it.'",
+        "He never does. The keep stands empty, its curse broken. Thornwall sleeps without nightmares, and Malachar's name passes slowly from memory to legend to rumor to silence.",
+        "Inside the stone, the white light does not go out.",
+        "It simply waits.",
+        "But some imprisonments are strong enough that waiting is all there is left to do."
+      ]
+    },
+
     "end_defeat": {
       chapter: "The End",
       title: "Darkness Eternal",
@@ -2293,6 +2338,7 @@ window.STORIES.push({
     { id: "fae_ally",          icon: "🧚", title: "A Friend Among Foes",   desc: "Earn the loyalty of a fae ally.",                              condition: { type: "flag_set",     flag: "has_fae_ally" } },
     { id: "true_name",         icon: "🔮", title: "The Name of Power",      desc: "Learn the Thornweave's true name.",                            condition: { type: "flag_set",     flag: "has_true_name" } },
     { id: "reunion",           icon: "💛", title: "Found You",              desc: "Find your missing sibling within the court.",                  condition: { type: "flag_set",     flag: "sibling_found" } },
+    { id: "court_claim",       icon: "👑", title: "Twilight Sovereign",    desc: "Find the hidden ending — claim the Thornweave's court as a Changeling.", condition: { type: "any_ending", ending: "end_court_claim" } },
     { id: "all_endings",       icon: "📜", title: "Chronicler of Courts",   desc: "Discover all four endings.",                                   condition: { type: "all_endings" } }
   ],
   story: {
@@ -2499,7 +2545,7 @@ window.STORIES.push({
       title: "Eyes Forward",
       location: "The Twilight Road",
       paragraphs: [
-        "You walk past without slowing. The fae watches you go with what might be approval.",
+        "You end the exchange without ceremony and walk on. The fae watches you go with what might be approval.",
         "\"Practical,\" they call after you. \"You'll do well here.\"",
         "You do not look back at the man in the old clothes. You cannot afford to carry anything that isn't your sibling home."
       ],
@@ -2896,7 +2942,7 @@ window.STORIES.push({
       title: "The Name beneath the Title",
       location: "The Archive",
       paragraphs: [
-        "True names are the most jealously guarded fae secrets. You go to the section the librarian grimly points you toward — a small cabinet, locked, which the librarian opens without expression.",
+        "True names are the most jealously guarded fae secrets. The section is a small locked cabinet set into the archive's north wall — the one corner where even the librarian's expression shifts — and it is open now.",
         "Inside, a single folded mica sheet. \"Titles of the Court's Lord, Historical Record.\"",
         "Most of the titles are public. But at the bottom, in handwriting different from the rest — smaller, as if written in haste or in concealment — is a single line in the old language.",
         function(s) {
@@ -3091,7 +3137,7 @@ window.STORIES.push({
         "You move through the court looking for signs of your sibling. Fae courtiers watch you with polite interest and volunteer nothing.",
         "The court is larger inside than its exterior suggests. Passages lead to rooms that have no corresponding space in the outer plan. Time slips — you lose a few minutes somewhere in a corridor, then find them again in a room that's ahead of where you expected to be.",
         "A passing courtier mentions, without being asked, that the Thornweave's guests are typically housed in comfort in the east wing. They gesture vaguely downward.",
-        "Below the hall. You've had that confirmed twice now."
+        "Below the hall. Now you have a direction."
       ],
       choices: [
         { text: "Find a way down to the east wing.", next: "vault" },
@@ -3477,8 +3523,18 @@ window.STORIES.push({
       location: "The Throne Room",
       choicePrompt: "What do you do with the advantage?",
       paragraphs: [
-        "You have the Thornweave in a position he has not occupied in seven ages: disadvantaged.",
-        "He knows it. You know it. The whole court knows it — you can feel the weight of their attention as if they are collectively holding their breath.",
+        function(s) {
+          if (s.flags.knows_weakness || s.flags.has_true_name || s.flags.has_fae_ally) {
+            return "You have the Thornweave in a position he has not occupied in seven ages: disadvantaged.";
+          }
+          return "You are still standing. That is not nothing. The Thornweave watches you with the particular attention of someone reassessing an obstacle that has not yet fallen.";
+        },
+        function(s) {
+          if (s.flags.knows_weakness || s.flags.has_true_name || s.flags.has_fae_ally) {
+            return "He knows it. You know it. The whole court knows it — you can feel the weight of their attention as if they are collectively holding their breath.";
+          }
+          return null;
+        },
         "Your sibling stands behind you, found and present and afraid and trying not to show it. The Thornweave looks at you across the length of the throne room with the expression of someone calculating odds.",
         "You have the next move."
       ],
@@ -3503,6 +3559,12 @@ window.STORIES.push({
           next: "end_partial"
         },
         {
+          text: "Claim the court. You were born for this.",
+          onlyFor: ["changeling"],
+          requiresFlag: "has_true_name",
+          next: "end_court_claim"
+        },
+        {
           text: "Hesitate too long.",
           next: "end_lost"
         }
@@ -3513,16 +3575,61 @@ window.STORIES.push({
        ENDINGS
     ═══════════════════════════════════════════════════════════════ */
 
+    "end_court_claim": {
+      chapter: "Ending — Hidden",
+      title: "Twilight Sovereign",
+      location: "The Throne Room — The Court Holds Its Breath",
+      isEnding: true,
+      paragraphs: [
+        "You speak his name. Not to banish. Not to bind. You speak it as a claim.",
+        "Eravel. Old tongue: he who holds the dusk. The court goes perfectly still.",
+        "The Thornweave rises from his throne — not in anger, you realize, but in recognition. He looks at you the way a dying man looks at his heir. Something in him has always known it would come to this. Something in him has always wanted it to.",
+        "'You cannot,' he says. And then: 'You can.'",
+        function (s) {
+          if (s.flags.has_fae_ally) {
+            return "Your ally steps into sight at the edge of the court — among their own kind at last, steady in the way that only the genuinely comfortable can be. They do not speak. They do not need to. Their presence is a vote.";
+          }
+          return "The court stirs around you. Not in opposition. They have lived under the Thornweave's rule since before your grandparents' grandparents drew breath. Changeless, lightless, waiting. A new sovereign is not a threat. It is something they have not dared to want until this moment.";
+        },
+        "The Thornweave dissolves. Not destroyed — dispersed, returning to the dusk that made him, as all sovereign fae do when their time ends. His power settles over you like a cloak that was always meant for your shoulders.",
+        function (s) {
+          return s.name + " sits in the throne of the Twilight Court. The twilight blood that was always yours to claim has claimed you back.";
+        },
+        "Your sibling crosses the floor and stands at your side. They do not ask if you are alright. They can see that you are different. They reach out and take your hand, and your hand is cooler than it was.",
+        "'You can still come home,' they say.",
+        "'I know,' you tell them. 'That's not the same thing as being able to stay.'",
+        "You let them through the gate. You watch it close.",
+        "The court waits. You were born for this. You were born for exactly this.",
+        "Whether that is a gift or a sentence is a question the Twilight Court has never found it useful to answer."
+      ]
+    },
+
     "end_heroic": {
       chapter: "Ending — Full Victory",
       title: "The Court Unmade",
       location: "The Twilight Court — Dissolving",
       isEnding: true,
       paragraphs: [
-        "You tell him what he is afraid of.",
-        "Not as a threat — as a fact. As a gift, even, offered cleanly: \"Every court ends. Every age concludes. You have stolen all this time and you are still here, still afraid, and the ending is still waiting. It has infinite patience. You are the one who has been running.\"",
-        "The Thornweave is very still.",
-        "\"What if you stopped?\" you say. \"What if you simply let the ending come?\"",
+        function(s) {
+          if (s.flags.has_true_name && !s.flags.knows_weakness) {
+            return "You speak his name into the hall — not loudly. A true name is a key; you only have to place it in the lock. Eravel.";
+          }
+          return "You tell him what he is afraid of.";
+        },
+        function(s) {
+          if (s.flags.has_true_name && !s.flags.knows_weakness) {
+            return "The court stops. The Thornweave — Eravel — sits back in his throne, and in sitting back, he begins to diminish. Not painfully. Not dramatically. Simply: correctly. The name binds him to his ending, and the ending takes him at last.";
+          }
+          return "Not as a threat — as a fact. As a gift, even, offered cleanly: \"Every court ends. Every age concludes. You have stolen all this time and you are still here, still afraid, and the ending is still waiting. It has infinite patience. You are the one who has been running.\"";
+        },
+        function(s) {
+          if (s.flags.has_true_name && !s.flags.knows_weakness) return null;
+          return "The Thornweave is very still.";
+        },
+        function(s) {
+          if (s.flags.has_true_name && !s.flags.knows_weakness) return null;
+          return "\"What if you stopped?\" you say. \"What if you simply let the ending come?\"";
+        },
         "The court changes. The air changes. The stolen hours in their bottles and cases begin to glow brighter — not with age, but with release. The decades and afternoons and ordinary Tuesdays begin to move, flowing back toward the veil, returning to the world they were taken from.",
         "The Thornweave — Eravel — sits back in his throne. And something in his face changes — not fear, not defeat, but something that looks almost like relief. The relief of someone who has been standing very straight for a very long time and been given permission to stop.",
         function(s) {
@@ -3664,6 +3771,21 @@ window.STORIES.push({
       tag:  "Observation & Record",
       desc: "You document what you observe. You resist interpretation. You have seen stranger things than most and you have never flinched from writing them down. You will write this down too."
     }
+  ],
+  achievements: [
+    { id: "first_signal",      icon: "🚨", title: "Dark Shore",           desc: "Set foot inside Morrow Light.",                              condition: { type: "scene_visit",  scene: "lighthouse_exterior" } },
+    { id: "captain_victor",    icon: "⚓", title: "Clear Harbour",        desc: "Seal the signal and get everyone out as a Captain.",         condition: { type: "class_ending", charClass: "captain",    ending: "end_sealed" } },
+    { id: "engineer_victor",   icon: "⚙️", title: "Engine Room",          desc: "Destroy the source with grit and machinery as an Engineer.", condition: { type: "class_ending", charClass: "engineer",   ending: "end_sealed" } },
+    { id: "radioman_victor",   icon: "📡", title: "Signal Locked",        desc: "Decode and survive the signal as a Radioman.",               condition: { type: "class_ending", charClass: "radioman",   ending: "end_sealed" } },
+    { id: "naturalist_victor", icon: "🔭", title: "Field Notes",          desc: "Observe, record, and return alive as a Naturalist.",         condition: { type: "class_ending", charClass: "naturalist", ending: "end_sealed" } },
+    { id: "consumed",          icon: "🌊", title: "Below the Threshold",  desc: "Be consumed by the signal.",                                condition: { type: "any_ending",   ending: "end_consumed" } },
+    { id: "broadcast",         icon: "📻", title: "Open Channel",         desc: "Broadcast the signal outward.",                             condition: { type: "any_ending",   ending: "end_broadcast" } },
+    { id: "keeper_found",      icon: "🕯️", title: "Keeper's Fate",        desc: "Discover what happened to Keeper Morrow.",                  condition: { type: "flag_set",     flag: "found_keeper" } },
+    { id: "journal_read",      icon: "📓", title: "Descent in Ink",       desc: "Read the keeper's journal entries.",                        condition: { type: "flag_set",     flag: "has_journal" } },
+    { id: "cave_reached",      icon: "🌀", title: "The Source",           desc: "Descend to the origin of the signal.",                      condition: { type: "flag_set",     flag: "cave_reached" } },
+    { id: "engine_running",    icon: "⚡", title: "Turning Again",        desc: "Restore the lighthouse engine to operation.",               condition: { type: "flag_set",     flag: "engine_running" } },
+    { id: "first_contact",     icon: "📶", title: "First Contact",        desc: "Find the hidden ending — answer the signal as a Radioman.",  condition: { type: "any_ending", ending: "end_contact" } },
+    { id: "all_endings",       icon: "📜", title: "Full Spectrum",        desc: "Discover all four endings of The Pale Signal.",             condition: { type: "all_endings" } }
   ],
   story: {
     start: "harbor",
@@ -4156,7 +4278,7 @@ window.STORIES.push({
         location: "Dursey Rock — sea cave, deep end",
         paragraphs: [
           "The fissure descends at perhaps forty degrees, wide enough to fit a person if they go sideways. The sound is unmistakable here — not heard with the ears alone but felt in the chest, in the teeth, in the marrow. Forty-seven seconds. Sixteen elements. Then silence for one cycle. Then again.",
-          "And in the silence: a seventeenth element, as you already knew there would be. The pattern has been speaking to whoever is listening. It knows you are here.",
+          "And in the silence: a seventeenth element. The pattern has been speaking to whoever is listening. It knows you are here.",
           "Below, in the fissure, the darkness is not complete. There is a pale luminescence — very faint, blue-white, coming from deeper than your torch can reach."
         ],
         choices: [
@@ -4218,14 +4340,24 @@ window.STORIES.push({
         choicePrompt: "What is your course of action?",
         paragraphs: [
           "There is something 340 fathoms below this rock that has been surveying the surface of the Earth since before humans had a word for the deep. It has noticed that something noticed it. It is now including that something in its survey.",
-          "Two men are in the chamber below: one willingly, one not. Nine people died because a ship ran aground on a rock whose warning light was being used to send a different message entirely.",
-          "The signal continues. Forty-seven seconds. Sixteen elements. Your element, the eighteenth, is in there now."
+          function(s) {
+            return s.flags.found_keeper
+              ? "Two men are in the chamber below: one willingly, one not. Nine people died because a ship ran aground on a rock whose warning light was being used to send a different message entirely."
+              : "Below the rock, in the fissure, something waits. Nine people died because a ship ran aground on a rock whose warning light was being used to send a different message entirely. Whatever is down there was the reason.";
+          },
+          function(s) {
+            if (s.charClass === "radioman" || s.flags.found_keeper) {
+              return "The signal continues. Forty-seven seconds. Sixteen elements. Your element, the eighteenth, is in there now.";
+            }
+            return "The signal continues. Forty-seven seconds. Sixteen elements. It knows you are here now. That much is certain.";
+          }
         ],
         choices: [
           { text: "Destroy the signal source. Whatever it costs.", next: "plan_destroy" },
           { text: "Redirect the signal — broadcast it outward, away from the coast.", next: "plan_broadcast" },
           { text: "Document everything and get out while you can.", next: "plan_document" },
-          { text: "Go back down. You want to understand it better before you decide.", next: "signal_nature" }
+          { text: "Go back down. You want to understand it better before you decide.", next: "signal_nature" },
+          { text: "Transmit a response. Answer it in its own pattern.", onlyFor: ["radioman"], requiresFlag: "found_keeper", next: "end_contact" }
         ]
       },
 
@@ -4426,7 +4558,12 @@ window.STORIES.push({
         location: "Dursey Rock — engine room",
         paragraphs: [
           "The signal horn is on the west face of the lighthouse, angled at the shipping lane. You can't move the horn, but you can add a deflector: sheet metal from the equipment store, bolted at an angle to redirect the output further west and upward.",
-          "The engine is already running. You configure the output, redirect the horn, and set the pattern to transmit on the sixteen-element cycle, timed to the natural period of the source.",
+          function(s) {
+            if (s.flags.engine_running) {
+              return "The engine is already running. You configure the output, redirect the horn, and set the pattern to transmit on the sixteen-element cycle, timed to the natural period of the source.";
+            }
+            return "The boiler is cold, pressure gauge flat at zero. Getting steam up takes twenty minutes and coal you barely have, but without pressure there is no mechanism. When the gauge finally moves, you configure the output, redirect the horn, and set the pattern.";
+          },
           "When you activate it, the lighthouse is speaking to the signal source in its own language, and the conversation is being directed into open water."
         ],
         choices: [
@@ -4524,6 +4661,36 @@ window.STORIES.push({
          ENDINGS
          ═══════════════════════════════════════════ */
 
+      end_contact: {
+        chapter:  "Ending — Hidden",
+        title:    "Answer",
+        location: "Morrow Light — the cave, then the sea",
+        isEnding: true,
+        paragraphs: [
+          "You go back down to the source.",
+          "You carry the portable transceiver from the radio room, a full battery pack, and the transcription of the pattern you spent the last two nights decoding. Forty-seven seconds. Sixteen elements. A geometric survey of something enormous.",
+          "You tap the response in Morse first, then in the signal's own pattern — the geometric sequence, extended by one element. The seventeenth. You make it an answer, not a copy: you confirm receipt, and then you add a question. Where are you from.",
+          "The signal pauses.",
+          "In eighteen years of radio work you have never heard silence like this — not absence of signal, but suspension of it. As if something vast has stopped mid-process to look at you.",
+          "It looks at you for eleven seconds. You count.",
+          "Then it answers.",
+          "The response takes four minutes and twenty seconds. You transcribe it as fast as you can, hand cramping, filling two notebook pages. You understand perhaps a quarter of it. What you understand is: depth-sounding. The survey. It is mapping the geometry of the continental shelf from below. It has been doing this for — you look at the data — a very long time.",
+          "You transmit the coordinates of the Mariana Trench. Deep water. Open ocean. No population centers.",
+          "Another pause. Seven seconds.",
+          "The signal shifts. Not off — it reorients. The pattern continues in a new direction, out toward the open Atlantic, away from the coast, away from shallow rock and the things that live on it.",
+          function (s) {
+            return "Hale surfaces from his trance forty minutes later, shaking and wet and alive. He does not remember anything past the second day in the cave. He asks where Morrow is. You tell him. You help him up the stairs and into the light.";
+          },
+          "You spend the crossing home writing and rewriting the report you will not file. The report you will not file says: contact established, communication successful, reorientation achieved, no hostile intent confirmed.",
+          "The report you do file says: mechanical anomaly, personnel recovered, light operational.",
+          "You keep the notebook in a locked case under your bed for the rest of your life. You don't show it to anyone. You are not certain it would be believed. You are not certain it should be.",
+          "But on quiet nights, long-wave open, you sweep the Atlantic band. And sometimes — not often, not reliably, but sometimes — you hear the pattern.",
+          "Forty-seven seconds. Seventeen elements now.",
+          "You are the seventeenth element.",
+          "You have no idea what that means. You note it. You continue."
+        ]
+      },
+
       end_sealed: {
         chapter:  "Ending — The Sealed Source",
         title:    "Silence",
@@ -4612,6 +4779,7 @@ window.AudioEngine = (function () {
   var timers = [];      // setTimeout IDs for scheduled events
   var muted = false;
   var currentStory = null;
+  var masterGain = null;
 
   /* ---- Restore mute preference ---- */
   try { muted = localStorage.getItem('adv_audio_muted') === '1'; } catch (e) {}
@@ -4680,6 +4848,7 @@ window.AudioEngine = (function () {
     var master = makeGain(c, 0);
     master.connect(c.destination);
     nodes.push(master);
+    masterGain = master;
 
     /* Ramp master in gently */
     master.gain.setValueAtTime(0, c.currentTime);
@@ -4736,6 +4905,7 @@ window.AudioEngine = (function () {
     var master = makeGain(c, 0);
     master.connect(c.destination);
     nodes.push(master);
+    masterGain = master;
 
     master.gain.setValueAtTime(0, c.currentTime);
     master.gain.linearRampToValueAtTime(1, c.currentTime + 5);
@@ -4793,9 +4963,74 @@ window.AudioEngine = (function () {
     timers.push(setTimeout(bellTone, 4000 + Math.random() * 6000));
   }
 
+  /* ================================================================
+     THE PALE SIGNAL — coastal horror ambience
+     Layers: deep ocean drone (breathing LFO) · AM radio static · signal pulses
+     ================================================================ */
+  function startPaleSignal(c) {
+    var master = makeGain(c, 0);
+    master.connect(c.destination);
+    nodes.push(master);
+    masterGain = master;
+
+    master.gain.setValueAtTime(0, c.currentTime);
+    master.gain.linearRampToValueAtTime(1, c.currentTime + 6);
+
+    /* Layer 1: deep ocean drone — two low sines through lowpass, slow LFO "breathing" */
+    var droneFilter = makeFilter(c, 'lowpass', 80);
+    var droneGain   = makeGain(c, 0.07);
+    droneFilter.connect(droneGain);
+    droneGain.connect(master);
+
+    var osc1 = makeOsc(c, 'sine', 28);
+    var osc2 = makeOsc(c, 'sine', 42);
+    [osc1, osc2].forEach(function (o) {
+      o.connect(droneFilter);
+      o.start();
+      nodes.push(o);
+    });
+
+    /* Slow LFO on drone — 0.04Hz, gives a 25-second breath cycle */
+    var lfo     = makeOsc(c, 'sine', 0.04);
+    var lfoGain = makeGain(c, 0.04);
+    lfo.connect(lfoGain);
+    lfoGain.connect(droneGain.gain);
+    lfo.start();
+    nodes.push(lfo);
+
+    /* Layer 2: AM radio static — noise through bandpass at voice frequencies */
+    var staticFilter = makeFilter(c, 'bandpass', 1800, 2.0);
+    var staticGain   = makeGain(c, 0.025);
+    chain(c, [makeNoise(c), staticFilter, staticGain], master);
+
+    /* Layer 3: signal pulses — periodic low sine bursts, the entity's pattern */
+    function signalPulse() {
+      if (!nodes.length) return;
+      var a = c.currentTime;
+      var g = makeGain(c, 0);
+      g.connect(master);
+      nodes.push(g);
+
+      var o = makeOsc(c, 'sine', 47); /* ~47Hz: echoes the story's 47-second cycle */
+      o.connect(g);
+      o.start(a);
+      o.stop(a + 1.8);
+      nodes.push(o);
+
+      g.gain.setValueAtTime(0, a);
+      g.gain.linearRampToValueAtTime(0.055, a + 0.3);
+      g.gain.exponentialRampToValueAtTime(0.0001, a + 1.8);
+
+      var delay = 15000 + Math.random() * 20000;
+      timers.push(setTimeout(signalPulse, delay));
+    }
+    timers.push(setTimeout(signalPulse, 8000 + Math.random() * 10000));
+  }
+
   var STARTERS = {
-    valdrath:  startValdrath,
-    fae_court: startFaeCourt
+    valdrath:    startValdrath,
+    fae_court:   startFaeCourt,
+    pale_signal: startPaleSignal
   };
 
   /* ---- Stop all active audio ---- */
@@ -4820,6 +5055,7 @@ window.AudioEngine = (function () {
     /* Clear the list after the fade */
     var captured = nodes;
     nodes = [];
+    masterGain = null;
     setTimeout(function () {
       captured.forEach(function (n) {
         try { n.disconnect(); } catch (e) {}
@@ -4847,8 +5083,24 @@ window.AudioEngine = (function () {
     currentStory = null;
   }
 
+  var TENSION_KEYWORDS = ['boss', 'confront', 'climax', 'signal_source', 'keeper_fate', 'destroy_climax', 'final_ritual', 'boss_final'];
+
   function onSceneLoad(id, scene) {
-    /* Future: scene-level audio variation (e.g. boss filter shift) */
+    if (!ctx || muted || !masterGain) return;
+    var now = ctx.currentTime;
+
+    if (scene && scene.isEnding) {
+      /* Fade ambient out as the story resolves */
+      masterGain.gain.cancelScheduledValues(now);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+      masterGain.gain.linearRampToValueAtTime(0, now + 4);
+      return;
+    }
+
+    var isTense = TENSION_KEYWORDS.some(function (kw) { return id.indexOf(kw) !== -1; });
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+    masterGain.gain.linearRampToValueAtTime(isTense ? 0.45 : 1, now + 2.5);
   }
 
   function toggleMute() {
@@ -4880,7 +5132,7 @@ window.AudioEngine = (function () {
 (function () {
   "use strict";
 
-  var state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1 };
+  var state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1, snapshots: [] };
 
   var setupContentEl  = document.getElementById("setup-content");
   var sceneChapterEl  = document.getElementById("scene-chapter");
@@ -5326,6 +5578,7 @@ window.AudioEngine = (function () {
     state.charClass = save.charClass;
     state.flags = save.flags || {};
     state.history = save.history || [];
+    state.snapshots = [];
     var cls = entry.classes.find(function (c) { return c.id === state.charClass; });
     classBadgeEl.textContent = cls ? cls.name : state.charClass;
     classBadgeEl.className = "class-badge " + state.charClass;
@@ -5347,7 +5600,7 @@ window.AudioEngine = (function () {
   function startGame() {
     if (state.story && state.story.id) clearSave(state.story.id, state.slot);
     cancelTypewriter();
-    state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1 };
+    state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1, snapshots: [] };
     if (window.AudioEngine) AudioEngine.stop();
     classBadgeEl.textContent = "";
     classBadgeEl.className = "class-badge";
@@ -5501,7 +5754,7 @@ window.AudioEngine = (function () {
     updateHistoryPanel();
 
     var paras = scene.paragraphs || [];
-    var lines = paras.map(function (p) { return typeof p === "function" ? p(state) : p; });
+    var lines = paras.map(function (p) { return typeof p === "function" ? p(state) : p; }).filter(function (l) { return l != null && l !== ""; });
 
     function afterParagraphs() {
       if (scene.isEnding) {
@@ -5512,6 +5765,20 @@ window.AudioEngine = (function () {
         saveProgress(id);
         checkAchievements(id);
         renderChoices(scene.choices || [], scene.choicePrompt);
+        if (state.snapshots.length > 0) {
+          var backBtn = document.createElement("button");
+          backBtn.type = "button";
+          backBtn.className = "choice-btn back-btn";
+          backBtn.textContent = "← Go Back";
+          backBtn.addEventListener("click", function () {
+            var snap = state.snapshots.pop();
+            state.flags = snap.flags;
+            state.history = snap.history;
+            loadScene(snap.sceneId);
+          });
+          sceneInteractEl.hidden = false;
+          sceneInteractEl.appendChild(backBtn);
+        }
       }
     }
 
@@ -5571,6 +5838,11 @@ window.AudioEngine = (function () {
   }
 
   function applyChoice(choice) {
+    state.snapshots.push({
+      sceneId: state.history[state.history.length - 1],
+      flags: Object.assign({}, state.flags),
+      history: state.history.slice(0, -1)
+    });
     if (choice.setsFlag) state.flags[choice.setsFlag] = true;
     loadScene(resolveNext(choice.next));
   }
@@ -5603,5 +5875,6 @@ window.AudioEngine = (function () {
 })();
 
 </script>
+
 </body>
 </html>

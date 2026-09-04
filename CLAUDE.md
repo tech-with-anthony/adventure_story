@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-`adventure_story` is a "Choose Your Own Adventure" interactive story game with DnD-style class mechanics. It is a static browser application (no build step, no server). It currently has three stories — "The Curse of Valdrath's Keep" (dark fantasy, 4 classes), "The Court of Stolen Hours" (fae fantasy, 4 classes), and "The Pale Signal" (cosmic horror, 4 classes) — each with class-mechanical choices, flag-based state, and four distinct endings. New stories can be added to GitHub Pages without an app update via the remote catalog system.
+`adventure_story` is a "Choose Your Own Adventure" interactive story game with DnD-style class mechanics. It is a static browser application (no build step, no server). It currently has three stories — "The Curse of Valdrath's Keep" (dark fantasy, 4 classes), "The Court of Stolen Hours" (fae fantasy, 4 classes), and "The Pale Signal" (cosmic horror, 4 classes) — each with class-mechanical choices, flag-based state, four standard endings, and one hidden secret ending. New stories can be added to GitHub Pages without an app update via the remote catalog system.
 
 ## Current Status (as of last session)
 
@@ -150,6 +150,35 @@ Full class-differentiation pass across the entire story. Goal: every class shoul
   - `pale_signal.js` `broadcast_engineer`: paragraph 2 `function(s)` — `engine_running` flag controls whether the engine is described as already running or cold
 - **Service worker cache bumped to v8 (PR #13)** — ensures all browsers (including Firefox) discard the cached pre-Go-Back `engine.js`
 
+### What was completed (eleventh session)
+
+- **Pale Signal ambient audio (PR #14)** — `startPaleSignal` added to `audio.js`; three-layer procedural soundscape:
+  - Layer 1: deep ocean drone — two sine oscillators at 28Hz and 42Hz through a lowpass filter (80Hz cutoff), with a slow 0.04Hz LFO on gain (25-second "breathing" cycle)
+  - Layer 2: AM radio static — white noise through a bandpass filter at 1800Hz (Q=2.0), gain 0.025; period-appropriate for 1923 shortwave equipment
+  - Layer 3: signal pulses — 47Hz sine bursts (echoing the story's forty-seven second motif), 1.8s duration, every 15–25s; gain envelope: 0.3s ramp-up, exponential decay
+  - `pale_signal: startPaleSignal` wired into the `STARTERS` map alongside valdrath and fae_court
+- **Go-Back button implementation** — the engine changes from PR #12 were committed to the current branch; also confirmed that `null`-filtering of `function(s)` paragraph returns was added to `engine.js` at the same time
+- **Test suite expanded to 27 checks (PR #14)**:
+  - `pale_signal` added to the mock catalog in `setupRoutes`
+  - Check [1] updated to verify all three story cards (≥3 cards, Pale Signal card present)
+  - New [9] Go-Back button test (2 checks: button appears after first choice; click restores previous scene title)
+  - New [10] Pale Signal captain path (1 check: reaches an ending)
+  - Check numbering shifted: old [8] JS errors moved to [11]; all 27 checks pass
+
+### What was completed (twelfth session)
+
+- **Pale Signal achievements** — `stories/pale_signal.js` was missing its `achievements` array entirely. Added 12 achievements: `first_signal` (scene_visit at `lighthouse_exterior`), class_ending for all 4 classes against `end_sealed`, `consumed` and `broadcast` (any_ending), `keeper_found` / `journal_read` / `cave_reached` / `engine_running` (flag_set), `all_endings`, and `first_contact` (for the new secret ending).
+- **Scene-level audio variation (`onSceneLoad`)** — replaced the no-op stub in `audio.js`:
+  - Each story starter now assigns `masterGain = master` so the function has a handle on the active gain node
+  - `stopAll()` now clears `masterGain = null`
+  - `onSceneLoad(id, scene)`: if `scene.isEnding`, fades master to 0 over 4s; if scene ID matches any `TENSION_KEYWORDS` (boss, confront, climax, signal_source, keeper_fate, destroy_climax, final_ritual, boss_final), drops to 0.45× gain over 2.5s; otherwise restores to 1.0 over 2.5s
+- **Secret 5th ending per story**:
+  - `valdrath.js` — "Sealed in Stone" (`end_bound`): Cleric with both `altar_restored` and `has_phylactery` seals Malachar inside the phylactery rather than destroying him. Routed from `boss_cleric`; new boss_cleric prose differentiates the dual-flag case. Achievement: "Sealed in Stone" (`eternal_bind`).
+  - `fae_court.js` — "Twilight Sovereign" (`end_court_claim`): Changeling with `has_true_name` claims the Thornweave's court instead of banishing him. Choice added to `boss_final_choice`; ending scene includes sibling farewell and `has_fae_ally` variant paragraph. Achievement: "Twilight Sovereign" (`court_claim`).
+  - `pale_signal.js` — "Answer" (`end_contact`): Radioman with `found_keeper` transmits a response to the entity in its own geometric pattern, negotiates reorientation to open ocean, and recovers Hale. Choice added to `confrontation_hub`. Achievement: "First Contact" (`first_contact`).
+- **Standalone bundle regenerated** — `adventure_standalone.html` (371 KB) rebuilt to include all of the above: Go-Back button, Pale Signal audio, prose fixes, achievements, secret endings.
+- All 27 Playwright checks pass.
+
 ### What still needs to happen — NEXT SESSION
 
 1. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
@@ -188,7 +217,7 @@ adventure_story/
 │   └── pale_signal.js       # "The Pale Signal" — 53 scenes, 3 acts, 4 endings (cosmic horror)
 ├── story-data.js            # Legacy single-story file (superseded by stories/valdrath.js)
 ├── tests/
-│   └── browser.test.js      # Playwright/Chromium regression tests (23 checks)
+│   └── browser.test.js      # Playwright/Chromium regression tests (27 checks)
 ├── .github/
 │   └── workflows/
 │       └── test.yml         # CI: runs npm test on every push to main

@@ -28,6 +28,21 @@ window.STORIES.push({
       desc: "You document what you observe. You resist interpretation. You have seen stranger things than most and you have never flinched from writing them down. You will write this down too."
     }
   ],
+  achievements: [
+    { id: "first_signal",      icon: "🚨", title: "Dark Shore",           desc: "Set foot inside Morrow Light.",                              condition: { type: "scene_visit",  scene: "lighthouse_exterior" } },
+    { id: "captain_victor",    icon: "⚓", title: "Clear Harbour",        desc: "Seal the signal and get everyone out as a Captain.",         condition: { type: "class_ending", charClass: "captain",    ending: "end_sealed" } },
+    { id: "engineer_victor",   icon: "⚙️", title: "Engine Room",          desc: "Destroy the source with grit and machinery as an Engineer.", condition: { type: "class_ending", charClass: "engineer",   ending: "end_sealed" } },
+    { id: "radioman_victor",   icon: "📡", title: "Signal Locked",        desc: "Decode and survive the signal as a Radioman.",               condition: { type: "class_ending", charClass: "radioman",   ending: "end_sealed" } },
+    { id: "naturalist_victor", icon: "🔭", title: "Field Notes",          desc: "Observe, record, and return alive as a Naturalist.",         condition: { type: "class_ending", charClass: "naturalist", ending: "end_sealed" } },
+    { id: "consumed",          icon: "🌊", title: "Below the Threshold",  desc: "Be consumed by the signal.",                                condition: { type: "any_ending",   ending: "end_consumed" } },
+    { id: "broadcast",         icon: "📻", title: "Open Channel",         desc: "Broadcast the signal outward.",                             condition: { type: "any_ending",   ending: "end_broadcast" } },
+    { id: "keeper_found",      icon: "🕯️", title: "Keeper's Fate",        desc: "Discover what happened to Keeper Morrow.",                  condition: { type: "flag_set",     flag: "found_keeper" } },
+    { id: "journal_read",      icon: "📓", title: "Descent in Ink",       desc: "Read the keeper's journal entries.",                        condition: { type: "flag_set",     flag: "has_journal" } },
+    { id: "cave_reached",      icon: "🌀", title: "The Source",           desc: "Descend to the origin of the signal.",                      condition: { type: "flag_set",     flag: "cave_reached" } },
+    { id: "engine_running",    icon: "⚡", title: "Turning Again",        desc: "Restore the lighthouse engine to operation.",               condition: { type: "flag_set",     flag: "engine_running" } },
+    { id: "first_contact",     icon: "📶", title: "First Contact",        desc: "Find the hidden ending — answer the signal as a Radioman.",  condition: { type: "any_ending", ending: "end_contact" } },
+    { id: "all_endings",       icon: "📜", title: "Full Spectrum",        desc: "Discover all four endings of The Pale Signal.",             condition: { type: "all_endings" } }
+  ],
   story: {
     start: "harbor",
     scenes: {
@@ -597,7 +612,8 @@ window.STORIES.push({
           { text: "Destroy the signal source. Whatever it costs.", next: "plan_destroy" },
           { text: "Redirect the signal — broadcast it outward, away from the coast.", next: "plan_broadcast" },
           { text: "Document everything and get out while you can.", next: "plan_document" },
-          { text: "Go back down. You want to understand it better before you decide.", next: "signal_nature" }
+          { text: "Go back down. You want to understand it better before you decide.", next: "signal_nature" },
+          { text: "Transmit a response. Answer it in its own pattern.", onlyFor: ["radioman"], requiresFlag: "found_keeper", next: "end_contact" }
         ]
       },
 
@@ -900,6 +916,36 @@ window.STORIES.push({
       /* ═══════════════════════════════════════════
          ENDINGS
          ═══════════════════════════════════════════ */
+
+      end_contact: {
+        chapter:  "Ending — Hidden",
+        title:    "Answer",
+        location: "Morrow Light — the cave, then the sea",
+        isEnding: true,
+        paragraphs: [
+          "You go back down to the source.",
+          "You carry the portable transceiver from the radio room, a full battery pack, and the transcription of the pattern you spent the last two nights decoding. Forty-seven seconds. Sixteen elements. A geometric survey of something enormous.",
+          "You tap the response in Morse first, then in the signal's own pattern — the geometric sequence, extended by one element. The seventeenth. You make it an answer, not a copy: you confirm receipt, and then you add a question. Where are you from.",
+          "The signal pauses.",
+          "In eighteen years of radio work you have never heard silence like this — not absence of signal, but suspension of it. As if something vast has stopped mid-process to look at you.",
+          "It looks at you for eleven seconds. You count.",
+          "Then it answers.",
+          "The response takes four minutes and twenty seconds. You transcribe it as fast as you can, hand cramping, filling two notebook pages. You understand perhaps a quarter of it. What you understand is: depth-sounding. The survey. It is mapping the geometry of the continental shelf from below. It has been doing this for — you look at the data — a very long time.",
+          "You transmit the coordinates of the Mariana Trench. Deep water. Open ocean. No population centers.",
+          "Another pause. Seven seconds.",
+          "The signal shifts. Not off — it reorients. The pattern continues in a new direction, out toward the open Atlantic, away from the coast, away from shallow rock and the things that live on it.",
+          function (s) {
+            return "Hale surfaces from his trance forty minutes later, shaking and wet and alive. He does not remember anything past the second day in the cave. He asks where Morrow is. You tell him. You help him up the stairs and into the light.";
+          },
+          "You spend the crossing home writing and rewriting the report you will not file. The report you will not file says: contact established, communication successful, reorientation achieved, no hostile intent confirmed.",
+          "The report you do file says: mechanical anomaly, personnel recovered, light operational.",
+          "You keep the notebook in a locked case under your bed for the rest of your life. You don't show it to anyone. You are not certain it would be believed. You are not certain it should be.",
+          "But on quiet nights, long-wave open, you sweep the Atlantic band. And sometimes — not often, not reliably, but sometimes — you hear the pattern.",
+          "Forty-seven seconds. Seventeen elements now.",
+          "You are the seventeenth element.",
+          "You have no idea what that means. You note it. You continue."
+        ]
+      },
 
       end_sealed: {
         chapter:  "Ending — The Sealed Source",
