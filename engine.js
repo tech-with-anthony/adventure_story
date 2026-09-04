@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var state = { name: "", charClass: "", flags: {}, history: [], story: null };
+  var state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1 };
 
   var setupContentEl  = document.getElementById("setup-content");
   var sceneChapterEl  = document.getElementById("scene-chapter");
@@ -10,43 +10,190 @@
   var classBadgeEl    = document.getElementById("class-badge");
   var sceneTextEl     = document.getElementById("scene-text");
   var sceneInteractEl = document.getElementById("scene-interact");
-  var storyGridEl  = document.getElementById("story-grid");
-  var setupTitleEl = document.getElementById("setup-title");
+  var storyGridEl     = document.getElementById("story-grid");
+  var setupTitleEl    = document.getElementById("setup-title");
+  var historyPanelEl  = document.getElementById("history-panel");
+  var historyListEl   = document.getElementById("history-list");
 
   /* ---- PERSISTENCE ---- */
 
-  function saveKey(id) { return "adv_save_" + id; }
+  function saveKey(id, slot) { return "adv_save_" + id + "_" + (slot || 1); }
   function endsKey(id) { return "adv_ends_" + id; }
 
-  function getSave(id) {
-    try { var r = localStorage.getItem(saveKey(id)); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+  function getSave(id, slot) {
+    try {
+      var r = localStorage.getItem(saveKey(id, slot));
+      // Migrate saves from single-slot format (slot 1 only)
+      if (!r && (slot === 1 || !slot)) r = localStorage.getItem("adv_save_" + id);
+      return r ? JSON.parse(r) : null;
+    } catch(e) { return null; }
   }
+
   function getEndings(id) {
     try { var r = localStorage.getItem(endsKey(id)); return r ? JSON.parse(r) : {}; } catch(e) { return {}; }
   }
+
   function saveProgress(sceneId) {
     if (!state.story || !state.story.id) return;
     try {
-      localStorage.setItem(saveKey(state.story.id), JSON.stringify({
+      localStorage.setItem(saveKey(state.story.id, state.slot), JSON.stringify({
         name: state.name, charClass: state.charClass,
         flags: state.flags, history: state.history, sceneId: sceneId
       }));
     } catch(e) {}
   }
+
   function recordEnding(sceneId, title) {
     if (!state.story || !state.story.id) return;
     try {
       var ends = getEndings(state.story.id);
       ends[sceneId] = title || sceneId;
       localStorage.setItem(endsKey(state.story.id), JSON.stringify(ends));
-      localStorage.removeItem(saveKey(state.story.id));
+      localStorage.removeItem(saveKey(state.story.id, state.slot));
+      localStorage.removeItem("adv_save_" + state.story.id);
     } catch(e) {}
   }
-  function clearSave(id) {
-    try { localStorage.removeItem(saveKey(id)); } catch(e) {}
+
+  function clearSave(id, slot) {
+    try {
+      localStorage.removeItem(saveKey(id, slot));
+      if (slot === 1 || !slot) localStorage.removeItem("adv_save_" + id);
+    } catch(e) {}
   }
+
   function countEndingScenes(scenes) {
     return Object.keys(scenes).filter(function(id) { return scenes[id].isEnding; }).length;
+  }
+
+  /* ---- PREFERENCES ---- */
+
+  function getPref(key, def) {
+    try { var v = localStorage.getItem(key); return v !== null ? v : def; } catch(e) { return def; }
+  }
+  function setPref(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+
+  function applyTheme(t) {
+    t = t || "valdrath";
+    document.documentElement.dataset.theme = t;
+    setPref("adv_theme", t);
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      var colors = { valdrath: "#0a1a0d", parchment: "#c8b090", void: "#06060e", ember: "#120804" };
+      meta.content = colors[t] || "#0a1a0d";
+    }
+    document.querySelectorAll(".swatch[data-theme-set]").forEach(function(s) {
+      var active = s.dataset.themeSet === t;
+      s.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
+  function applyFontSize(s) {
+    s = s || "medium";
+    document.documentElement.dataset.fontsize = s;
+    setPref("adv_fontsize", s);
+    document.querySelectorAll(".font-btn[data-fontsize-set]").forEach(function(b) {
+      var active = b.dataset.fontsizeSet === s;
+      b.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
+  function getTypewriter() { return getPref("adv_typewriter", "off") === "on"; }
+
+  function updateTwBtn() {
+    var btn = document.getElementById("tw-toggle");
+    if (!btn) return;
+    var on = getTypewriter();
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.title = on ? "Typewriter mode: ON" : "Typewriter mode: OFF";
+  }
+
+  function initPreferences() {
+    document.querySelectorAll(".swatch[data-theme-set]").forEach(function(btn) {
+      btn.addEventListener("click", function() { applyTheme(btn.dataset.themeSet); });
+    });
+    document.querySelectorAll(".font-btn[data-fontsize-set]").forEach(function(btn) {
+      btn.addEventListener("click", function() { applyFontSize(btn.dataset.fontsizeSet); });
+    });
+    var twBtn = document.getElementById("tw-toggle");
+    if (twBtn) {
+      twBtn.addEventListener("click", function() {
+        setPref("adv_typewriter", getTypewriter() ? "off" : "on");
+        updateTwBtn();
+      });
+    }
+    var histToggle = document.getElementById("history-toggle");
+    if (histToggle && historyListEl) {
+      histToggle.addEventListener("click", function() {
+        var open = historyListEl.hidden;
+        historyListEl.hidden = !open;
+        histToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        var chev = histToggle.querySelector(".history-chevron");
+        if (chev) chev.textContent = open ? "▴" : "▾";
+      });
+    }
+    applyTheme(getPref("adv_theme", "valdrath"));
+    applyFontSize(getPref("adv_fontsize", "medium"));
+    updateTwBtn();
+  }
+
+  /* ---- TYPEWRITER ---- */
+
+  var twTimer = null;
+
+  function cancelTypewriter() {
+    if (twTimer) { clearTimeout(twTimer); twTimer = null; }
+    sceneTextEl.onclick = null;
+    sceneTextEl.style.cursor = "";
+    sceneTextEl.title = "";
+  }
+
+  function startTypewriter(lines, onDone) {
+    var idx = 0;
+    var skipped = false;
+
+    function flush() {
+      cancelTypewriter();
+      while (idx < lines.length) { addP(sceneTextEl, lines[idx]); idx++; }
+      onDone();
+    }
+
+    sceneTextEl.onclick = function() { skipped = true; flush(); };
+    sceneTextEl.style.cursor = "pointer";
+    sceneTextEl.title = "Click to skip";
+
+    function tick() {
+      if (skipped) return;
+      if (idx >= lines.length) {
+        cancelTypewriter();
+        onDone();
+        return;
+      }
+      addP(sceneTextEl, lines[idx]);
+      idx++;
+      twTimer = setTimeout(tick, 850);
+    }
+    tick();
+  }
+
+  /* ---- HISTORY PANEL ---- */
+
+  function updateHistoryPanel() {
+    if (!historyPanelEl || !historyListEl) return;
+    if (!state.history || state.history.length <= 1) {
+      historyPanelEl.hidden = true;
+      return;
+    }
+    historyPanelEl.hidden = false;
+    historyListEl.innerHTML = "";
+    var scenes = state.story && state.story.story ? state.story.story.scenes : {};
+    var slice = state.history.slice(-12);
+    slice.forEach(function(sceneId, i) {
+      var scene = scenes[sceneId];
+      var item = document.createElement("div");
+      item.className = "history-item" + (i === slice.length - 1 ? " current" : "");
+      item.textContent = (scene && scene.title) ? scene.title : sceneId;
+      historyListEl.appendChild(item);
+    });
   }
 
   /* ---- ACHIEVEMENTS ---- */
@@ -118,7 +265,7 @@
     });
   }
 
-  /* ---- DOM UTILITIES (same patterns as original) ---- */
+  /* ---- DOM UTILITIES ---- */
 
   function showPage(id) {
     document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
@@ -192,33 +339,41 @@
       card.appendChild(blurbEl);
       card.appendChild(chipsEl);
 
-      var actionsEl = document.createElement("div");
-      actionsEl.className = "story-card-actions";
+      // Two save slots
+      var slotRow = document.createElement("div");
+      slotRow.className = "slot-row";
+      [1, 2].forEach(function(slot) {
+        var save = entry.id ? getSave(entry.id, slot) : null;
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "slot-btn " + (save ? "slot-filled" : "slot-empty");
 
-      var save = entry.id ? getSave(entry.id) : null;
-      if (save) {
-        var contBtn = document.createElement("button");
-        contBtn.type = "button";
-        contBtn.className = "primary";
-        contBtn.textContent = "Continue";
-        contBtn.addEventListener("click", function () { resumeStory(entry, save); });
-        actionsEl.appendChild(contBtn);
+        var labelEl = document.createElement("span");
+        labelEl.className = "slot-label";
+        labelEl.textContent = "Slot " + (slot === 1 ? "I" : "II");
 
-        var newBtn = document.createElement("button");
-        newBtn.type = "button";
-        newBtn.textContent = "New Game";
-        newBtn.addEventListener("click", function () { selectStory(entry); });
-        actionsEl.appendChild(newBtn);
-      } else {
-        var playBtn = document.createElement("button");
-        playBtn.type = "button";
-        playBtn.className = "primary";
-        playBtn.textContent = "Begin Adventure";
-        playBtn.addEventListener("click", function () { selectStory(entry); });
-        actionsEl.appendChild(playBtn);
-      }
+        var infoEl = document.createElement("span");
+        infoEl.className = "slot-info";
 
-      card.appendChild(actionsEl);
+        if (save) {
+          btn.setAttribute("aria-label", "Slot " + slot + ": continue as " + save.name + " the " + save.charClass);
+          infoEl.textContent = save.name + " · " + save.charClass;
+          btn.addEventListener("click", (function(e, sv, sl) {
+            return function() { resumeStory(e, sv, sl); };
+          })(entry, save, slot));
+        } else {
+          btn.setAttribute("aria-label", "Slot " + slot + ": new game");
+          infoEl.textContent = "— new game —";
+          btn.addEventListener("click", (function(e, sl) {
+            return function() { selectStory(e, sl); };
+          })(entry, slot));
+        }
+
+        btn.appendChild(labelEl);
+        btn.appendChild(infoEl);
+        slotRow.appendChild(btn);
+      });
+      card.appendChild(slotRow);
 
       if (entry.id) {
         var ends = getEndings(entry.id);
@@ -285,9 +440,10 @@
     if (firstBtn) firstBtn.focus();
   }
 
-  function resumeStory(entry, save) {
+  function resumeStory(entry, save, slot) {
     state.story = entry;
-    state.name = save.name;
+    state.slot  = slot || 1;
+    state.name  = save.name;
     state.charClass = save.charClass;
     state.flags = save.flags || {};
     state.history = save.history || [];
@@ -298,8 +454,9 @@
     loadScene(save.sceneId);
   }
 
-  function selectStory(entry) {
+  function selectStory(entry, slot) {
     state.story = entry;
+    state.slot  = slot || 1;
     setupTitleEl.textContent = entry.title;
     if (window.AudioEngine) AudioEngine.setStory(entry.id);
     showPage("page-setup");
@@ -309,8 +466,9 @@
   /* ---- SETUP FLOW ---- */
 
   function startGame() {
-    if (state.story && state.story.id) clearSave(state.story.id);
-    state = { name: "", charClass: "", flags: {}, history: [], story: null };
+    if (state.story && state.story.id) clearSave(state.story.id, state.slot);
+    cancelTypewriter();
+    state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1 };
     if (window.AudioEngine) AudioEngine.stop();
     classBadgeEl.textContent = "";
     classBadgeEl.className = "class-badge";
@@ -459,20 +617,30 @@
     sceneLocationEl.textContent = scene.location  || "";
 
     sceneTextEl.innerHTML = "";
+    cancelTypewriter();
+    clearInteract(sceneInteractEl);
+    updateHistoryPanel();
+
     var paras = scene.paragraphs || [];
     var lines = paras.map(function (p) { return typeof p === "function" ? p(state) : p; });
-    addPs(sceneTextEl, lines);
 
-    clearInteract(sceneInteractEl);
+    function afterParagraphs() {
+      if (scene.isEnding) {
+        recordEnding(id, scene.title);
+        checkAchievements(id);
+        renderContinue(sceneInteractEl, "Play Again", startGame);
+      } else {
+        saveProgress(id);
+        checkAchievements(id);
+        renderChoices(scene.choices || [], scene.choicePrompt);
+      }
+    }
 
-    if (scene.isEnding) {
-      recordEnding(id, scene.title);
-      checkAchievements(id);
-      renderContinue(sceneInteractEl, "Play Again", startGame);
+    if (getTypewriter()) {
+      startTypewriter(lines, afterParagraphs);
     } else {
-      saveProgress(id);
-      checkAchievements(id);
-      renderChoices(scene.choices || [], scene.choicePrompt);
+      addPs(sceneTextEl, lines);
+      afterParagraphs();
     }
   }
 
@@ -551,5 +719,6 @@
       .catch(function () { injectStoryScripts(window.STORY_CATALOG || []); });
   }
 
+  initPreferences();
   loadCatalogStories();
 })();

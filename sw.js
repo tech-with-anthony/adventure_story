@@ -1,4 +1,4 @@
-const STATIC_CACHE = 'adventure-stories-v6';
+const STATIC_CACHE = 'adventure-stories-v7';
 const DYNAMIC_CACHE = 'adventure-stories-dynamic-v1';
 
 const STATIC_ASSETS = [
