@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-`adventure_story` is a DnD-themed "Choose Your Own Adventure" interactive story game. It is a static browser application (no build step, no server). It currently has two stories — "The Curse of Valdrath's Keep" (dark fantasy, 4 classes) and "The Court of Stolen Hours" (fae fantasy, 4 classes) — each with class-mechanical choices, flag-based state, and four distinct endings. New stories can be added to GitHub Pages without an app update via the remote catalog system.
+`adventure_story` is a "Choose Your Own Adventure" interactive story game with DnD-style class mechanics. It is a static browser application (no build step, no server). It currently has three stories — "The Curse of Valdrath's Keep" (dark fantasy, 4 classes), "The Court of Stolen Hours" (fae fantasy, 4 classes), and "The Pale Signal" (cosmic horror, 4 classes) — each with class-mechanical choices, flag-based state, and four distinct endings. New stories can be added to GitHub Pages without an app update via the remote catalog system.
 
 ## Current Status (as of last session)
 
@@ -110,11 +110,35 @@ Full class-differentiation pass across the entire story. Goal: every class shoul
   - `test_story.js` removed (was used to verify remote catalog; no longer needed)
   - `catalog.json` updated with `fae_court` entry pointing to GitHub Pages URL
 
+### What was completed (eighth session)
+
+- **CI/CD** — `.github/workflows/test.yml` added; Playwright/Chromium test runs on every push to main. `package.json` updated with `playwright` devDependency and `test` script. `tests/browser.test.js` written with 8 test groups (23 checks): library render, setup flow, Valdrath fighter path, save/resume, ending gallery, Fae Court knight path, Play Again reset, no JS errors.
+- **Atmospheric audio** — `audio.js` added (Web Audio API ambient soundscapes, no audio files). Valdrath gets bass drone + wind noise + distant chains; Fae Court gets shimmer oscillators + wind + bell tones. Mute toggle persists in localStorage. All engine calls guarded with `window.AudioEngine &&`. `sw.js` bumped to `v5` + audio.js added to static cache.
+- **Achievement system** — `adv_achievements_<id>` in localStorage. 12 achievements per story (5 ending-based, 4 class-specific, 3 exploration). Collapsible panel on each library card ("3 of 12 achievements"). `achievements.js` defines per-story achievement specs; engine hooks `checkAchievements()` on every `loadScene()` call.
+
+### What was completed (ninth session)
+
+- **Engine & UI upgrades (PR #11)**:
+  - **2 save slots per story** — `adv_save_<id>_1` / `adv_save_<id>_2`; slot buttons (`.slot-btn`) with character name + class + scene count replace the old `button.primary` on library cards; empty slots show "New Game", filled slots show character info + "Delete" button
+  - **Typewriter mode** — paragraph-by-paragraph reveal at 850ms delay; click anywhere to skip to full text; toggle in settings panel persists in localStorage (`adv_typewriter`)
+  - **Journey history panel** — collapsible "Journey So Far" below each scene listing visited scene titles; `state.history` tracks IDs; `historyEl` rendered after each `loadScene`
+  - **Font size toggle** — 3 levels (small/medium/large) via `html[data-fontsize="..."]`; persists in localStorage (`adv_fontsize`)
+  - **4 colour themes** — Valdrath (default dark fantasy), Parchment (sepia), Void (deep space), Ember (warm orange); `html[data-theme="..."]`; persists in localStorage (`adv_theme`)
+  - **Settings panel** — gear icon (⚙) in fixed corner opens a slide-in panel with all four toggles
+  - Tests updated to use `.slot-btn` selectors; all 23 checks pass
+- **Third story: "The Pale Signal"** (`stories/pale_signal.js`, id `pale_signal`)
+  - Cosmic horror: 1923 lighthouse, keeper vanished, anomalous signal from the deep
+  - 4 classes: Captain (Authority & Navigation), Engineer (Mechanics & Grit), Radioman (Signals & Pattern), Naturalist (Observation & Record)
+  - 53 scenes across 3 acts, 4 endings (`end_sealed`, `end_broadcast`, `end_recorded`, `end_consumed`)
+  - Class-exclusive scenes: `radio_intercept` (Radioman), `engine_repair` (Engineer, required for `destroy_engineer` path)
+  - Key flags: `has_journal`, `knows_signal`, `cave_reached`, `found_keeper`, `engine_running`
+  - Registered in `catalog.json` + `catalog.js`; added to `sw.js` static cache (`v7`)
+- **Standalone bundle** — `adventure_standalone.html` regenerated (~361KB) with all three stories + audio inlined
+
 ### What still needs to happen — NEXT SESSION
 
-1. **Cross-browser check** — confirm in Firefox (Chrome was used for all automated testing).
-2. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
-3. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).
+1. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
+2. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).
 
 ---
 
@@ -138,26 +162,33 @@ The only external resource is Google Fonts (Cinzel, EB Garamond) loaded from a C
 ```
 adventure_story/
 ├── adventure.html           # HTML shell + all CSS
-├── adventure_standalone.html# Self-contained single-file bundle (~84KB)
+├── adventure_standalone.html# Self-contained single-file bundle (~361KB, all stories inlined)
 ├── catalog.js               # Bundled story registry (window.STORY_CATALOG) — offline fallback
 ├── catalog.json             # Remote story registry with absolute GitHub Pages URLs
 ├── engine.js                # Game engine: setup, scene rendering, state, persistence, class gates
+├── audio.js                 # Web Audio API ambient soundscapes (no audio files)
 ├── stories/
 │   ├── valdrath.js          # "The Curse of Valdrath's Keep" — 71 scenes, 3 acts, 4 endings
-│   └── fae_court.js         # "The Court of Stolen Hours" — ~68 scenes, 3 acts, 4 endings
+│   ├── fae_court.js         # "The Court of Stolen Hours" — ~68 scenes, 3 acts, 4 endings
+│   └── pale_signal.js       # "The Pale Signal" — 53 scenes, 3 acts, 4 endings (cosmic horror)
 ├── story-data.js            # Legacy single-story file (superseded by stories/valdrath.js)
+├── tests/
+│   └── browser.test.js      # Playwright/Chromium regression tests (23 checks)
+├── .github/
+│   └── workflows/
+│       └── test.yml         # CI: runs npm test on every push to main
 ├── .claude/
 │   └── agents/
 │       ├── fantasy-storyteller.md  # DnD/fantasy interactive fiction specialist
 │       └── content-editor.md       # Grammar and coherence reviewer
 ├── index.html               # Root redirect → adventure.html (for GitHub Pages)
 ├── manifest.json            # PWA manifest
-├── sw.js                    # Service worker (offline cache, v3 + dynamic cache)
+├── sw.js                    # Service worker (offline cache, v7 + dynamic cache)
 ├── icon-1024.png            # App icon source
 ├── icon-512.png             # PWA icon (512×512)
 ├── icon-192.png             # PWA icon (192×192)
 ├── capacitor.config.json    # Capacitor Android config
-├── package.json             # npm scripts for Capacitor sync
+├── package.json             # npm scripts + playwright devDependency
 ├── android/                 # Capacitor Android project
 ├── CLAUDE.md                # This file
 └── README.md                # Project description with live URL
@@ -166,6 +197,7 @@ adventure_story/
 `adventure.html` loads the scripts in dependency order:
 ```html
 <script src="catalog.js"></script>   <!-- defines window.STORY_CATALOG -->
+<script src="audio.js"></script>     <!-- defines window.AudioEngine -->
 <script src="engine.js"></script>    <!-- starts the game, loads stories from catalog -->
 ```
 
@@ -183,13 +215,18 @@ Three `<section>` elements; only one is visible at a time via `.page.active`:
 
 CSS highlights:
 - CSS custom properties on `:root` control the dark-fantasy color scheme (`--bg-panel`, `--green`, `--gold`, `--arcane`, etc.)
+- `html[data-theme="valdrath|parchment|void|ember"]` — 4 colour themes; default `valdrath` is dark fantasy
+- `html[data-fontsize="small|medium|large"]` — 3 font size levels
 - `.passage` + `@keyframes rise` handles animated paragraph entry
 - `.class-badge` chips show the player's class throughout the game
 - `.class-card` / `.class-grid` styles the 2×2 class picker in setup
 - `.choices-col` stacks story choice buttons vertically with left-aligned text
 - `.story-card` / `.story-grid` styles the library picker (card is a `<div>`, not `<button>`)
-- `.story-card-actions` — flex row of Continue/New Game or Begin Adventure buttons
+- `.slot-btn` — save-slot buttons on library cards (`.slot-empty` / `.slot-filled`)
+- `.story-card-actions` — flex row of slot buttons
 - `.story-card-endings` — gold italic "N of M endings discovered" line
+- `.history-panel` / `.history-list` — collapsible "Journey So Far" beneath each scene
+- `#settings-panel` — slide-in settings drawer (typewriter, theme, font size toggles)
 - `@media (prefers-reduced-motion)` disables animations
 
 ### Game Engine (`engine.js`)
