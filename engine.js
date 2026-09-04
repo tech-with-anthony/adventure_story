@@ -49,6 +49,75 @@
     return Object.keys(scenes).filter(function(id) { return scenes[id].isEnding; }).length;
   }
 
+  /* ---- ACHIEVEMENTS ---- */
+
+  function achKey(id) { return "adv_ach_" + id; }
+  function getAchievements(id) {
+    try { var r = localStorage.getItem(achKey(id)); return r ? JSON.parse(r) : {}; } catch(e) { return {}; }
+  }
+
+  function showAchievementToast(ach) {
+    var toast = document.createElement("div");
+    toast.className = "achievement-toast";
+    toast.innerHTML =
+      '<span class="achievement-toast-icon">' + (ach.icon || "🏆") + '</span>' +
+      '<div class="achievement-toast-body">' +
+        '<div class="achievement-toast-label">Achievement Unlocked</div>' +
+        '<div class="achievement-toast-title">' + ach.title + '</div>' +
+      '</div>';
+    document.body.appendChild(toast);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { toast.classList.add("achievement-toast-visible"); });
+    });
+    setTimeout(function () {
+      toast.classList.remove("achievement-toast-visible");
+      setTimeout(function () { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 500);
+    }, 3500);
+  }
+
+  function unlockAchievement(storyId, ach) {
+    try {
+      var unlocked = getAchievements(storyId);
+      if (unlocked[ach.id]) return;
+      unlocked[ach.id] = Date.now();
+      localStorage.setItem(achKey(storyId), JSON.stringify(unlocked));
+      showAchievementToast(ach);
+    } catch(e) {}
+  }
+
+  function checkAchievements(sceneId) {
+    if (!state.story || !state.story.achievements) return;
+    var storyId = state.story.id;
+    var scene = state.story.story.scenes[sceneId];
+    var ends = getEndings(storyId);
+    var totalEnds = countEndingScenes(state.story.story.scenes);
+
+    state.story.achievements.forEach(function (ach) {
+      var c = ach.condition;
+      if (!c) return;
+      switch (c.type) {
+        case "scene_visit":
+          if (c.scene === sceneId) unlockAchievement(storyId, ach);
+          break;
+        case "flag_set":
+          if (state.flags[c.flag]) unlockAchievement(storyId, ach);
+          break;
+        case "any_ending":
+          if (scene && scene.isEnding && sceneId === c.ending) unlockAchievement(storyId, ach);
+          break;
+        case "class_ending":
+          if (scene && scene.isEnding && sceneId === c.ending && state.charClass === c.charClass) unlockAchievement(storyId, ach);
+          break;
+        case "class_any_ending":
+          if (scene && scene.isEnding && state.charClass === c.charClass) unlockAchievement(storyId, ach);
+          break;
+        case "all_endings":
+          if (Object.keys(ends).length >= totalEnds) unlockAchievement(storyId, ach);
+          break;
+      }
+    });
+  }
+
   /* ---- DOM UTILITIES (same patterns as original) ---- */
 
   function showPage(id) {
@@ -161,6 +230,51 @@
           endsEl.textContent = endCount + " of " + totalEnds + " endings discovered";
           card.appendChild(endsEl);
         }
+      }
+
+      if (entry.id && entry.achievements && entry.achievements.length) {
+        var unlocked = getAchievements(entry.id);
+        var unlockedCount = Object.keys(unlocked).length;
+        var total = entry.achievements.length;
+
+        var achSection = document.createElement("div");
+        achSection.className = "story-card-achievements";
+
+        var achToggle = document.createElement("button");
+        achToggle.type = "button";
+        achToggle.className = "achievements-toggle";
+        achToggle.setAttribute("aria-expanded", "false");
+        achToggle.innerHTML =
+          '<span class="achievements-count">' + unlockedCount + ' of ' + total + ' achievements</span>' +
+          '<span class="achievements-chevron">▾</span>';
+
+        var achList = document.createElement("div");
+        achList.className = "achievements-list";
+        achList.hidden = true;
+
+        entry.achievements.forEach(function (ach) {
+          var isUnlocked = !!unlocked[ach.id];
+          var item = document.createElement("div");
+          item.className = "achievement-item" + (isUnlocked ? " unlocked" : " locked");
+          item.innerHTML =
+            '<span class="achievement-item-icon">' + (ach.icon || "🏆") + '</span>' +
+            '<div class="achievement-item-text">' +
+              '<div class="achievement-item-title">' + ach.title + '</div>' +
+              '<div class="achievement-item-desc">' + (isUnlocked ? ach.desc : "Keep playing to unlock") + '</div>' +
+            '</div>';
+          achList.appendChild(item);
+        });
+
+        achToggle.addEventListener("click", function () {
+          var open = achList.hidden;
+          achList.hidden = !open;
+          achToggle.setAttribute("aria-expanded", open ? "true" : "false");
+          achToggle.querySelector(".achievements-chevron").textContent = open ? "▴" : "▾";
+        });
+
+        achSection.appendChild(achToggle);
+        achSection.appendChild(achList);
+        card.appendChild(achSection);
       }
 
       storyGridEl.appendChild(card);
@@ -353,9 +467,11 @@
 
     if (scene.isEnding) {
       recordEnding(id, scene.title);
+      checkAchievements(id);
       renderContinue(sceneInteractEl, "Play Again", startGame);
     } else {
       saveProgress(id);
+      checkAchievements(id);
       renderChoices(scene.choices || [], scene.choicePrompt);
     }
   }

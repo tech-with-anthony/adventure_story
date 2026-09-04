@@ -10,6 +10,20 @@ window.STORIES.push({
     { id: "witch",      name: "Witch",      tag: "Old Pacts",      desc: "You know fae law and the old bindings. Names have power here." },
     { id: "changeling", name: "Changeling", tag: "Twilight Blood", desc: "Half-fae yourself — you see through glamour and know this world." }
   ],
+  achievements: [
+    { id: "first_steps",       icon: "🌺", title: "Stepped Through",       desc: "Enter the great hall of the Twilight Court.",                  condition: { type: "scene_visit",  scene: "great_hall" } },
+    { id: "knight_victor",     icon: "⚔️", title: "Iron in the Gloaming",  desc: "Rescue your sibling as a Knight.",                             condition: { type: "class_ending", charClass: "knight",     ending: "end_heroic" } },
+    { id: "bard_victor",       icon: "🎵", title: "The Last Verse",         desc: "Rescue your sibling as a Bard.",                               condition: { type: "class_ending", charClass: "bard",       ending: "end_heroic" } },
+    { id: "witch_victor",      icon: "🌿", title: "Old Pact Honored",       desc: "Rescue your sibling as a Witch.",                              condition: { type: "class_ending", charClass: "witch",      ending: "end_heroic" } },
+    { id: "changeling_victor", icon: "🌙", title: "Twilight Reclaimed",     desc: "Rescue your sibling as a Changeling.",                         condition: { type: "class_ending", charClass: "changeling", ending: "end_heroic" } },
+    { id: "gilded_cage",       icon: "🤝", title: "The Gilded Cage",        desc: "Strike a bargain with the Thornweave.",                         condition: { type: "any_ending",   ending: "end_bargain" } },
+    { id: "bittersweet",       icon: "🍂", title: "Bittersweet",            desc: "Find an imperfect freedom.",                                   condition: { type: "any_ending",   ending: "end_partial" } },
+    { id: "lost_to_gloaming",  icon: "🌑", title: "Gone to the Gloaming",  desc: "Lose yourself to the twilight court.",                         condition: { type: "any_ending",   ending: "end_lost" } },
+    { id: "fae_ally",          icon: "🧚", title: "A Friend Among Foes",   desc: "Earn the loyalty of a fae ally.",                              condition: { type: "flag_set",     flag: "has_fae_ally" } },
+    { id: "true_name",         icon: "🔮", title: "The Name of Power",      desc: "Learn the Thornweave's true name.",                            condition: { type: "flag_set",     flag: "has_true_name" } },
+    { id: "reunion",           icon: "💛", title: "Found You",              desc: "Find your missing sibling within the court.",                  condition: { type: "flag_set",     flag: "sibling_found" } },
+    { id: "all_endings",       icon: "📜", title: "Chronicler of Courts",   desc: "Discover all four endings.",                                   condition: { type: "all_endings" } }
+  ],
   story: {
     start: "crossroads",
     scenes: {
