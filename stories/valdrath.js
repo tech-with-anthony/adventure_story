@@ -10,6 +10,20 @@ window.STORIES.push({
     { id: "rogue",   name: "Rogue",   tag: "Shadow & Cunning",  desc: "A creature of shadow. Locks, traps, and going unnoticed are your greatest weapons." },
     { id: "cleric",  name: "Cleric",  tag: "Divine Favor",      desc: "Bearer of holy power. Your faith grants healing, light, and dominion over the undead." }
   ],
+  achievements: [
+    { id: "first_steps",     icon: "🏰", title: "Into the Dark",      desc: "Set foot inside Valdrath's Keep.",                        condition: { type: "scene_visit",  scene: "keep_hall" } },
+    { id: "fighter_victor",  icon: "⚔️", title: "Iron Will",           desc: "Defeat Malachar as a Fighter.",                          condition: { type: "class_ending", charClass: "fighter", ending: "end_heroic" } },
+    { id: "wizard_victor",   icon: "🔮", title: "Arcane Triumph",      desc: "Defeat Malachar as a Wizard.",                           condition: { type: "class_ending", charClass: "wizard",  ending: "end_heroic" } },
+    { id: "rogue_victor",    icon: "🗡️", title: "Shadow's Edge",       desc: "Defeat Malachar as a Rogue.",                            condition: { type: "class_ending", charClass: "rogue",   ending: "end_heroic" } },
+    { id: "cleric_victor",   icon: "✨", title: "Sacred Light",        desc: "Defeat Malachar as a Cleric.",                           condition: { type: "class_ending", charClass: "cleric",  ending: "end_heroic" } },
+    { id: "darkness_wins",   icon: "💀", title: "Darkness Prevails",   desc: "Fail to stop the lich. The keep endures.",               condition: { type: "any_ending",   ending: "end_defeat" } },
+    { id: "pyrrhic",         icon: "🩸", title: "A Costly Victory",    desc: "Win — but not without sacrifice.",                       condition: { type: "any_ending",   ending: "end_costly" } },
+    { id: "soul_hunter",     icon: "💎", title: "Soul Hunter",         desc: "Find and claim Malachar's phylactery.",                  condition: { type: "flag_set",     flag: "has_phylactery" } },
+    { id: "consecrated",     icon: "🕯️", title: "Consecrated Ground",  desc: "Restore the chapel altar as a Cleric.",                  condition: { type: "flag_set",     flag: "altar_restored" } },
+    { id: "know_weakness",   icon: "📖", title: "Know Thine Enemy",    desc: "Uncover Malachar's weakness through parley or study.",   condition: { type: "flag_set",     flag: "know_weakness" } },
+    { id: "quiet_way",       icon: "🗝️", title: "The Quiet Way",       desc: "Find a way into the keep without alerting the guards.",  condition: { type: "flag_set",     flag: "entered_quietly" } },
+    { id: "all_endings",     icon: "📜", title: "Historian of Ruin",   desc: "Discover all four endings.",                             condition: { type: "all_endings" } }
+  ],
   story: {
     start: "tavern",
     scenes: {
