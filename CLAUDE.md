@@ -135,6 +135,21 @@ Full class-differentiation pass across the entire story. Goal: every class shoul
   - Registered in `catalog.json` + `catalog.js`; added to `sw.js` static cache (`v7`)
 - **Standalone bundle** — `adventure_standalone.html` regenerated (~361KB) with all three stories + audio inlined
 
+### What was completed (tenth session)
+
+- **Go-Back button (PR #12)** — one-step undo for any choice. Before each `applyChoice`, the engine pushes a snapshot `{sceneId, flags, history}` onto `state.snapshots`. After `renderChoices`, a "← Go Back" button appears (dashed border, reduced opacity) that pops the snapshot and calls `loadScene(snap.sceneId)`. Snapshots are session-only — not saved to localStorage. Cleared on `startGame` and `resumeStory`. `null`-filtering added to paragraph resolution so `function(s)` paragraphs can return `null` to be skipped (used by new conditional paragraphs in fae_court and pale_signal).
+- **Prose consistency fixes (PR #12)** — nine scenes audited and corrected across all three stories:
+  - `valdrath.js` `boss_cunning`: paragraph 1 split into `function(s)` — rogue sees "the wight showed you" (silent gesture); others see "the wight told you"; rogue switch branch updated to reference the wight's silence, not instructions
+  - `fae_court.js` `road_ignore_mortal`: opening verb corrected (player stopped in both arrival paths, not walked past)
+  - `fae_court.js` `sibling_search`: false "confirmed twice" count removed
+  - `fae_court.js` `archive_true_name`: librarian-directed prose rewritten to neutral; works for both normal and forced-access paths
+  - `fae_court.js` `boss_final_choice`: opening paragraph now `function(s)` — players without leverage flags see "still standing, not nothing" instead of the false "disadvantaged" claim
+  - `fae_court.js` `end_heroic`: paragraphs 1–4 conditional — `has_true_name`-only players (no `knows_weakness`) see the banishment-name sequence; `knows_weakness` players see the original endings-speech; `null` returns skip inapplicable lines
+  - `pale_signal.js` `cave_depths`: removed "as you already knew there would be" from seventeenth-element sentence
+  - `pale_signal.js` `confrontation_hub`: paragraph 2 (men in chamber) `function(s)`-gated by `found_keeper`; paragraph 3 (eighteenth element) gated by radioman class or `found_keeper`
+  - `pale_signal.js` `broadcast_engineer`: paragraph 2 `function(s)` — `engine_running` flag controls whether the engine is described as already running or cold
+- **Service worker cache bumped to v8 (PR #13)** — ensures all browsers (including Firefox) discard the cached pre-Go-Back `engine.js`
+
 ### What still needs to happen — NEXT SESSION
 
 1. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).

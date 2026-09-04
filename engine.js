@@ -636,6 +636,7 @@
         renderChoices(scene.choices || [], scene.choicePrompt);
         if (state.snapshots.length > 0) {
           var backBtn = document.createElement("button");
+          backBtn.type = "button";
           backBtn.className = "choice-btn back-btn";
           backBtn.textContent = "← Go Back";
           backBtn.addEventListener("click", function () {
@@ -644,6 +645,7 @@
             state.history = snap.history;
             loadScene(snap.sceneId);
           });
+          sceneInteractEl.hidden = false;
           sceneInteractEl.appendChild(backBtn);
         }
       }
