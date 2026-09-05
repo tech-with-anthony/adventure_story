@@ -450,7 +450,7 @@
         }
       }
 
-      if (entry.id) {
+      if (entry.id && entry.story.scenes.epilogue_start) {
         var ends2 = getEndings(entry.id);
         var totalEnds2 = countEndingScenes(entry.story.scenes);
         if (totalEnds2 > 0 && Object.keys(ends2).length >= totalEnds2) {
@@ -693,6 +693,7 @@
       sceneTextEl.innerHTML = "";
       cancelTypewriter();
       clearInteract(sceneInteractEl);
+      sceneInteractEl.style.pointerEvents = "";
       updateHistoryPanel();
 
       var paras = scene.paragraphs || [];
@@ -740,6 +741,7 @@
 
     if (sceneContentEl && !prefersReducedMotion()) {
       sceneContentEl.classList.add("scene-fade-out");
+      sceneInteractEl.style.pointerEvents = "none";
       setTimeout(renderScene, SCENE_FADE_MS);
     } else {
       if (sceneContentEl) sceneContentEl.classList.remove("scene-fade-out");
