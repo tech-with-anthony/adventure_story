@@ -208,6 +208,19 @@ Full content audit of all three stories against the user request: "Make sure the
   2. `boss_direct`: the Thornweave's diagnostic line ("No iron. No true name. No contest law cited.") was factually wrong for any witch, who cited the Accord to enter the court. Now a `function(s)` — witch sees "The Accord. The archive clause. You know your law. No true name, though." while all other classes see the original line.
 - All 27 Playwright checks pass.
 
+### What was completed (fifteenth session)
+
+- **Story Forge polish** — the authoring tool artifact was upgraded with six new features:
+  - **Scene Graph tab** — pan/zoom canvas (drag + scroll-wheel) showing all scenes as nodes with bezier edges and arrowheads. BFS layout from the start scene assigns each scene a column by depth; orphan/unreachable scenes are placed in a rightmost column and dimmed. Start scene has a gold border and tint; ending scenes are teal; selected scene has a white border. Click any node to jump directly to that scene's editor. Atmospheric dot-grid background.
+  - **Scene search** — filter input above the scene list; matches on scene ID or title
+  - **Scene count badge** — `(N)` count next to the "Scenes" sidebar label
+  - **Reorder scenes** — ↑/↓ buttons appear on row hover; swap adjacent scenes in the array
+  - **Add/remove classes** — `+ Add Class` button in the Classes panel header; × delete on each class card (protected when only one remains)
+  - **Datalist autocomplete** — `<datalist id="scene-ids">` updated on every save; all "Next Scene ID" inputs use `list="scene-ids"` for native browser autocomplete
+  - **Validation badge** — live `✓ Valid` / `N issues` badge in the top bar, recalculated on every change
+  - **Validation in export modal** — before the generated JS, shows either a green "No issues found" block or a red list of errors: missing start scene, unknown start scene, empty scene IDs, duplicate scene IDs, broken next-scene references, and unreachable scenes (BFS from start)
+  - localStorage key bumped to `storyforge_v2`
+
 ### What still needs to happen
 
 1. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
