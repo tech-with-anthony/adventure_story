@@ -23,7 +23,8 @@ window.STORIES.push({
     { id: "true_name",         icon: "🔮", title: "The Name of Power",      desc: "Learn the Thornweave's true name.",                            condition: { type: "flag_set",     flag: "has_true_name" } },
     { id: "reunion",           icon: "💛", title: "Found You",              desc: "Find your missing sibling within the court.",                  condition: { type: "flag_set",     flag: "sibling_found" } },
     { id: "court_claim",       icon: "👑", title: "Twilight Sovereign",    desc: "Find the hidden ending — claim the Thornweave's court as a Changeling.", condition: { type: "any_ending", ending: "end_court_claim" } },
-    { id: "all_endings",       icon: "📜", title: "Chronicler of Courts",   desc: "Discover all four endings.",                                   condition: { type: "all_endings" } }
+    { id: "all_endings",       icon: "📜", title: "Chronicler of Courts",   desc: "Discover all four endings.",                                   condition: { type: "all_endings" } },
+    { id: "ending_freely_given", icon: "🌘", title: "An Ending, Freely Given", desc: "Return to the Twilight Court one last time, having seen it end every way it can.", condition: { type: "scene_visit", scene: "epilogue_end" } }
   ],
   story: {
     start: "crossroads",
@@ -1423,6 +1424,214 @@ window.STORIES.push({
           if (s.charClass === "witch") return "You know precisely what happened. The steps, the choices, the specific moment when the court's weight exceeded what you had prepared for. The memory is complete and in perfect order. What you no longer have is the ground the knowledge is supposed to stand on — the reason why knowing should produce movement. The law is still there. The party to the compact is very far away now. You know. You cannot make the knowing matter.";
           return "The fae half of you is, for the first time in your life, entirely at peace. Not suppressed, not divided — simply home. The court settles around you like a hand that always knew the shape of what it was made to hold. The mortal half grows quiet. Not gone — it does not go. But quieter, farther down, speaking in a voice that sounds like it is coming through a wall you cannot find the door in. You are home. That is, at last, enough.";
         }
+      ]
+    },
+
+    /* ═══════════════════════════════════════════════════════════════
+       EPILOGUE — AFTER EVERY ENDING
+       Unlocked once all 5 endings have been discovered across saves.
+    ═══════════════════════════════════════════════════════════════ */
+
+    "epilogue_start": {
+      chapter: "Epilogue — After Every Ending",
+      title: "The Ring, Long After",
+      location: "Midsummer's Hill — Some Other Dusk",
+      choicePrompt: "How do you cross this time?",
+      paragraphs: [
+        "You have stood on this hill more times than one life should hold room for — waiting for the stones to hum, watching the sky curdle toward that particular shade of violet that belongs to no honest evening. Every time before, something was missing on the other side, and you went to find it. Nothing is missing tonight. You came anyway.",
+        "The stones are exactly as old as they have always been. They know your footsteps by now, whichever feet you arrived on. The hum starts low, almost polite, like a door being cleared of its throat before it opens.",
+        "There is no three-day clock ticking down behind your ribs this time. No sibling's absence pulling at you like a hook set deep and left to work. Just the ring, and the dusk, and the old, patient pull of a place that has never once let go of anyone all the way.",
+        "You crossed once gripping cold iron like a promise. You crossed once singing. You crossed once citing a compact older than any crown. You crossed once simply walking, because the veil already knew your name before you gave it. All of that happened. None of it happened to quite the same person. You hold it anyway, the way a hand holds the memory of every glove it has worn."
+      ],
+      choices: [
+        { text: "Wait for full dusk and cross the way you always have.", next: "epilogue_crossing" },
+        { text: "Don't wait for the stones to finish humming. Walk through early, unbothered.", setsFlag: "epilogue_unhurried", next: "epilogue_crossing" }
+      ]
+    },
+
+    "epilogue_crossing": {
+      chapter: "Epilogue — After Every Ending",
+      title: "The Veil, Unresisting",
+      location: "The Standing Stones",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The shimmer inside the ring parts for you the way it never quite did the first time — not tested, not weighed, simply open, the way a door left permanently ajar stops being a door and becomes a habit of the wall.",
+        function(s) {
+          switch (s.charClass) {
+            case "knight": return "The iron at your wrist is cold and quiet. You don't grip it. There is nothing here tonight asking to be resisted.";
+            case "bard": return "You hum a few bars out of old habit, and the stones hum back, unhurried, the way old friends finish each other's sentences badly and don't mind.";
+            case "witch": return "You don't recite the old formula. The compact already knows your standing. Some rights, once claimed, don't need reclaiming.";
+            case "changeling": return "It doesn't feel like coming home this time. It feels like visiting somewhere you used to live — familiar down to the floorboards, no longer yours to occupy without knocking.";
+            default: return null;
+          }
+        },
+        "On the other side, the sky is still the color of a bruise fading toward grey at its edges, lit by a sun that has not decided which direction to move in. Some things this place will never change, even for someone it has come to know this well.",
+        function(s) {
+          if (s.flags.epilogue_unhurried) return "You crossed before the hum finished. The stones didn't seem to mind. Some doors open for you whether or not you wait to be let in.";
+          return "You crossed at the exact moment the hum reached its peak, the way you always have. There is a kind of respect in doing a thing properly, even when properly no longer matters to anyone but you.";
+        }
+      ],
+      choices: [
+        { text: "Follow the road toward the court, the way you know it now.", next: "epilogue_road" }
+      ]
+    },
+
+    "epilogue_road": {
+      chapter: "Epilogue — After Every Ending",
+      title: "The Road That Already Knows You",
+      location: "The Twilight Road",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The road is the same crushed white stone, ringing softly underfoot, curving away from the direct path for reasons that were never explained and never needed to be. You don't fight the wrongness of the time tonight. You let it happen the way you'd let weather happen.",
+        "Somewhere along this road, in some other telling, a man in decades-old clothes walked in a permanent daze beside a fae who called forgetting a kindness. You do not look for him tonight. Whatever telling he belongs to, that particular ache was never yours to solve twice, and you made your peace with that a long time ago, in whichever life it was that you had to.",
+        "The three-way crossroads comes up out of the mist the way it always does, the tall carved post with its three lying signs — THE COURT, THE COURT, THE COURT — all pointing in directions that cannot all be honest at once.",
+        function(s) {
+          switch (s.charClass) {
+            case "knight": return "You don't hold the iron out to test the roads this time. You already know which one is honest, and knowing, once earned properly, doesn't need earning twice.";
+            case "bard": return "You hum half a note anyway, purely from habit, and smile when it bends exactly the way you remember it bending. Old proof, freely reconfirmed.";
+            case "witch": return "You don't press your thumb to the post to feel out its binding. The compulsion hasn't changed. Neither has the law that reads it, or your right to read the law.";
+            case "changeling": return "You don't need fae-sight to sort the honest road from the hungry one anymore. You've walked all three, in your time, in one telling or another. That's its own kind of knowing, the kind that doesn't fade.";
+            default: return "You look at the three signs a moment longer than you need to. You already know which road is honest. You've known it since the first time you had to work it out the hard way.";
+          }
+        },
+        "You take the center road without ceremony this time. It reaches the court exactly as directly as it always did."
+      ],
+      choices: [
+        { text: "Walk the honest road to the gate.", next: "epilogue_gate" }
+      ]
+    },
+
+    "epilogue_gate": {
+      chapter: "Epilogue — After Every Ending",
+      title: "An Open Arch",
+      location: "The Outer Gate of the Twilight Court",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The Twilight Court rises the way it always has, towers leaning like living things, bridges of woven glass spanning distances too great to be comfortable. The green torches at the gate still burn steady, unmoved by any wind that has ever existed.",
+        "Two guards stand at the arch, tall and still and fae in every particular. Neither one asks you to state your purpose. Neither one asks your name.",
+        "Whichever words got you through the first time — iron held up like a warning, a song offered mid-verse, a clause of the Accord cited word for word, a walk that assumed its own welcome — the gate seems to have stopped keeping score of which one it was.",
+        "The arch is already open when you arrive, which it has never once managed to do entirely on its own before."
+      ],
+      choices: [
+        { text: "Walk through. No test required this time.", next: "epilogue_hall" }
+      ]
+    },
+
+    "epilogue_hall": {
+      chapter: "Epilogue — After Every Ending",
+      title: "The Hall Without a Performance",
+      location: "The Thornweave's Great Hall",
+      choicePrompt: "Where do you go, before the end of this?",
+      paragraphs: [
+        "The great hall's ceiling still keeps its own weather — thin cloud at the apex, chandeliers of captive starlight hanging steady above the black glass dais. Fewer courtiers drift through the space tonight than you remember, or more, depending on which telling is doing the remembering. None of them approach. None of them need to.",
+        "The throne is visible at the far end, the way it always has been. You don't have to go to it yet. There are other rooms in this court that were part of the story before they were ever part of the ending, and you find you'd like to see them once more, on your own terms, with nothing riding on what you find.",
+        "Three ways open from where you stand: the passage toward the garden, the long window-lit hall toward the archive, and the stairs down toward the vault and the rooms below it, where a table once held a cup that never quite finished going cold."
+      ],
+      choices: [
+        { text: "Walk the passage to the garden, to see if the small fae is still tending it.", next: "epilogue_garden" },
+        { text: "Step into the archive, to see what got written down.", next: "epilogue_archive" },
+        { text: "Go below, to the Waiting Rooms, and stand in that room one more time.", next: "epilogue_waiting_room" }
+      ]
+    },
+
+    "epilogue_garden": {
+      chapter: "Epilogue — After Every Ending",
+      title: "The Mended Wing",
+      location: "The Twilight Garden — Deep Growth",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The garden is exactly as wrong and exactly as beautiful as it has always been — flowers the color of nothing you have a name for, the fountain still running upward into its suspended pool, three feet above a basin it has never once bothered to fall back into.",
+        "In the deep growth, between the two trees whose branches grew together into an archway, the small fae is where they have always been. Silver-green, ancient, dressed in something like woven lichen, unbothered by the passage of however much time has actually passed.",
+        "They look up before you've made a sound, the way they always do. In their palm sits the glass bird — its wing fully mended now, the seam gone smooth, no longer a repair in progress.",
+        "\"The wind still carries the three notes, if you were the one who remembered to ask for them,\" the small fae says, without preamble, the way they say everything. \"If you weren't, some other telling of you did. I've stopped keeping accounts of who owes me what. Gardens don't do accounts. Gardens do seasons.\"",
+        "They open their hand. The glass bird lifts on its own, circles the archway once, twice, and does not come back to their palm. \"That,\" the small fae says, watching it go, \"is what mending is for. You don't keep the thing. You let it be finished somewhere you can't see.\"",
+        "You don't ask them for anything this time. There is nothing left in this garden you came here to take."
+      ],
+      choices: [
+        { text: "Thank them, and mean it, before you go.", next: "epilogue_throne" }
+      ]
+    },
+
+    "epilogue_archive": {
+      chapter: "Epilogue — After Every Ending",
+      title: "The Record That Doesn't Need Updating",
+      location: "The Archive of the Twilight Court",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The archive is as long and as strange as it ever was, shelves of contracts written on skin, songs trapped in crystal vials, oaths pressed between sheets of mica. The librarian sits at the same desk, so old and so still you take a moment, the way you always do, to be sure they are not decorative. Then they blink.",
+        "\"Research?\" they ask, exactly as they did the first time.",
+        "\"Not this time,\" you say.",
+        "\"Obviously,\" the librarian says, in the same tone as before, as if the word obviously has never once changed meaning in all the ages they've used it. \"No one ever finishes with an archive. They just stop asking for a while.\"",
+        "The small locked cabinet on the north wall is closed tonight. Whether that's because a name was spoken once and spent and can no longer do harm to anyone, or because the name is still folded there on its mica sheet, waiting for some other telling's need — the librarian doesn't say, and you don't ask. Some things are better left filed than resolved.",
+        "You run one hand along a shelf you never had reason to search before, out of nothing more than curiosity, and let it go at that."
+      ],
+      choices: [
+        { text: "Leave the archive to its quiet.", next: "epilogue_throne" }
+      ]
+    },
+
+    "epilogue_waiting_room": {
+      chapter: "Epilogue — After Every Ending",
+      title: "The Third Room, Empty",
+      location: "Below the Great Hall — The Waiting Rooms",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The Waiting Rooms are exactly as comfortable and exactly as insufficient as they always were — soft light, warm air, a small table in the third room set for someone who isn't there.",
+        "In one telling, threaded somewhere out past the edge of what you can quite remember, you are the one who never left this room. Somewhere down that particular thread, someone is still sitting where a sibling once sat, holding a cup that never quite finishes going cold, waiting for a name they can no longer call up on their own. That telling is not this one.",
+        "Tonight the room is only a room. The cup on the table is cold and undisturbed and no one has needed it in a very long time. Dust has started to gather on the chair's arm in the specific, patient way dust gathers on furniture no one is coming back to sit in.",
+        "You stand in the doorway a moment, the way you stood the first time, before there was anyone here to run to.",
+        "There is nothing to run to now. That is not the same thing as nothing happening. It is what happening looks like, afterward, once it's finished."
+      ],
+      choices: [
+        { text: "Leave the room to its quiet and go find the throne.", next: "epilogue_throne" }
+      ]
+    },
+
+    "epilogue_throne": {
+      chapter: "Epilogue — After Every Ending",
+      title: "The Throne, However It Ended",
+      location: "The Throne Room",
+      choicePrompt: "What do you do, before you leave for good?",
+      paragraphs: [
+        "The dais is exactly where it has always been, black glass lit from beneath by whatever light this court runs on when nothing living is watching it.",
+        "In one telling, the throne has stood empty since the night an ending was finally offered and finally accepted — Eravel dispersed into the dusk that made him, this room reduced at last to furniture with no one left to hold court from it. In another, he is still here, older around the eyes than a fae should be able to look, watching you with the wary respect of someone who remembers exactly what you cost him and never quite forgave the arithmetic. In another telling still, it isn't Eravel in that chair at all anymore. It's someone who spent half a life divided between two worlds and finally stopped having to choose — twilight blood settled the rest of the way into the shape it was always going to take, sovereign now instead of split down the middle, because some inheritances only ever wait to be claimed.",
+        "You don't need to know which one is true tonight. You lived all three, or enough of them to stop needing the fourth.",
+        function(s) {
+          switch (s.charClass) {
+            case "knight": return "You don't reach for the iron. There's nothing in this room asking to be resisted anymore, whichever version of the room you're standing in.";
+            case "bard": return "You could sing something here. You find, for once, that you don't need to. Some rooms have already heard your best song and don't require an encore.";
+            case "witch": return "You look for the binding language in the floor out of old habit. It's still there, faint under the rushes, still technically enforceable. You let it stay technical. Not every law needs invoking twice.";
+            case "changeling": return "Whatever half of you came from this place, it doesn't pull at you the way it used to. You can stand in this room now without needing it to mean anything about which world you belong to.";
+            default: return "You don't reach for anything to prove yourself here — not iron, not a song, not a citation, not a claim of belonging. Whatever this room once asked of you, you've already answered it more than once. Standing in it now doesn't require you to answer again.";
+          }
+        },
+        "Whatever this room owes you, it already paid — in every telling that mattered, to every version of you that came looking for something it took."
+      ],
+      choices: [
+        { text: "Sit a while in the quiet, at the foot of the dais.", setsFlag: "epilogue_sat_with_it", next: "epilogue_end" },
+        { text: "Say the word out loud that this place has always feared, and mean it kindly.", next: "epilogue_end" }
+      ]
+    },
+
+    "epilogue_end": {
+      chapter: "Epilogue — After Every Ending",
+      title: "What the Twilight Keeps",
+      location: "Midsummer's Hill — Whatever Hour Decides to Be Waiting",
+      isEnding: true,
+      isEpilogue: true,
+      paragraphs: [
+        "You climb back up through the court the way you came — past the throne, past the wing you chose, past the great hall with its weather ceiling and its indifferent, beautiful courtiers — and out through the gate, which closes behind you without any particular ceremony.",
+        function(s) {
+          if (s.flags.epilogue_sat_with_it) return "You sat a while at the foot of that dais before you climbed out, in the quiet, not mourning exactly — more like counting. Making sure every version of what happened in that room had been accounted for, at least once, by someone who was actually there for all of them.";
+          return "You said the word out loud before you climbed out — the one this place has spent seven ages refusing to hear spoken kindly. It didn't answer. It never really needed to. Some words are true whether or not the room agrees to notice.";
+        },
+        "The road back is the same crushed white stone, ringing the same soft note underfoot, and this time you don't lose track of the sun's position even once — because tonight, for once, there's nothing left to distract you from noticing.",
+        "No key pressed urgently into your hands this time. No promise made under duress, no bargain still needing paid down the line, no clock behind your ribs counting some other telling's forgetting. The Twilight Court doesn't know you came back tonight, and it wouldn't ask if it did, and that turns out to be exactly the right amount of attention for a visit like this one.",
+        "This place has been a court to fight, a court to sing for, a court to cite law at, a court to walk into like you already belonged — because you were all of those people, in different tellings, at different times, and it never once complained about the inconsistency. It only ever asked the same question of everyone who crossed: what will you give up, to get back what was taken. You gave up different things, in different lives. Tonight you didn't come to give up anything at all.",
+        "Tonight you came only to offer the one thing this place has spent seven ages hoarding time to avoid, and to mean it, and to let that be enough: an ending, freely given, the way an ending is supposed to arrive when nobody has to lose for it to happen.",
+        "The stones are ordinary and cold again on this side of the veil. Somewhere close to a village you may or may not still live near, a sibling you may or may not still see every week is asleep in an ordinary bed, in an ordinary night, entirely unaware that any of this happened again on their behalf.",
+        "You walk down off the hill. The road doesn't need you to remember it. You do anyway.",
+        "You are the only one who was there for every way this story ends. That, it turns out, was the last thing this place had left to ask of you. You gave it, and you kept walking, and behind you the stones went quiet the way stones do when nothing is arriving and nothing is leaving — just settling, the way anything settles, once it's finally allowed to be finished."
       ]
     }
 

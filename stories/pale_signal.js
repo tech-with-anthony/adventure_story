@@ -42,7 +42,8 @@ window.STORIES.push({
     { id: "cave_reached",      icon: "🌀", title: "The Source",           desc: "Descend to the origin of the signal.",                      condition: { type: "flag_set",     flag: "cave_reached" } },
     { id: "engine_running",    icon: "⚡", title: "Turning Again",        desc: "Restore the lighthouse engine to operation.",               condition: { type: "flag_set",     flag: "engine_running" } },
     { id: "first_contact",     icon: "📶", title: "First Contact",        desc: "Find the hidden ending — answer the signal as a Radioman.",  condition: { type: "any_ending", ending: "end_contact" } },
-    { id: "all_endings",       icon: "📜", title: "Full Spectrum",        desc: "Discover all four endings of The Pale Signal.",             condition: { type: "all_endings" } }
+    { id: "all_endings",       icon: "📜", title: "Full Spectrum",        desc: "Discover all four endings of The Pale Signal.",             condition: { type: "all_endings" } },
+    { id: "nineteenth_element", icon: "🌑", title: "The Nineteenth Element", desc: "Return to Dursey Rock having heard the signal end every way it can end.", condition: { type: "scene_visit", scene: "epilogue_end" } }
   ],
   story: {
     start: "harbor",
@@ -1020,6 +1021,171 @@ window.STORIES.push({
             return "You have your notebook in your hand when you step in. You are still trying to write it down. This is the last thing you record: The water is warm. The pattern is complete. I understand that this is the conclusion of the observation, not the observer. I note that I do not stop. Your pencil continues for a moment after the words stop making sense, then stops too.";
           },
           "The survey continues. It now has three data points on this rock. It does not distinguish between them. They are all simply: here."
+        ]
+      },
+
+      /* ═══════════════════════════════════════════
+         EPILOGUE — THE LONG LISTENING
+         ═══════════════════════════════════════════ */
+
+      epilogue_start: {
+        chapter: "Epilogue — The Long Listening",
+        title: "The Frequency You Kept",
+        location: "Somewhere inland — years later, an unlogged night",
+        choicePrompt: "How do you begin?",
+        paragraphs: [
+          "You have been keeper, castaway, evidence, silence, and answer. You have sealed it, redirected it, documented it, drowned in it, and spoken back to it — not in that order, not in any order that makes sense to a body that only gets to live once. You remember doing all of it. None of it happened to the same you twice.",
+          "It doesn't matter what year this is on the calendar you keep for other people. On the one you keep for yourself, there's only one date that counts, and it has never once managed to get all the way behind you.",
+          "Somewhere in a drawer, in a locked case, in a report you never filed, is the version of the record that's actually true. You haven't looked at it in a long time. Tonight you're going to.",
+          function (s) {
+            if (s.charClass === "captain") return "It's a chart that does it — a coastal chart, unrelated, showing a shelf that happens to drop to three hundred fathoms a hundred miles from anywhere you've ever sailed. You put your finger on the depth marking and don't move it for a long time.";
+            if (s.charClass === "engineer") return "It's the sound an old valve makes when it finally gives — a long, ductile groan of metal remembering a shape it was bent into once. You've heard that sound exactly once before in your life. You set down your tools.";
+            if (s.charClass === "radioman") return "It's the long-wave band, three in the morning, tuned to nothing in particular, the way you tune it most nights out of a habit you've stopped explaining to anyone. Sixteen elements. Forty-seven seconds. You knew it would come back eventually. You didn't expect to feel relief when it did.";
+            return "It's the notebook — the one with the locked clasp, the one you've never let anyone else open. You take it out. You've read it a hundred times. Tonight, for no reason you can name, you decide to finish where it left off instead of where you always stop.";
+          },
+          "The tide tables say the crossing is good for another eight hours. You have time. That has never once been the problem."
+        ],
+        choices: [
+          { text: "Pack what you'll need and go by sea, the way you went the first time.", setsFlag: "epilogue_returned_by_sea", next: "epilogue_crossing" },
+          { text: "You don't need the boat, not really. Sit down, tune down, and let the distance close itself.", next: "epilogue_crossing" }
+        ]
+      },
+
+      epilogue_crossing: {
+        chapter: "Epilogue — The Long Listening",
+        title: "Open Water, Late",
+        location: "The Atlantic — the same crossing, some other time",
+        paragraphs: [
+          function (s) {
+            if (s.flags.epilogue_returned_by_sea) {
+              return "You hired a boat this time — no coastguard cutter, no harbour authority breathing over the manifest, just a hull, an engine, and you. The crossing takes longer than you remember. Twelve miles was never really the distance that mattered.";
+            }
+            return "You didn't leave the room. You told yourself you would, and then you didn't, and the crossing happened anyway — the receiver warming under your hands, the pattern growing louder the way distance is supposed to work, except you haven't moved and the water outside your window is nowhere near open ocean.";
+          },
+          "Dursey Rock doesn't announce itself gradually anymore. There's no gradual with a place like that. It's a smudge on the horizon, and then it's the whole horizon, and then, for reasons that have nothing to do with speed, it's underneath you.",
+          function (s) {
+            if (s.charClass === "captain") return "You keep waiting for the wheel to tell you something. It doesn't. Water is water tonight, indifferent in the ordinary way, and you don't know if that's mercy or just distance.";
+            if (s.charClass === "engineer") return "You listen for the resonance you heard the first time, the wrongness in the engine note. There isn't one. Either the water's stopped saying anything, or you've stopped being able to hear it over everything else you've heard since.";
+            if (s.charClass === "radioman") return "You don't need the receiver to know the pattern's still running. You've had an address in it for years now. You could find your way back to this rock blind, the way sailors used to steer by stars that had already burned out.";
+            return "You keep your notebook shut in your lap the whole crossing. You already know what you'd write. First entry, every time: approaching Dursey Rock. Second entry: it is exactly as I left it. Third entry, this time, unwritten yet: it is exactly as I left it, and so am I.";
+          },
+          "The lighthouse is dark. It has been dark, officially, for a long time — decommissioned, the paperwork says, after 'repeated equipment failure.' Unofficially, everyone who was ever actually here knows the paperwork is doing the same work paperwork always does about this rock: telling a story small enough to file."
+        ],
+        choices: [
+          { text: "Bring the boat, or the distance, alongside the dock.", next: "epilogue_rock" }
+        ]
+      },
+
+      epilogue_rock: {
+        chapter: "Epilogue — The Long Listening",
+        title: "The Dock, Unattended",
+        location: "Dursey Rock — the dock",
+        choicePrompt: "Where do you go first?",
+        paragraphs: [
+          "The dock is the same concrete, the same iron mooring rings, gone rust-orange now instead of rust-red. No rowing boat tied off this time. There's still a coiled rope, or what's left of the frayed end you remember — it's just rope now, old and stiff, finally, after all these years, done fraying.",
+          "Salt grass has taken the paths between the outbuildings. The equipment store door hangs open on one hinge. Nobody has needed fuel canisters or lamp wicks here in a long time. Nobody has needed a light.",
+          "There's a shack near the old garden plot that wasn't here before — driftwood and salvaged tin, the work of someone who wanted shelter and didn't much care what it looked like. A thin curl of smoke rises from something that might generously be called a chimney. You don't know if that's Morrow. You don't know if 'Morrow' is still the right word for whatever chose, at some point in some telling, to stay."
+        ],
+        choices: [
+          { text: "Go to the shack. If someone's still keeping this rock, they deserve to be asked how.", next: "epilogue_shack" },
+          { text: "Go straight to the lighthouse. Some questions don't need asking twice.", next: "epilogue_lighthouse" }
+        ]
+      },
+
+      epilogue_shack: {
+        chapter: "Epilogue — The Long Listening",
+        title: "Driftwood and Tin",
+        location: "Dursey Rock — the shack",
+        paragraphs: [
+          "The door is a sheet of corrugated iron on leather hinges. You knock, which feels absurd, and then the door opens, which feels more absurd, because you didn't actually expect anyone to answer.",
+          "The man inside is old in the way rock is old — worn, not broken. He doesn't ask who you are. He looks at you the way Morrow once looked at the pool in the deep chamber: recognition, not surprise.",
+          "'You came back,' he says. Not a question. His voice doesn't sound like Morrow's did, all those years ago, and it doesn't sound like Hale's either. It sounds like both of them said the same sentence at once and only one of them came out the other side of it.",
+          "'It still asks about you,' he says. 'Not by name. It doesn't do names. But there's a place in the pattern that used to be empty and isn't anymore. I hear it most nights. I don't mind, anymore. Neither will you, eventually.'",
+          "He closes the door before you can decide whether to say goodbye. Through the tin wall, faint, you hear him start to hum something in sixteen parts."
+        ],
+        choices: [
+          { text: "Go down to the water.", next: "epilogue_descent" }
+        ]
+      },
+
+      epilogue_lighthouse: {
+        chapter: "Epilogue — The Long Listening",
+        title: "The Empty Watch",
+        location: "Dursey Rock — lighthouse base",
+        paragraphs: [
+          "The lighthouse door isn't locked. It's barely a door anymore — the wood swollen and sprung from the frame, held shut by its own weight more than by any latch. It gives when you lean on it.",
+          "Inside: the smell you remember, fainter but not gone. Salt, cold ash, something underneath that used to remind you of drying seaweed and now just reminds you of this specific room. Nothing has been touched in a long time. Nothing has been put back, either.",
+          "The kitchen table still has two chairs. One of them is still pushed back the way it was pushed back the day you found this place the first time. No one has straightened it. You don't straighten it either.",
+          "You climb halfway up the spiral stair out of a habit you don't examine, and stop at the twelfth step, where a stain used to be. It's gone now — decades of salt air will do that to almost anything, eventually. You go back down without going all the way to the lantern room. You already know the ending to that part of the story, in every version you were given."
+        ],
+        choices: [
+          { text: "Go down to the water.", next: "epilogue_descent" }
+        ]
+      },
+
+      epilogue_descent: {
+        chapter: "Epilogue — The Long Listening",
+        title: "The Path Down, Again",
+        location: "Dursey Rock — north face path",
+        paragraphs: [
+          "The path to the cave is worse than you remember — more slumped, more given over to salt and time — but it's still passable, and your feet find the good stone without being told which stone is good.",
+          "The tide is out, the way it was the first time. You've never once managed to come back and find it otherwise. You've stopped believing that's a coincidence.",
+          "The cave mouth is exactly as wide as it always was. The smell reaches you before the dark does — that same organic sweetness, that same mineral edge like struck flint, undiminished by any of the years or any of the endings that were supposed to have settled it.",
+          "In every telling, this was the last threshold before the part of the story that changed depending on who you were when you crossed it. Tonight there's no version of you left to choose between. You're all of them at once, for the length of this last walk in."
+        ],
+        choices: [
+          { text: "Go in.", next: "epilogue_chamber" }
+        ]
+      },
+
+      epilogue_chamber: {
+        chapter: "Epilogue — The Long Listening",
+        title: "The Source, Unchanged",
+        location: "Dursey Rock — the deep chamber",
+        choicePrompt: "What do you do, before you leave for good?",
+        paragraphs: [
+          "The descent takes the same fifteen minutes it always takes, whether you're going down for the first time or the last. The luminescence is there, faint and blue-white, exactly where you left it in every telling that ever put you in this room.",
+          "The chamber opens the way it opens. The markings are still on the walls, layered, older beneath newer, patient with an indifference that has never once needed your permission to continue. The pool at the centre is still. It is always still. That's the thing about a pool that has been listening for longer than land has had names.",
+          "In one telling, you filled this chamber with dust and stone and left it sealed behind six charges of gelignite. In another, you turned its voice west and let it go on talking to water that never answers back. In another, you took your samples and your photographs and let the silence keep its secret while you kept your evidence. In another, you didn't come back up at all — you're the one who's still down here, in that telling, part of the pattern instead of a witness to it. In one, only one, and you remember it clearest of all, you answered it. You gave it coordinates. It listened to you the way you'd been listening to it, and it moved.",
+          "None of that is what's happening tonight. Whatever's down here doesn't remember you the way a person remembers — it doesn't remember at all, not like that. It only ever surveys. But there is a shape in the pattern, low among the sixteen elements, that wasn't there before you first arrived and hasn't left since. You've come to recognise the shape of your own name in something that has never once used names.",
+          function (s) {
+            if (s.charClass === "captain") return "You have given orders your whole life, and taken responsibility for the ones that went wrong, and you find that whatever this thing is, it has still never once given or taken an order in any way you'd recognise. It doesn't command. It doesn't obey. It only counts. You've spent years wondering which is worse than a monster that wants something. You still don't know.";
+            if (s.charClass === "engineer") return "You look for the failure point out of habit — the place where this could be interrupted, redirected, shut down for good. You don't find one. You never found one. What you found, across every telling, was a way to make the not-finding survivable. That's still the only kind of victory this room has ever offered anyone.";
+            if (s.charClass === "radioman") return "You can hear it without the receiver now. You've been able to for years — the seventeenth element, the eighteenth, whichever one ended up being yours, a low tone under everything, present the way a heartbeat is present until you go looking for it. Down here, for once, you let yourself listen on purpose instead of around it.";
+            return "You don't take out your notebook. This is the one observation you've decided, across every telling, not to make — not because you can't, but because some things stop being data the moment you decide they're the only thing left worth writing down twice.";
+          },
+          "It doesn't ask anything of you, this time. It doesn't need to. It surveyed you a long time ago, in whichever telling did the surveying, and the result is already recorded somewhere in a geometry you were never going to fully read. You are, and have been for years, simply: here."
+        ],
+        choices: [
+          { text: "Stay a while and listen, without answering.", setsFlag: "epilogue_listened", next: "epilogue_end" },
+          { text: "Turn around and climb back out, and don't look back this time.", next: "epilogue_end" }
+        ]
+      },
+
+      epilogue_end: {
+        chapter: "Epilogue — The Long Listening",
+        title: "The Nineteenth Element",
+        location: "Dursey Rock — after, and always",
+        isEnding: true,
+        isEpilogue: true,
+        paragraphs: [
+          "You climb back up through the fissure, through the cave, out into whatever hour has decided to be waiting on the surface. The tide has come in around the cave mouth behind you, the way it always does, indifferent to how long you spent below it.",
+          function (s) {
+            if (s.flags.epilogue_listened) {
+              return "You listened for a while down there, without answering anything. It felt less like keeping vigil and more like checking a pulse you already knew wasn't going to stop — confirming, one more time, that the thing you carry away from that rock is still exactly as large as it's always been.";
+            }
+            return "You didn't linger. You've done enough listening for one lifetime, in every telling that ever put a receiver or a set of ears in your hands. Walking away without a last look felt, for once, like the correct amount of respect to pay something that was never going to notice the difference.";
+          },
+          "No harbour authority is waiting this time. No chart, no telegram, no coastal steamer's nine dead to account for. Nobody sent you. Nobody's expecting a report.",
+          "Somewhere behind you — in a shack of driftwood and tin, or in an empty house with two chairs and one of them still pushed back — whatever chose to stay on Dursey Rock goes on staying, the way the rock goes on being rock. You were never going to be the one who ended that. Nobody ends a survey. You can only ever stop being the one it's currently counting.",
+          function (s) {
+            if (s.charClass === "captain") return "You take the boat back yourself, hand steady on a wheel that has never once, across any telling, told you the whole truth about the water underneath it. You've made your peace with commanding what you can't fully chart. That peace is the only trophy this rock was ever going to let you keep.";
+            if (s.charClass === "engineer") return "You think, on the crossing back, about the valve you once bent into shape with a wrench and two hours and more nerve than sense. Some things get fixed. Some things just get made survivable. You've spent the years since learning to tell the difference before you spend the effort — that, more than any repair, is the actual skill you brought home from this rock.";
+            if (s.charClass === "radioman") return "You don't turn the receiver on for the crossing back. You don't need to. You know exactly what you'd hear, and exactly where in it you'd be, and for the first time in years that knowledge sits in you like ballast instead of like a wound. Some frequencies you learn to carry instead of chase.";
+            return "Your notebook stays closed the whole way back. You already know what the last entry will say, because you've written some version of it in every telling: The phenomenon persists. Its subject does too. You have stopped waiting for a framework that will make the second sentence easier to file than the first.";
+          },
+          "Forty-seven seconds. Sixteen elements, or seventeen, or eighteen, depending on which telling is doing the counting. Somewhere below three hundred fathoms of cold Atlantic water, something that has never once needed you to understand it goes on surveying a coastline that includes, now and permanently, the specific shape of your attention.",
+          "You were never going to get to stop being part of its data. The only thing you ever actually got to choose was how you carried that — and you have now carried it every way there was to carry it. That, on a rock that has never once offered anyone closure, is the closest thing to it you were ever going to get."
         ]
       }
 
