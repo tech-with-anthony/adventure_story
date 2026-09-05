@@ -55,6 +55,30 @@
     } catch(e) {}
   }
 
+  function statsKey(id) { return "adv_choicestats_" + id; }
+
+  function getChoiceStats(id) {
+    try { var r = localStorage.getItem(statsKey(id)); return r ? JSON.parse(r) : {}; } catch(e) { return {}; }
+  }
+
+  function recordSceneVisit(id, sceneId) {
+    try {
+      var stats = getChoiceStats(id);
+      stats[sceneId] = stats[sceneId] || { visits: 0, picks: {} };
+      stats[sceneId].visits++;
+      localStorage.setItem(statsKey(id), JSON.stringify(stats));
+    } catch(e) {}
+  }
+
+  function recordChoicePick(id, sceneId, index) {
+    try {
+      var stats = getChoiceStats(id);
+      stats[sceneId] = stats[sceneId] || { visits: 0, picks: {} };
+      stats[sceneId].picks[index] = (stats[sceneId].picks[index] || 0) + 1;
+      localStorage.setItem(statsKey(id), JSON.stringify(stats));
+    } catch(e) {}
+  }
+
   function clearSave(id, slot) {
     try {
       localStorage.removeItem(saveKey(id, slot));
@@ -706,6 +730,7 @@
           renderContinue(sceneInteractEl, "Play Again", startGame);
         } else {
           saveProgress(id);
+          recordSceneVisit(state.story.id, id);
           checkAchievements(id);
           renderChoices(scene.choices || [], scene.choicePrompt);
           if (state.snapshots.length > 0) {
@@ -783,11 +808,22 @@
     var row = document.createElement("div");
     row.className = "btn-row choices-col";
 
+    var currentSceneId = state.history[state.history.length - 1];
+    var sceneStats = getChoiceStats(state.story.id)[currentSceneId];
+
     visible.forEach(function (choice) {
+      var originalIndex = choices.indexOf(choice);
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.textContent = resolveText(choice);
-      btn.addEventListener("click", function () { applyChoice(choice); });
+      btn.appendChild(document.createTextNode(resolveText(choice)));
+      if (sceneStats && sceneStats.visits > 1) {
+        var picks = sceneStats.picks[originalIndex] || 0;
+        var statEl = document.createElement("span");
+        statEl.className = "choice-stat";
+        statEl.textContent = "Chosen " + picks + " of " + sceneStats.visits + " times";
+        btn.appendChild(statEl);
+      }
+      btn.addEventListener("click", function () { applyChoice(choice, originalIndex); });
       row.appendChild(btn);
     });
 
@@ -796,12 +832,13 @@
     row.querySelector("button").focus();
   }
 
-  function applyChoice(choice) {
+  function applyChoice(choice, index) {
     state.snapshots.push({
       sceneId: state.history[state.history.length - 1],
       flags: Object.assign({}, state.flags),
       history: state.history.slice(0, -1)
     });
+    if (index !== undefined) recordChoicePick(state.story.id, state.history[state.history.length - 1], index);
     if (choice.setsFlag) state.flags[choice.setsFlag] = true;
     loadScene(resolveNext(choice.next));
   }
