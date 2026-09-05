@@ -1459,7 +1459,7 @@ window.STORIES.push({
       choicePrompt: "How do you walk it?",
       paragraphs: [
         function (s) {
-          return s.name + " has walked this road as more people than one body should be able to hold — soldier, scholar, thief, believer, sometimes the one who bled for it and sometimes the one who buried something small and dangerous under a crossroads shrine three miles south. All of it happened. None of it happened at the same time. You remember it anyway, the way a hand remembers every glove it has ever worn.";
+          return "You have walked this road as more people than one body should be able to hold — soldier, scholar, thief, believer, sometimes the one who bled for it and sometimes the one who buried something small and dangerous under a crossroads shrine three miles south. All of it happened. None of it happened at the same time. You remember it anyway, the way a hand remembers every glove it has ever worn.";
         },
         "The green light went out clean, once. It banked to embers and waited, once. It burned on after everything you had was already spent, once. You watched a stone that used to scream go quiet in your palm and called that mercy, once. Every keep needed someone; you have been all of the someones it needed, one telling at a time.",
         "None of that is what's happening tonight. There's no messenger's purse in your coat, no lord's fear riding behind you, no reward posted at the road's end you haven't already collected in every denomination it comes in. Whatever needed ending, some version of you already ended it.",
@@ -1534,7 +1534,7 @@ window.STORIES.push({
             case "fighter":
               return "You find the choke points again without meaning to — the doorways, the sightlines, the place where you'd have made your stand if it had come to that again. It doesn't come to that again. You let your hand fall away from your hilt and notice, with some surprise, how long it takes.";
             case "wizard":
-              return "The wall where the binding lattice used to be scarred into the stone still carries a faint discoloration, the way skin holds a scar long after the wound that made it. You put your palm against it. It's cold in the ordinary way now. Just old stone.";
+              return "The scarring the binding lattice left in this wall still carries a faint discoloration, the way skin holds a scar long after the wound that made it. You put your palm against it. It's cold in the ordinary way now. Just old stone.";
             case "rogue":
               return "You look for the line of disturbed dust that used to run along the left passage — a track something wore into this floor by walking it too often. It isn't there. Nothing's walked this hall in a long time. You find you don't miss having something to track.";
             case "cleric":
@@ -1574,7 +1574,7 @@ window.STORIES.push({
       choicePrompt: "What do you do?",
       paragraphs: [
         function (s) {
-          return s.name + " says a name into the empty corner — not the ghost's, since you never learned it, but your own, and the word 'finished,' and nothing else. It feels less foolish than you expected. It feels like exactly the right amount of foolish.";
+          return "You say a name into the empty corner — not the ghost's, since you never learned it, but your own, and the word 'finished,' and nothing else. It feels less foolish than you expected. It feels like exactly the right amount of foolish.";
         },
         "Nothing answers. Dust doesn't move. No cold spot draws itself around your shoulders, no impression of a livery collar or a soldier's fixed stare. Whatever stood its last post in this room stood it, eventually, all the way through to the end. That's what a post is for.",
         "You leave the corner the way you found it. Empty is not the same thing as unresolved."
@@ -1640,7 +1640,7 @@ window.STORIES.push({
       location: "Valdrath's Keep — The Sanctum",
       choicePrompt: "What do you do, before you leave for good?",
       paragraphs: [
-        "The chamber is exactly as large as you remember and exactly as empty as it should be. The green flames that lit it without warmth are gone, or banked to nothing, or sealed three miles south under a crossroads shrine, depending on which telling you're standing inside tonight. The throne of fused bone and dark iron is still there. It's just furniture now.",
+        "The chamber is exactly as large as you remember and exactly as empty as it should be. The green flames that lit it without warmth are gone, or banked to nothing, or sealed three miles south under a crossroads shrine, depending on which telling you're standing inside tonight. The throne of fused bones and dark iron is still there. It's just furniture now.",
         function (s) {
           switch (s.charClass) {
             case "fighter":
@@ -1671,7 +1671,7 @@ window.STORIES.push({
       isEpilogue: true,
       paragraphs: [
         function (s) {
-          return s.name + " climbs back up through the crypt, past the seal chamber and the old dead and the settled hall, and out through the gate into whatever hour of morning has decided to be waiting.";
+          return "You climb back up through the crypt, past the seal chamber and the old dead and the settled hall, and out through the gate into whatever hour of morning has decided to be waiting.";
         },
         function (s) {
           if (s.flags.epilogue_sat_with_it) {
@@ -1682,7 +1682,7 @@ window.STORIES.push({
         "No coin purse waits at the gate this time. No messenger, no lord, no survivor with a key pressed into your hands. Thornwall doesn't know you came back, and won't ask, and that turns out to be exactly the right amount of attention for this particular trip.",
         "The keep will still be here the next time someone needs it to mean something. It has been a soldier's fight, a scholar's puzzle, a thief's job, a believer's vigil, and, once, a stone buried quietly and asked to keep a promise. It has been all of those things because you were all of those people, at different times, in different tellings, and it never once complained about the inconsistency.",
         function (s) {
-          return "This time it was neither. This time " + s.name + " came back only to look, and only to leave on your own terms, with nothing left to prove to Lord Harwick, or Malachar, or the fifty gold crowns that started all of it more tellings ago than you've bothered to count.";
+          return "This time it was neither. This time you came back only to look, and only to leave on your own terms, with nothing left to prove to Lord Harwick, or Malachar, or the fifty gold crowns that started all of it more tellings ago than you've bothered to count.";
         },
         "Somewhere behind you, the keep settles the way old stone settles — not collapsing, not healing, just continuing, indifferent to whichever ending you brought with you this time.",
         "You walk south. The road doesn't need you to remember it. You do anyway.",
