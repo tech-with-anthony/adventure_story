@@ -809,7 +809,20 @@
   function injectStoryScripts(catalog) {
     if (!catalog.length) { showLibrary(); return; }
     var pending = catalog.length;
-    function onDone() { pending--; if (pending === 0) showLibrary(); }
+    function onDone() {
+      pending--;
+      if (pending === 0) {
+        // Dynamically injected <script> tags load asynchronously and are not
+        // guaranteed to execute in DOM order, so window.STORIES.push() calls
+        // can land in a different order on every page load. Re-sort to match
+        // the catalog's declared order so the library grid is deterministic.
+        var order = catalog.map(function (e) { return e.id; });
+        (window.STORIES || []).sort(function (a, b) {
+          return order.indexOf(a.id) - order.indexOf(b.id);
+        });
+        showLibrary();
+      }
+    }
     catalog.forEach(function (entry) {
       var s = document.createElement("script");
       s.src = entry.file;

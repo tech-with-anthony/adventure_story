@@ -13,10 +13,15 @@ const { chromium } = require('playwright');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const pixelmatchModule = require('pixelmatch'); // v7 is ESM-only; CJS require() yields { default: fn }
+const pixelmatch = typeof pixelmatchModule === 'function' ? pixelmatchModule : pixelmatchModule.default;
+const { PNG } = require('pngjs');
 
 const GAME_DIR = path.resolve(__dirname, '..');
 const PORT = 7777;
 const BASE = `http://localhost:${PORT}`;
+const SCREENSHOT_DIR = path.join(__dirname, '__screenshots__');
+const VISUAL_DIFF_THRESHOLD_PCT = 0.5; // allow up to 0.5% of pixels to differ (font-rendering flakiness)
 
 let passed = 0;
 let failed = 0;
@@ -24,6 +29,49 @@ let failed = 0;
 function ok(label, condition) {
   if (condition) { console.log('  ✓', label); passed++; }
   else           { console.error('  ✗', label); failed++; }
+}
+
+/* ---- Visual regression helpers ---- */
+
+/* Compares a freshly captured PNG buffer against a stored baseline.
+ * If no baseline exists yet, the capture becomes the baseline (pass). */
+function compareScreenshot(name, buffer) {
+  if (!fs.existsSync(SCREENSHOT_DIR)) fs.mkdirSync(SCREENSHOT_DIR, { recursive: true });
+  const baselinePath = path.join(SCREENSHOT_DIR, name + '.png');
+
+  if (!fs.existsSync(baselinePath)) {
+    fs.writeFileSync(baselinePath, buffer);
+    console.log('  ✓ baseline captured:', name);
+    passed++;
+    return;
+  }
+
+  const baseline = PNG.sync.read(fs.readFileSync(baselinePath));
+  const current = PNG.sync.read(buffer);
+
+  if (baseline.width !== current.width || baseline.height !== current.height) {
+    ok(name + ': screenshot dimensions match baseline (got ' + current.width + 'x' + current.height +
+      ', expected ' + baseline.width + 'x' + baseline.height + ')', false);
+    return;
+  }
+
+  const diff = new PNG({ width: baseline.width, height: baseline.height });
+  const numDiffPixels = pixelmatch(
+    baseline.data, current.data, diff.data,
+    baseline.width, baseline.height,
+    { threshold: 0.1 }
+  );
+  const totalPixels = baseline.width * baseline.height;
+  const diffPct = (numDiffPixels / totalPixels) * 100;
+  ok(name + ': screenshot within tolerance (' + diffPct.toFixed(3) + '% differs, allowed ' +
+    VISUAL_DIFF_THRESHOLD_PCT + '%)', diffPct <= VISUAL_DIFF_THRESHOLD_PCT);
+}
+
+/* Waits for webfonts to finish loading, then screenshots + compares. */
+async function captureAndCompare(page, name) {
+  await page.evaluate(() => document.fonts.ready);
+  const buffer = await page.screenshot({ fullPage: false });
+  compareScreenshot(name, buffer);
 }
 
 /* ---- Minimal HTTP server ---- */
@@ -419,8 +467,136 @@ async function walkPaleSignal(page) {
       await page.close();
     }
 
-    /* [11] No JS console errors */
-    console.log('\n[11] No JS console errors');
+    /* [12] Visual regression (screenshot baselines) */
+    console.log('\n[12] Visual regression (screenshot baselines)');
+    {
+      const viewport = { width: 1280, height: 900 };
+
+      /* Library page */
+      {
+        const page = await browser.newPage({ viewport });
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await setupRoutes(page);
+        page.on('pageerror', e => errors.push(e.message));
+        await page.goto(BASE + '/adventure.html');
+        await page.evaluate(() => localStorage.clear());
+        await page.reload();
+        await waitForLibrary(page);
+        await captureAndCompare(page, 'library');
+        await page.close();
+      }
+
+      /* Setup page (name entry) */
+      {
+        const page = await browser.newPage({ viewport });
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await setupRoutes(page);
+        page.on('pageerror', e => errors.push(e.message));
+        await page.goto(BASE + '/adventure.html');
+        await page.evaluate(() => localStorage.clear());
+        await page.reload();
+        await waitForLibrary(page);
+        const card = page.locator('.story-card', { hasText: VALDRATH_TEXT });
+        await card.locator('.slot-btn').first().click();
+        await waitForSetup(page);
+        await clickPrimary(page); // intro -> name entry
+        await page.waitForSelector('input[type=text]');
+        await captureAndCompare(page, 'setup-name');
+        await page.close();
+      }
+
+      /* Loaded scene page (default theme) */
+      {
+        const page = await browser.newPage({ viewport });
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await setupRoutes(page);
+        page.on('pageerror', e => errors.push(e.message));
+        await page.goto(BASE + '/adventure.html');
+        await page.evaluate(() => localStorage.clear());
+        await page.reload();
+        await waitForLibrary(page);
+        const card = page.locator('.story-card', { hasText: VALDRATH_TEXT });
+        await card.locator('.slot-btn').first().click();
+        await waitForSetup(page);
+        await clickPrimary(page);
+        await page.locator('input[type=text]').fill('Snapshot');
+        await clickPrimary(page);
+        await page.locator('.class-card.fighter').click();
+        await waitForScene(page);
+        await captureAndCompare(page, 'scene-default');
+        await page.close();
+      }
+
+      /* Scene page under each of the 4 colour themes */
+      const themes = ['valdrath', 'parchment', 'void', 'ember'];
+      for (const theme of themes) {
+        const page = await browser.newPage({ viewport });
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await setupRoutes(page);
+        page.on('pageerror', e => errors.push(e.message));
+        await page.goto(BASE + '/adventure.html');
+        await page.evaluate((t) => {
+          localStorage.clear();
+          localStorage.setItem('adv_theme', t);
+        }, theme);
+        await page.reload();
+        await waitForLibrary(page);
+        ok('Theme "' + theme + '" applied to <html data-theme>',
+          (await page.evaluate(() => document.documentElement.dataset.theme)) === theme);
+
+        const card = page.locator('.story-card', { hasText: VALDRATH_TEXT });
+        await card.locator('.slot-btn').first().click();
+        await waitForSetup(page);
+        await clickPrimary(page);
+        await page.locator('input[type=text]').fill('Snapshot');
+        await clickPrimary(page);
+        await page.locator('.class-card.fighter').click();
+        await waitForScene(page);
+        await captureAndCompare(page, 'scene-theme-' + theme);
+        await page.close();
+      }
+    }
+
+    /* [13] New Game+ epilogue unlock (seeded ending completion) */
+    console.log('\n[13] New Game+ epilogue unlock (seeded ending completion)');
+    {
+      const page = await browser.newPage();
+      await setupRoutes(page);
+      page.on('pageerror', e => errors.push(e.message));
+      await page.goto(BASE + '/adventure.html');
+      await page.evaluate(() => {
+        localStorage.clear();
+        // Seed all 5 real Valdrath ending IDs (isEnding:true, not isEpilogue) as discovered.
+        localStorage.setItem('adv_ends_valdrath', JSON.stringify({
+          end_heroic:  'The Heroic End',
+          end_costly:  'A Costly Victory',
+          end_partial: 'Weakened, Not Broken',
+          end_defeat:  'Darkness Prevails',
+          end_bound:   'Sealed in Stone'
+        }));
+      });
+      await page.reload();
+      await waitForLibrary(page);
+
+      const card = page.locator('.story-card', { hasText: VALDRATH_TEXT });
+      const epilogueBtn = card.locator('.epilogue-btn');
+      ok('Epilogue button appears after all 5 endings recorded',
+        await epilogueBtn.isVisible().catch(() => false));
+
+      await epilogueBtn.click();
+      await waitForScene(page);
+
+      const title = await page.locator('#scene-title').textContent().catch(() => '');
+      ok('Epilogue opens scene with a visible title', title.trim().length > 0);
+
+      const bodyText = await page.locator('#scene-text').textContent().catch(() => '');
+      ok('Epilogue scene renders non-empty story text', bodyText.trim().length > 0);
+
+      await page.close();
+    }
+
+    /* [14] No JS console errors */
+    console.log('\n[14] No JS console errors');
     ok('No uncaught JS errors across all tests', errors.length === 0);
     if (errors.length) errors.forEach(e => console.error('   Error:', e));
 
