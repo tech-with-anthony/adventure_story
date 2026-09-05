@@ -35,6 +35,14 @@
       radial-gradient(circle at 20% 0%, rgba(62,107,72,0.25), transparent 45%),
       radial-gradient(circle at 80% 100%, rgba(74,53,38,0.35), transparent 50%),
       linear-gradient(160deg, #0a110c 0%, #0c140f 50%, #090d0a 100%);
+    /* Accessible-contrast helper tokens (see CLAUDE.md accessibility pass notes) */
+    --btn-text:        var(--text);
+    --btn-hover-bg:    #3f6d49;
+    --gold-text:       var(--gold-bright);
+    --gold-fill:       var(--gold);
+    --gold-fill-bright:var(--gold-bright);
+    --gold-fill-stop2: #b88f3c;
+    --error:           #e89b7d;
   }
 
   /* ---- PARCHMENT THEME ---- */
@@ -57,6 +65,15 @@
     --arcane-bright: #3a2058;
     --neutral:       #8a7a60;
     --neutral-bright:#5a4a30;
+    /* Nudged for WCAG AA — see accessibility pass notes */
+    --text-dim:      #5b4c35;
+    --green-bright:  #285832;
+    --btn-text:      #fdfaf3;
+    --btn-hover-bg:  #285832;
+    --gold-text:     #62480f;
+    --gold-fill:     #c9a13e;
+    --gold-fill-bright: #d9b969;
+    --error:         #8f3a19;
   }
 
   /* ---- VOID THEME ---- */
@@ -82,6 +99,14 @@
     --arcane-bright: #9060c0;
     --neutral:       #283848;
     --neutral-bright:#5878a0;
+    /* Nudged for WCAG AA — see accessibility pass notes */
+    --gold:          #7a52a3;
+    --arcane-bright: #986bc4;
+    --neutral-bright:#6080a7;
+    --btn-hover-bg:  #1b6576;
+    --gold-fill:        #6d4293;
+    --gold-fill-bright: #754a9b;
+    --gold-fill-stop2:  #502878;
   }
 
   /* ---- EMBER THEME ---- */
@@ -107,6 +132,10 @@
     --arcane-bright: #c07040;
     --neutral:       #4a3828;
     --neutral-bright:#907060;
+    /* Nudged for WCAG AA — see accessibility pass notes */
+    --green-bright:  #da5833;
+    --neutral-bright:#9b7a69;
+    --btn-hover-bg:  #a13d18;
   }
 
   /* ---- FONT SIZE SCALE ---- */
@@ -116,6 +145,25 @@
   html[data-fontsize="large"]  { font-size: 22px; }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ---- SKIP LINK ---- */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 2000;
+    background: var(--bg-panel);
+    color: var(--gold-bright);
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--gold);
+    border-radius: 0 0 8px 0;
+    font-family: 'Cinzel', serif;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+  .skip-link:focus {
+    left: 0;
+  }
 
   body {
     min-height: 100vh;
@@ -209,8 +257,24 @@
     text-align: center;
   }
   @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+  /* ---- SCENE TRANSITION ---- */
+  #scene-content {
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+  #scene-content.scene-fade-out {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .passage { animation: none; opacity: 1; transform: none; }
+    #scene-content,
+    #scene-content.scene-fade-out {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
   }
 
   /* ---- INTERACTION ---- */
@@ -239,7 +303,7 @@
     font-weight: 500;
     font-size: 1.05rem;
     letter-spacing: 0.04em;
-    color: var(--text);
+    color: var(--btn-text);
     background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%);
     border: 1px solid var(--green-bright);
     border-radius: 10px;
@@ -250,19 +314,19 @@
     transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
   }
   button:hover:not(:disabled) {
-    background: linear-gradient(180deg, var(--green-bright) 0%, var(--green) 100%);
+    background: linear-gradient(180deg, var(--btn-hover-bg) 0%, var(--green) 100%);
     transform: translateY(-2px);
     box-shadow: 0 8px 18px var(--shadow);
   }
   button:active:not(:disabled) { transform: translateY(0); }
   button.primary {
-    background: linear-gradient(180deg, var(--gold) 0%, #b88f3c 100%);
+    background: linear-gradient(180deg, var(--gold-fill) 0%, var(--gold-fill-stop2) 100%);
     border-color: var(--gold-bright);
     color: #2a1f0c;
     font-weight: 700;
   }
   button.primary:hover:not(:disabled) {
-    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    background: linear-gradient(180deg, var(--gold-fill-bright) 0%, var(--gold-fill) 100%);
   }
   html[data-theme="void"] button.primary { color: var(--text); }
   button:disabled { opacity: 0.45; cursor: not-allowed; }
@@ -324,7 +388,7 @@
   }
   input[type="text"]::placeholder { color: #6f7a6c; font-style: italic; }
   html[data-theme="parchment"] input[type="text"]::placeholder { color: #8a7a68; }
-  .error-msg { color: #e89b7d; font-size: 0.95rem; font-style: italic; min-height: 1.2rem; }
+  .error-msg { color: var(--error); font-size: 0.95rem; font-style: italic; min-height: 1.2rem; }
 
   /* ---- CLASS PICKER ---- */
   .class-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-top: 1.25rem; }
@@ -449,17 +513,17 @@
     background: transparent;
     transform: none;
     box-shadow: none;
-    color: var(--gold);
+    color: var(--gold-text);
     border-color: var(--gold);
   }
   .font-btn[aria-pressed="true"] {
-    background: linear-gradient(180deg, var(--gold) 0%, #b88f3c 100%);
+    background: linear-gradient(180deg, var(--gold-fill) 0%, var(--gold-fill-stop2) 100%);
     border-color: var(--gold-bright);
     color: #2a1f0c;
   }
   html[data-theme="void"] .font-btn[aria-pressed="true"] { color: var(--text); }
   .font-btn[aria-pressed="true"]:hover:not(:disabled) {
-    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    background: linear-gradient(180deg, var(--gold-fill-bright) 0%, var(--gold-fill) 100%);
     transform: none;
     box-shadow: none;
     color: #2a1f0c;
@@ -485,17 +549,17 @@
     background: transparent;
     transform: none;
     box-shadow: none;
-    color: var(--gold);
+    color: var(--gold-text);
     border-color: var(--gold);
   }
   .tw-btn[aria-pressed="true"] {
-    background: linear-gradient(180deg, var(--gold) 0%, #b88f3c 100%);
+    background: linear-gradient(180deg, var(--gold-fill) 0%, var(--gold-fill-stop2) 100%);
     border-color: var(--gold-bright);
     color: #2a1f0c;
   }
   html[data-theme="void"] .tw-btn[aria-pressed="true"] { color: var(--text); }
   .tw-btn[aria-pressed="true"]:hover:not(:disabled) {
-    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    background: linear-gradient(180deg, var(--gold-fill-bright) 0%, var(--gold-fill) 100%);
     transform: none;
     box-shadow: none;
     color: #2a1f0c;
@@ -583,21 +647,21 @@
     color: var(--text);
   }
   .slot-btn.slot-filled {
-    background: linear-gradient(180deg, var(--gold) 0%, #b88f3c 100%);
+    background: linear-gradient(180deg, var(--gold-fill) 0%, var(--gold-fill-stop2) 100%);
     border-color: var(--gold-bright);
     color: #2a1f0c;
     font-weight: 600;
   }
   .slot-btn.slot-filled .slot-label { color: rgba(42,31,12,0.65); }
   .slot-btn.slot-filled:hover:not(:disabled) {
-    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    background: linear-gradient(180deg, var(--gold-fill-bright) 0%, var(--gold-fill) 100%);
   }
   html[data-theme="void"] .slot-btn.slot-filled { color: var(--text); }
   html[data-theme="void"] .slot-btn.slot-filled .slot-label { color: rgba(200,220,232,0.65); }
 
   .story-card-endings {
     font-size: 0.78rem;
-    color: var(--gold);
+    color: var(--gold-text);
     font-style: italic;
     letter-spacing: 0.02em;
   }
@@ -614,7 +678,7 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     text-align: center;
-    color: var(--gold-bright);
+    color: var(--gold-text);
     background: transparent;
     border: 1px solid var(--gold);
     border-radius: 8px;
@@ -623,11 +687,13 @@
   .epilogue-btn:hover:not(:disabled),
   .epilogue-btn:focus-visible {
     color: #2a1f0c;
-    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    background: linear-gradient(180deg, var(--gold-fill-bright) 0%, var(--gold-fill) 100%);
     box-shadow: 0 0 16px -2px var(--gold-bright);
     transform: translateY(-1px);
   }
   .epilogue-btn:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+  html[data-theme="void"] .epilogue-btn:hover:not(:disabled),
+  html[data-theme="void"] .epilogue-btn:focus-visible { color: var(--text); }
 
   /* Class chips */
   .story-class-chip {
@@ -643,10 +709,10 @@
   .story-class-chip.fighter { color: var(--green-bright); border-color: var(--green); }
   .story-class-chip.wizard  { color: var(--arcane-bright); border-color: var(--arcane); }
   .story-class-chip.rogue   { color: var(--neutral-bright); border-color: var(--neutral); }
-  .story-class-chip.cleric  { color: var(--gold-bright); border-color: var(--gold); }
+  .story-class-chip.cleric  { color: var(--gold-text); border-color: var(--gold); }
   /* Fae Court */
   .story-class-chip.knight     { color: var(--green-bright); border-color: var(--green); }
-  .story-class-chip.bard       { color: var(--gold-bright); border-color: var(--gold); }
+  .story-class-chip.bard       { color: var(--gold-text); border-color: var(--gold); }
   .story-class-chip.witch      { color: var(--arcane-bright); border-color: var(--arcane); }
   .story-class-chip.changeling { color: var(--neutral-bright); border-color: var(--neutral); }
   .story-class-chip.unknown    { color: var(--neutral-bright); border-color: var(--neutral); }
@@ -692,7 +758,7 @@
     border-left: 2px solid transparent;
     letter-spacing: 0.04em;
   }
-  .history-item.current { color: var(--gold); border-left-color: var(--gold); }
+  .history-item.current { color: var(--gold-text); border-left-color: var(--gold); }
 
   /* ---- MUTE TOGGLE (fixed, always visible) ---- */
   #mute-toggle {
@@ -732,12 +798,12 @@
     width: 100%;
     cursor: pointer;
     font-size: 0.78rem;
-    color: var(--gold);
+    color: var(--gold-text);
     font-style: italic;
     letter-spacing: 0.02em;
     box-sizing: border-box;
   }
-  .achievements-toggle:hover { color: var(--gold-bright); }
+  .achievements-toggle:hover { color: var(--gold-text); }
   .achievements-toggle:focus-visible { outline: 2px solid var(--gold); border-radius: 2px; }
   .achievements-chevron { margin-left: 0.5rem; font-style: normal; font-size: 1em; }
 
@@ -844,7 +910,7 @@
     font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: var(--gold);
+    color: var(--gold-text);
     font-family: 'Cinzel', serif;
   }
   .achievement-toast-title { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-top: 0.1rem; }
@@ -860,7 +926,11 @@
 </head>
 <body>
 
-<button id="mute-toggle" aria-label="Toggle audio">🔊</button>
+<a href="#main-content" class="skip-link">Skip to content</a>
+
+<button id="mute-toggle" aria-label="Toggle audio"><span aria-hidden="true">🔊</span></button>
+
+<main id="main-content" tabindex="-1">
 
 <!-- LIBRARY PAGE — story selection, shown on app open -->
 <section id="page-library" class="page" aria-label="Story library">
@@ -880,7 +950,7 @@
           <button class="font-btn md" data-fontsize-set="medium" aria-label="Medium text" aria-pressed="true" title="Medium text">A</button>
           <button class="font-btn lg" data-fontsize-set="large" aria-label="Large text" aria-pressed="false" title="Large text">A</button>
         </div>
-        <button class="tw-btn" id="tw-toggle" aria-label="Typewriter mode" aria-pressed="false" title="Typewriter mode: OFF">✦ Typewriter</button>
+        <button class="tw-btn" id="tw-toggle" aria-label="Typewriter mode" aria-pressed="false" title="Typewriter mode: OFF"><span aria-hidden="true">✦</span> Typewriter</button>
       </div>
     </header>
     <div id="story-grid" class="story-grid" role="list"></div>
@@ -901,27 +971,31 @@
 <!-- SCENE PAGE — all story content renders here dynamically -->
 <section id="page-scene" class="page" aria-label="Adventure">
   <div class="page-col">
-    <div class="scene-header">
-      <p id="scene-chapter" class="chapter-label"></p>
-      <h1 id="scene-title"></h1>
-      <p id="scene-location" class="scene-location"></p>
-    </div>
-    <div class="class-badge-wrap">
-      <span id="class-badge" class="class-badge"></span>
-    </div>
-    <div class="panel" aria-live="polite">
-      <div id="scene-text" class="story-text"></div>
-      <div id="scene-interact" class="interaction" hidden></div>
+    <div id="scene-content">
+      <div class="scene-header">
+        <p id="scene-chapter" class="chapter-label"></p>
+        <h1 id="scene-title"></h1>
+        <p id="scene-location" class="scene-location"></p>
+      </div>
+      <div class="class-badge-wrap">
+        <span id="class-badge" class="class-badge"></span>
+      </div>
+      <div class="panel" aria-live="polite">
+        <div id="scene-text" class="story-text"></div>
+        <div id="scene-interact" class="interaction" hidden></div>
+      </div>
     </div>
     <div id="history-panel" class="history-panel" hidden>
       <button type="button" class="history-toggle" id="history-toggle"
               aria-expanded="false" aria-controls="history-list">
-        <span>Journey So Far</span><span class="history-chevron">▾</span>
+        <span>Journey So Far</span><span class="history-chevron" aria-hidden="true">▾</span>
       </button>
       <div id="history-list" class="history-list" hidden></div>
     </div>
   </div>
 </section>
+
+</main>
 
 <script src="catalog.js"></script>
 <script src="audio.js"></script>

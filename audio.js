@@ -293,7 +293,10 @@ window.AudioEngine = (function () {
   /* ---- Update mute button icon ---- */
   function updateBtn() {
     var btn = document.getElementById('mute-toggle');
-    if (btn) btn.textContent = muted ? '🔇' : '🔊';
+    if (!btn) return;
+    var icon = btn.querySelector('span');
+    if (icon) icon.textContent = muted ? '🔇' : '🔊';
+    else btn.textContent = muted ? '🔇' : '🔊';
   }
 
   /* ---- Public API ---- */
