@@ -1,5 +1,18 @@
 # CLAUDE.md — adventure_story
 
+## Agent Usage — Always Required
+
+Before starting any task in this repo — no matter how small — check the list of available agents and use whichever ones are relevant. This is not optional.
+
+- **Check first**: At the start of every task, review the available agent types (shown in the system prompt or via the Agent tool's description). Do not assume a task is "too simple" to warrant an agent.
+- **Use the right specialist**: Writing or editing story content → `fantasy-storyteller`. Grammar/coherence review → `content-editor`. Running the app → `run` skill. Code review → `code-reviewer`. Debugging → `debugger`. Tests → `test-runner`. UI changes → `frontend-developer`. New features needing design → `code-architect` first.
+- **Parallelize when possible**: If two independent parts of a task map to different agents, spawn both at the same time rather than running them sequentially.
+- **Don't duplicate work**: If a task is delegated to an agent, do not repeat the same searches or edits yourself. Trust the agent's output, then verify.
+
+The goal is for every session to take full advantage of the specialist agents available rather than defaulting to doing everything inline.
+
+---
+
 ## Project Overview
 
 `adventure_story` is a "Choose Your Own Adventure" interactive story game with DnD-style class mechanics. It is a static browser application (no build step, no server). It currently has three stories — "The Curse of Valdrath's Keep" (dark fantasy, 4 classes), "The Court of Stolen Hours" (fae fantasy, 4 classes), and "The Pale Signal" (cosmic horror, 4 classes) — each with class-mechanical choices, flag-based state, four standard endings, and one hidden secret ending. New stories can be added to GitHub Pages without an app update via the remote catalog system.
