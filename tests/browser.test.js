@@ -595,8 +595,65 @@ async function walkPaleSignal(page) {
       await page.close();
     }
 
-    /* [14] No JS console errors */
-    console.log('\n[14] No JS console errors');
+    /* [15] Choice stats (visit/pick tracking) */
+    console.log('\n[15] Choice stats (visit/pick tracking)');
+    {
+      // Uses the real Go-Back flow (already proven reliable by [9]) rather than
+      // seeding localStorage directly, so this exercises recordSceneVisit /
+      // recordChoicePick / renderChoices exactly as a real replay would.
+      const page = await browser.newPage();
+      await setupRoutes(page);
+      page.on('pageerror', e => errors.push(e.message));
+      await page.goto(BASE + '/adventure.html');
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+      await waitForLibrary(page);
+
+      const card = page.locator('.story-card', { hasText: VALDRATH_TEXT });
+      await card.locator('.slot-btn').first().click();
+      await waitForSetup(page);
+      await clickPrimary(page);
+      await page.locator('input[type=text]').fill('StatsTest');
+      await clickPrimary(page);
+      await page.locator('.class-card.fighter').click();
+      await waitForScene(page);
+
+      // First-ever visit to the opening scene (tavern, 3 choices) — no stats yet.
+      const statsBeforeCount = await page.locator('#scene-interact .choice-stat').count();
+      ok('No .choice-stat shown on a scene visited for the first time', statsBeforeCount === 0);
+
+      const firstChoiceBtn = page.locator('#scene-interact button').first();
+      const firstChoiceLabel = (await firstChoiceBtn.textContent()).trim();
+      await firstChoiceBtn.click();
+      await page.waitForTimeout(300);
+
+      const backBtn = page.locator('#scene-interact button.back-btn');
+      ok('Go-Back button available to return to the first-choice scene',
+        await backBtn.isVisible().catch(() => false));
+      await backBtn.click();
+      await page.waitForTimeout(300);
+
+      const choiceButtons = page.locator('#scene-interact button:not(.back-btn)');
+      const totalChoices = await choiceButtons.count();
+      const statsAfterCount = await page.locator('#scene-interact .choice-stat').count();
+      ok('.choice-stat appears under every choice on a scene\'s second visit',
+        totalChoices > 0 && statsAfterCount === totalChoices);
+
+      const pickedBtn = page.locator('#scene-interact button', { hasText: firstChoiceLabel }).first();
+      const pickedStatText = (await pickedBtn.locator('.choice-stat').textContent().catch(() => '')).trim();
+      ok('Previously-picked choice reports 1 pick out of 2 visits ("' + pickedStatText + '")',
+        /\b1\b/.test(pickedStatText) && /\b2\b/.test(pickedStatText));
+
+      const otherBtn = page.locator('#scene-interact button:not(.back-btn)').filter({ hasNotText: firstChoiceLabel }).first();
+      const otherStatText = (await otherBtn.locator('.choice-stat').textContent().catch(() => '')).trim();
+      ok('An unpicked choice on the same scene reports 0 picks out of 2 visits ("' + otherStatText + '")',
+        /\b0\b/.test(otherStatText) && /\b2\b/.test(otherStatText));
+
+      await page.close();
+    }
+
+    /* [16] No JS console errors */
+    console.log('\n[16] No JS console errors');
     ok('No uncaught JS errors across all tests', errors.length === 0);
     if (errors.length) errors.forEach(e => console.error('   Error:', e));
 
