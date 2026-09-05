@@ -1082,7 +1082,7 @@ window.STORIES.push({
         location: "Dursey Rock — the dock",
         choicePrompt: "Where do you go first?",
         paragraphs: [
-          "The dock is the same concrete, the same iron mooring rings, gone rust-orange now instead of rust-red. No rowing boat tied off this time. There's still a coiled rope with a frayed end — or rather, there is, but it's just rope now, old and stiff, finally, after all these years, done fraying.",
+          "The dock is the same concrete, the same iron mooring rings, gone rust-orange now instead of rust-red. No rowing boat tied off this time. There's still a coiled rope, or what's left of the frayed end you remember — it's just rope now, old and stiff, finally, after all these years, done fraying.",
           "Salt grass has taken the paths between the outbuildings. The equipment store door hangs open on one hinge. Nobody has needed fuel canisters or lamp wicks here in a long time. Nobody has needed a light.",
           "There's a shack near the old garden plot that wasn't here before — driftwood and salvaged tin, the work of someone who wanted shelter and didn't much care what it looked like. A thin curl of smoke rises from something that might generously be called a chimney. You don't know if that's Morrow. You don't know if 'Morrow' is still the right word for whatever chose, at some point in some telling, to stay."
         ],

@@ -1594,14 +1594,15 @@ window.STORIES.push({
       choicePrompt: "What do you do, before you leave for good?",
       paragraphs: [
         "The dais is exactly where it has always been, black glass lit from beneath by whatever light this court runs on when nothing living is watching it.",
-        "In one telling, the throne has stood empty since the night an ending was finally offered and finally accepted — Eravel dispersed into the dusk that made him, this room reduced at last to furniture with no one left to hold court from it. In another, he is still here, older around the eyes than a fae should be able to look, watching you with the wary respect of someone who remembers exactly what you cost him and never quite forgave the arithmetic. In another telling still, it isn't Eravel in that chair at all anymore. It's a shape that used to check exits before it sat down, that used to count doors and question everything, before the court decided — or it decided, which amounts to the same law either way — to keep it.",
+        "In one telling, the throne has stood empty since the night an ending was finally offered and finally accepted — Eravel dispersed into the dusk that made him, this room reduced at last to furniture with no one left to hold court from it. In another, he is still here, older around the eyes than a fae should be able to look, watching you with the wary respect of someone who remembers exactly what you cost him and never quite forgave the arithmetic. In another telling still, it isn't Eravel in that chair at all anymore. It's someone who spent half a life divided between two worlds and finally stopped having to choose — twilight blood settled the rest of the way into the shape it was always going to take, sovereign now instead of split down the middle, because some inheritances only ever wait to be claimed.",
         "You don't need to know which one is true tonight. You lived all three, or enough of them to stop needing the fourth.",
         function(s) {
           switch (s.charClass) {
             case "knight": return "You don't reach for the iron. There's nothing in this room asking to be resisted anymore, whichever version of the room you're standing in.";
             case "bard": return "You could sing something here. You find, for once, that you don't need to. Some rooms have already heard your best song and don't require an encore.";
             case "witch": return "You look for the binding language in the floor out of old habit. It's still there, faint under the rushes, still technically enforceable. You let it stay technical. Not every law needs invoking twice.";
-            default: return "Whatever half of you came from this place, it doesn't pull at you the way it used to. You can stand in this room now without needing it to mean anything about which world you belong to.";
+            case "changeling": return "Whatever half of you came from this place, it doesn't pull at you the way it used to. You can stand in this room now without needing it to mean anything about which world you belong to.";
+            default: return "You don't reach for anything to prove yourself here — not iron, not a song, not a citation, not a claim of belonging. Whatever this room once asked of you, you've already answered it more than once. Standing in it now doesn't require you to answer again.";
           }
         },
         "Whatever this room owes you, it already paid — in every telling that mattered, to every version of you that came looking for something it took."
