@@ -595,6 +595,91 @@ async function walkPaleSignal(page) {
       await page.close();
     }
 
+    /* [14] New Game+ epilogue unlock — Fae Court & Pale Signal (seeded ending completion) */
+    console.log('\n[14] New Game+ epilogue unlock — Fae Court & Pale Signal');
+    {
+      /* Fae Court: seed its 5 real ending IDs (isEnding:true, not isEpilogue). */
+      const page = await browser.newPage();
+      await setupRoutes(page);
+      page.on('pageerror', e => errors.push(e.message));
+      await page.goto(BASE + '/adventure.html');
+      await page.evaluate(() => {
+        localStorage.clear();
+        localStorage.setItem('adv_ends_fae_court', JSON.stringify({
+          end_heroic:      'A Sibling Returned',
+          end_bargain:     'The Gilded Cage',
+          end_partial:     'An Imperfect Freedom',
+          end_lost:        'Gone to the Gloaming',
+          end_court_claim: 'Twilight Sovereign'
+        }));
+      });
+      await page.reload();
+      await waitForLibrary(page);
+
+      const faeCard = page.locator('.story-card').filter({ hasText: 'Stolen Hours' });
+      const valdrathCard = page.locator('.story-card').filter({ hasText: VALDRATH_TEXT });
+      const paleCard = page.locator('.story-card').filter({ hasText: 'Pale Signal' });
+
+      ok('Fae Court: epilogue button appears after all 5 endings recorded',
+        await faeCard.locator('.epilogue-btn').isVisible().catch(() => false));
+      ok('Valdrath: epilogue button does NOT appear (only Fae Court endings seeded)',
+        !(await valdrathCard.locator('.epilogue-btn').isVisible().catch(() => false)));
+      ok('Pale Signal: epilogue button does NOT appear (only Fae Court endings seeded)',
+        !(await paleCard.locator('.epilogue-btn').isVisible().catch(() => false)));
+
+      await faeCard.locator('.epilogue-btn').click();
+      await waitForScene(page);
+
+      const faeTitle = await page.locator('#scene-title').textContent().catch(() => '');
+      ok('Fae Court epilogue opens scene with a visible title', faeTitle.trim().length > 0);
+
+      const faeBody = await page.locator('#scene-text').textContent().catch(() => '');
+      ok('Fae Court epilogue scene renders non-empty story text', faeBody.trim().length > 0);
+
+      await page.close();
+    }
+    {
+      /* Pale Signal: seed its 5 real ending IDs (isEnding:true, not isEpilogue). */
+      const page = await browser.newPage();
+      await setupRoutes(page);
+      page.on('pageerror', e => errors.push(e.message));
+      await page.goto(BASE + '/adventure.html');
+      await page.evaluate(() => {
+        localStorage.clear();
+        localStorage.setItem('adv_ends_pale_signal', JSON.stringify({
+          end_sealed:    'Clear Harbour',
+          end_broadcast: 'Open Channel',
+          end_recorded:  'Field Notes',
+          end_consumed:  'Below the Threshold',
+          end_contact:   'First Contact'
+        }));
+      });
+      await page.reload();
+      await waitForLibrary(page);
+
+      const paleCard = page.locator('.story-card').filter({ hasText: 'Pale Signal' });
+      const valdrathCard = page.locator('.story-card').filter({ hasText: VALDRATH_TEXT });
+      const faeCard = page.locator('.story-card').filter({ hasText: 'Stolen Hours' });
+
+      ok('Pale Signal: epilogue button appears after all 5 endings recorded',
+        await paleCard.locator('.epilogue-btn').isVisible().catch(() => false));
+      ok('Valdrath: epilogue button does NOT appear (only Pale Signal endings seeded)',
+        !(await valdrathCard.locator('.epilogue-btn').isVisible().catch(() => false)));
+      ok('Fae Court: epilogue button does NOT appear (only Pale Signal endings seeded)',
+        !(await faeCard.locator('.epilogue-btn').isVisible().catch(() => false)));
+
+      await paleCard.locator('.epilogue-btn').click();
+      await waitForScene(page);
+
+      const paleTitle = await page.locator('#scene-title').textContent().catch(() => '');
+      ok('Pale Signal epilogue opens scene with a visible title', paleTitle.trim().length > 0);
+
+      const paleBody = await page.locator('#scene-text').textContent().catch(() => '');
+      ok('Pale Signal epilogue scene renders non-empty story text', paleBody.trim().length > 0);
+
+      await page.close();
+    }
+
     /* [15] Choice stats (visit/pick tracking) */
     console.log('\n[15] Choice stats (visit/pick tracking)');
     {
