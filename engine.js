@@ -4,6 +4,7 @@
   var state = { name: "", charClass: "", flags: {}, history: [], story: null, slot: 1, snapshots: [] };
 
   var setupContentEl  = document.getElementById("setup-content");
+  var sceneContentEl  = document.getElementById("scene-content");
   var sceneChapterEl  = document.getElementById("scene-chapter");
   var sceneTitleEl    = document.getElementById("scene-title");
   var sceneLocationEl = document.getElementById("scene-location");
@@ -62,7 +63,7 @@
   }
 
   function countEndingScenes(scenes) {
-    return Object.keys(scenes).filter(function(id) { return scenes[id].isEnding; }).length;
+    return Object.keys(scenes).filter(function(id) { return scenes[id].isEnding && !scenes[id].isEpilogue; }).length;
   }
 
   /* ---- PREFERENCES ---- */
@@ -207,7 +208,7 @@
     var toast = document.createElement("div");
     toast.className = "achievement-toast";
     toast.innerHTML =
-      '<span class="achievement-toast-icon">' + (ach.icon || "🏆") + '</span>' +
+      '<span class="achievement-toast-icon" aria-hidden="true">' + (ach.icon || "🏆") + '</span>' +
       '<div class="achievement-toast-body">' +
         '<div class="achievement-toast-label">Achievement Unlocked</div>' +
         '<div class="achievement-toast-title">' + ach.title + '</div>' +
@@ -267,6 +268,12 @@
 
   /* ---- DOM UTILITIES ---- */
 
+  var SCENE_FADE_MS = 220;
+
+  function prefersReducedMotion() {
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
   function showPage(id) {
     document.querySelectorAll(".page").forEach(function (p) { p.classList.remove("active"); });
     document.getElementById(id).classList.add("active");
@@ -322,7 +329,7 @@
         '<div class="ach-modal-box">' +
           '<div class="ach-modal-header">' +
             '<h2 class="ach-modal-title" id="ach-modal-title"></h2>' +
-            '<button class="ach-modal-close" aria-label="Close achievements">×</button>' +
+            '<button class="ach-modal-close" aria-label="Close achievements"><span aria-hidden="true">×</span></button>' +
           '</div>' +
           '<div class="ach-modal-grid"></div>' +
         '</div>';
@@ -348,7 +355,7 @@
       var item = document.createElement("div");
       item.className = "ach-item" + (isUnlocked ? " ach-item-unlocked" : " ach-item-locked");
       item.innerHTML =
-        '<div class="ach-item-icon">' + (ach.icon || "🏆") + "</div>" +
+        '<div class="ach-item-icon" aria-hidden="true">' + (ach.icon || "🏆") + "</div>" +
         '<div class="ach-item-title">' + (isUnlocked ? ach.title : "???") + "</div>" +
         '<div class="ach-item-desc">' + (isUnlocked ? ach.desc : "Keep playing to unlock") + "</div>";
       grid.appendChild(item);
@@ -443,6 +450,22 @@
         }
       }
 
+      if (entry.id && entry.story.scenes.epilogue_start) {
+        var ends2 = getEndings(entry.id);
+        var totalEnds2 = countEndingScenes(entry.story.scenes);
+        if (totalEnds2 > 0 && Object.keys(ends2).length >= totalEnds2) {
+          var epBtn = document.createElement("button");
+          epBtn.type = "button";
+          epBtn.className = "epilogue-btn";
+          epBtn.innerHTML = '<span aria-hidden="true">▶</span> Epilogue';
+          epBtn.setAttribute("aria-label", "Play the epilogue for " + entry.title);
+          epBtn.addEventListener("click", (function(e) {
+            return function() { startEpilogue(e); };
+          })(entry));
+          card.appendChild(epBtn);
+        }
+      }
+
       if (entry.id && entry.achievements && entry.achievements.length) {
         var unlocked = getAchievements(entry.id);
         var unlockedCount = Object.keys(unlocked).length;
@@ -456,7 +479,7 @@
         achToggle.className = "achievements-toggle";
         achToggle.innerHTML =
           '<span class="achievements-count">' + unlockedCount + " of " + total + " achievements</span>" +
-          '<span class="achievements-chevron">›</span>';
+          '<span class="achievements-chevron" aria-hidden="true">›</span>';
         achToggle.addEventListener("click", (function (e) {
           return function () { openAchievementsModal(e); };
         })(entry));
@@ -495,6 +518,22 @@
     if (window.AudioEngine) AudioEngine.setStory(entry.id);
     showPage("page-setup");
     showSetupIntro();
+  }
+
+  function startEpilogue(entry) {
+    state.story = entry;
+    state.slot = "epilogue";
+    state.name = "";
+    state.charClass = "";
+    state.flags = {};
+    state.history = [];
+    state.snapshots = [];
+    var ends = getEndings(entry.id);
+    Object.keys(ends).forEach(function(sceneId) { state.flags["saw_" + sceneId] = true; });
+    classBadgeEl.textContent = "";
+    classBadgeEl.className = "class-badge";
+    if (window.AudioEngine) AudioEngine.setStory(entry.id);
+    loadScene("epilogue_start");
   }
 
   /* ---- SETUP FLOW ---- */
@@ -642,53 +681,71 @@
     var scene = state.story.story.scenes[id];
     if (!scene) { console.error("Missing scene:", id); return; }
 
-    state.history.push(id);
-    showPage("page-scene");
-    if (window.AudioEngine) AudioEngine.onSceneLoad(id, scene);
+    function renderScene() {
+      state.history.push(id);
+      showPage("page-scene");
+      if (window.AudioEngine) AudioEngine.onSceneLoad(id, scene);
 
-    sceneChapterEl.textContent  = scene.chapter  || "";
-    sceneTitleEl.textContent    = scene.title     || "";
-    sceneLocationEl.textContent = scene.location  || "";
+      sceneChapterEl.textContent  = scene.chapter  || "";
+      sceneTitleEl.textContent    = scene.title     || "";
+      sceneLocationEl.textContent = scene.location  || "";
 
-    sceneTextEl.innerHTML = "";
-    cancelTypewriter();
-    clearInteract(sceneInteractEl);
-    updateHistoryPanel();
+      sceneTextEl.innerHTML = "";
+      cancelTypewriter();
+      clearInteract(sceneInteractEl);
+      sceneInteractEl.style.pointerEvents = "";
+      updateHistoryPanel();
 
-    var paras = scene.paragraphs || [];
-    var lines = paras.map(function (p) { return typeof p === "function" ? p(state) : p; }).filter(function (l) { return l != null && l !== ""; });
+      var paras = scene.paragraphs || [];
+      var lines = paras.map(function (p) { return typeof p === "function" ? p(state) : p; }).filter(function (l) { return l != null && l !== ""; });
 
-    function afterParagraphs() {
-      if (scene.isEnding) {
-        recordEnding(id, scene.title);
-        checkAchievements(id);
-        renderContinue(sceneInteractEl, "Play Again", startGame);
-      } else {
-        saveProgress(id);
-        checkAchievements(id);
-        renderChoices(scene.choices || [], scene.choicePrompt);
-        if (state.snapshots.length > 0) {
-          var backBtn = document.createElement("button");
-          backBtn.type = "button";
-          backBtn.className = "choice-btn back-btn";
-          backBtn.textContent = "← Go Back";
-          backBtn.addEventListener("click", function () {
-            var snap = state.snapshots.pop();
-            state.flags = snap.flags;
-            state.history = snap.history;
-            loadScene(snap.sceneId);
-          });
-          sceneInteractEl.hidden = false;
-          sceneInteractEl.appendChild(backBtn);
+      function afterParagraphs() {
+        if (scene.isEnding) {
+          if (!scene.isEpilogue) recordEnding(id, scene.title);
+          checkAchievements(id);
+          renderContinue(sceneInteractEl, "Play Again", startGame);
+        } else {
+          saveProgress(id);
+          checkAchievements(id);
+          renderChoices(scene.choices || [], scene.choicePrompt);
+          if (state.snapshots.length > 0) {
+            var backBtn = document.createElement("button");
+            backBtn.type = "button";
+            backBtn.className = "choice-btn back-btn";
+            backBtn.textContent = "← Go Back";
+            backBtn.addEventListener("click", function () {
+              var snap = state.snapshots.pop();
+              state.flags = snap.flags;
+              state.history = snap.history;
+              loadScene(snap.sceneId);
+            });
+            sceneInteractEl.hidden = false;
+            sceneInteractEl.appendChild(backBtn);
+          }
         }
+      }
+
+      if (getTypewriter()) {
+        startTypewriter(lines, afterParagraphs);
+      } else {
+        addPs(sceneTextEl, lines);
+        afterParagraphs();
+      }
+
+      if (sceneContentEl) {
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { sceneContentEl.classList.remove("scene-fade-out"); });
+        });
       }
     }
 
-    if (getTypewriter()) {
-      startTypewriter(lines, afterParagraphs);
+    if (sceneContentEl && !prefersReducedMotion()) {
+      sceneContentEl.classList.add("scene-fade-out");
+      sceneInteractEl.style.pointerEvents = "none";
+      setTimeout(renderScene, SCENE_FADE_MS);
     } else {
-      addPs(sceneTextEl, lines);
-      afterParagraphs();
+      if (sceneContentEl) sceneContentEl.classList.remove("scene-fade-out");
+      renderScene();
     }
   }
 
@@ -754,7 +811,20 @@
   function injectStoryScripts(catalog) {
     if (!catalog.length) { showLibrary(); return; }
     var pending = catalog.length;
-    function onDone() { pending--; if (pending === 0) showLibrary(); }
+    function onDone() {
+      pending--;
+      if (pending === 0) {
+        // Dynamically injected <script> tags load asynchronously and are not
+        // guaranteed to execute in DOM order, so window.STORIES.push() calls
+        // can land in a different order on every page load. Re-sort to match
+        // the catalog's declared order so the library grid is deterministic.
+        var order = catalog.map(function (e) { return e.id; });
+        (window.STORIES || []).sort(function (a, b) {
+          return order.indexOf(a.id) - order.indexOf(b.id);
+        });
+        showLibrary();
+      }
+    }
     catalog.forEach(function (entry) {
       var s = document.createElement("script");
       s.src = entry.file;
