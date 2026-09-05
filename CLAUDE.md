@@ -179,7 +179,23 @@ Full class-differentiation pass across the entire story. Goal: every class shoul
 - **Standalone bundle regenerated** — `adventure_standalone.html` (371 KB) rebuilt to include all of the above: Go-Back button, Pale Signal audio, prose fixes, achievements, secret endings.
 - All 27 Playwright checks pass.
 
-### What still needs to happen — NEXT SESSION
+### What was completed (thirteenth session)
+
+- **Achievement modal upgrade** — clicking an achievement badge in the collapsible panel now opens a full-screen modal with the achievement icon, title, description, and unlock condition. Locked achievements show as greyed-out placeholders. Modal closes on backdrop click or Escape key.
+- **Story Forge authoring tool** — published as a Claude Artifact; a visual web-based editor for writing new stories in the engine format. Authors fill in scene IDs, paragraph text, choice labels, flag gates, and class restrictions through a form UI; the tool generates a valid `stories/*.js` file ready to drop into the catalog. Useful for contributing new stories without touching raw JS.
+
+### What was completed (fourteenth session)
+
+Full content audit of all three stories against the user request: "Make sure the content matches with the classes and the choices. The choices also need to make sense with the details before and after the decision point. Everything should be unique between the classes in each story so every run through is a different experience but also needs to match the dialogue."
+
+- **`valdrath.js`** — no issues found. Class differentiation is thorough and internally consistent throughout all routing, prose, and choice labels.
+- **`pale_signal.js`** — critical bug fixed: the `id: "pale_signal"` field was missing from the story's `window.STORIES.push({...})` call. Without it, save keys (`adv_save_undefined`), achievement tracking (`adv_achievements_undefined`), and ending recording all silently wrote to wrong keys.
+- **`fae_court.js`** — two narrative inconsistencies fixed:
+  1. `boss_approach`: a witch without `has_true_name` previously saw "Speak his true name." as their class-signature choice but was routed to `boss_direct`. Now shows "Assert the Accord. Force his compliance." — accurately reflecting their legal entry rights while correctly routing to the unprepared-confrontation scene.
+  2. `boss_direct`: the Thornweave's diagnostic line ("No iron. No true name. No contest law cited.") was factually wrong for any witch, who cited the Accord to enter the court. Now a `function(s)` — witch sees "The Accord. The archive clause. You know your law. No true name, though." while all other classes see the original line.
+- All 27 Playwright checks pass.
+
+### What still needs to happen
 
 1. **Release APK** — debug APK is sideloadable but for Play Store distribution, a signed release APK is needed (`Build → Generate Signed Bundle / APK` in Android Studio, requires a keystore).
 2. **Custom Android icon** — Capacitor uses generic launcher icons by default. Replace with the Valdrath's Keep icon via Android Studio's Image Asset tool (`res/mipmap-*`).

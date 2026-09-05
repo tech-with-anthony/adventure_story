@@ -307,6 +307,62 @@
     btn.focus();
   }
 
+  /* ---- ACHIEVEMENTS MODAL ---- */
+
+  function openAchievementsModal(entry) {
+    var modal = document.getElementById("achievements-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "achievements-modal";
+      modal.setAttribute("role", "dialog");
+      modal.setAttribute("aria-modal", "true");
+      modal.setAttribute("aria-labelledby", "ach-modal-title");
+      modal.innerHTML =
+        '<div class="ach-modal-backdrop"></div>' +
+        '<div class="ach-modal-box">' +
+          '<div class="ach-modal-header">' +
+            '<h2 class="ach-modal-title" id="ach-modal-title"></h2>' +
+            '<button class="ach-modal-close" aria-label="Close achievements">×</button>' +
+          '</div>' +
+          '<div class="ach-modal-grid"></div>' +
+        '</div>';
+      document.body.appendChild(modal);
+      modal.querySelector(".ach-modal-backdrop").addEventListener("click", closeAchievementsModal);
+      modal.querySelector(".ach-modal-close").addEventListener("click", closeAchievementsModal);
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !modal.hidden) closeAchievementsModal();
+      });
+    }
+
+    var unlocked = getAchievements(entry.id);
+    var unlockedCount = Object.keys(unlocked).length;
+    var total = entry.achievements.length;
+
+    modal.querySelector(".ach-modal-title").textContent =
+      entry.title + " — " + unlockedCount + " of " + total + " Achievements";
+
+    var grid = modal.querySelector(".ach-modal-grid");
+    grid.innerHTML = "";
+    entry.achievements.forEach(function (ach) {
+      var isUnlocked = !!unlocked[ach.id];
+      var item = document.createElement("div");
+      item.className = "ach-item" + (isUnlocked ? " ach-item-unlocked" : " ach-item-locked");
+      item.innerHTML =
+        '<div class="ach-item-icon">' + (ach.icon || "🏆") + "</div>" +
+        '<div class="ach-item-title">' + (isUnlocked ? ach.title : "???") + "</div>" +
+        '<div class="ach-item-desc">' + (isUnlocked ? ach.desc : "Keep playing to unlock") + "</div>";
+      grid.appendChild(item);
+    });
+
+    modal.hidden = false;
+    modal.querySelector(".ach-modal-close").focus();
+  }
+
+  function closeAchievementsModal() {
+    var modal = document.getElementById("achievements-modal");
+    if (modal) modal.hidden = true;
+  }
+
   /* ---- LIBRARY FLOW ---- */
 
   function showLibrary() {
@@ -398,37 +454,14 @@
         var achToggle = document.createElement("button");
         achToggle.type = "button";
         achToggle.className = "achievements-toggle";
-        achToggle.setAttribute("aria-expanded", "false");
         achToggle.innerHTML =
-          '<span class="achievements-count">' + unlockedCount + ' of ' + total + ' achievements</span>' +
-          '<span class="achievements-chevron">▾</span>';
-
-        var achList = document.createElement("div");
-        achList.className = "achievements-list";
-        achList.hidden = true;
-
-        entry.achievements.forEach(function (ach) {
-          var isUnlocked = !!unlocked[ach.id];
-          var item = document.createElement("div");
-          item.className = "achievement-item" + (isUnlocked ? " unlocked" : " locked");
-          item.innerHTML =
-            '<span class="achievement-item-icon">' + (ach.icon || "🏆") + '</span>' +
-            '<div class="achievement-item-text">' +
-              '<div class="achievement-item-title">' + ach.title + '</div>' +
-              '<div class="achievement-item-desc">' + (isUnlocked ? ach.desc : "Keep playing to unlock") + '</div>' +
-            '</div>';
-          achList.appendChild(item);
-        });
-
-        achToggle.addEventListener("click", function () {
-          var open = achList.hidden;
-          achList.hidden = !open;
-          achToggle.setAttribute("aria-expanded", open ? "true" : "false");
-          achToggle.querySelector(".achievements-chevron").textContent = open ? "▴" : "▾";
-        });
+          '<span class="achievements-count">' + unlockedCount + " of " + total + " achievements</span>" +
+          '<span class="achievements-chevron">›</span>';
+        achToggle.addEventListener("click", (function (e) {
+          return function () { openAchievementsModal(e); };
+        })(entry));
 
         achSection.appendChild(achToggle);
-        achSection.appendChild(achList);
         card.appendChild(achSection);
       }
 
