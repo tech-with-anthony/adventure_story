@@ -602,6 +602,33 @@
     letter-spacing: 0.02em;
   }
 
+  /* Epilogue unlock button */
+  .epilogue-btn {
+    display: block;
+    width: 100%;
+    margin-top: 0.35rem;
+    padding: 0.6rem 0.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--gold-bright);
+    background: transparent;
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    box-shadow: 0 0 10px -2px var(--gold);
+  }
+  .epilogue-btn:hover:not(:disabled),
+  .epilogue-btn:focus-visible {
+    color: #2a1f0c;
+    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 100%);
+    box-shadow: 0 0 16px -2px var(--gold-bright);
+    transform: translateY(-1px);
+  }
+  .epilogue-btn:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+
   /* Class chips */
   .story-class-chip {
     font-family: 'Cinzel', serif;

@@ -62,7 +62,7 @@
   }
 
   function countEndingScenes(scenes) {
-    return Object.keys(scenes).filter(function(id) { return scenes[id].isEnding; }).length;
+    return Object.keys(scenes).filter(function(id) { return scenes[id].isEnding && !scenes[id].isEpilogue; }).length;
   }
 
   /* ---- PREFERENCES ---- */
@@ -443,6 +443,22 @@
         }
       }
 
+      if (entry.id) {
+        var ends2 = getEndings(entry.id);
+        var totalEnds2 = countEndingScenes(entry.story.scenes);
+        if (totalEnds2 > 0 && Object.keys(ends2).length >= totalEnds2) {
+          var epBtn = document.createElement("button");
+          epBtn.type = "button";
+          epBtn.className = "epilogue-btn";
+          epBtn.textContent = "▶ Epilogue";
+          epBtn.setAttribute("aria-label", "Play the epilogue for " + entry.title);
+          epBtn.addEventListener("click", (function(e) {
+            return function() { startEpilogue(e); };
+          })(entry));
+          card.appendChild(epBtn);
+        }
+      }
+
       if (entry.id && entry.achievements && entry.achievements.length) {
         var unlocked = getAchievements(entry.id);
         var unlockedCount = Object.keys(unlocked).length;
@@ -495,6 +511,22 @@
     if (window.AudioEngine) AudioEngine.setStory(entry.id);
     showPage("page-setup");
     showSetupIntro();
+  }
+
+  function startEpilogue(entry) {
+    state.story = entry;
+    state.slot = "epilogue";
+    state.name = "";
+    state.charClass = "";
+    state.flags = {};
+    state.history = [];
+    state.snapshots = [];
+    var ends = getEndings(entry.id);
+    Object.keys(ends).forEach(function(sceneId) { state.flags["saw_" + sceneId] = true; });
+    classBadgeEl.textContent = "";
+    classBadgeEl.className = "class-badge";
+    if (window.AudioEngine) AudioEngine.setStory(entry.id);
+    loadScene("epilogue_start");
   }
 
   /* ---- SETUP FLOW ---- */
@@ -660,7 +692,7 @@
 
     function afterParagraphs() {
       if (scene.isEnding) {
-        recordEnding(id, scene.title);
+        if (!scene.isEpilogue) recordEnding(id, scene.title);
         checkAchievements(id);
         renderContinue(sceneInteractEl, "Play Again", startGame);
       } else {

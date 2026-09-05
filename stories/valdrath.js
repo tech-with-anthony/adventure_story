@@ -23,7 +23,8 @@ window.STORIES.push({
     { id: "know_weakness",   icon: "📖", title: "Know Thine Enemy",    desc: "Uncover Malachar's weakness through parley or study.",   condition: { type: "flag_set",     flag: "know_weakness" } },
     { id: "quiet_way",       icon: "🗝️", title: "The Quiet Way",       desc: "Find a way into the keep without alerting the guards.",  condition: { type: "flag_set",     flag: "entered_quietly" } },
     { id: "eternal_bind",    icon: "🔒", title: "Sealed in Stone",     desc: "Find the hidden ending — bind Malachar rather than destroy him.", condition: { type: "any_ending", ending: "end_bound" } },
-    { id: "all_endings",     icon: "📜", title: "Historian of Ruin",   desc: "Discover all four endings.",                             condition: { type: "all_endings" } }
+    { id: "all_endings",     icon: "📜", title: "Historian of Ruin",   desc: "Discover all four endings.",                             condition: { type: "all_endings" } },
+    { id: "the_last_telling", icon: "🕯️", title: "The Last Telling",   desc: "Return to Valdrath's Keep one final time, having seen every way its story ends.", condition: { type: "scene_visit", scene: "epilogue_end" } }
   ],
   story: {
     start: "tavern",
@@ -1448,6 +1449,244 @@ window.STORIES.push({
         "That almost matters. But almost is the word the dead know best.",
         "The green light burns on in Valdrath's Keep, visible from the road on clear nights. Thornwall closes its shutters and does not look north after dark.",
         "The story is not over. It is only waiting for someone else to try."
+      ]
+    },
+
+    "epilogue_start": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "The Road, Again",
+      location: "The Northern Road — Some Other Time",
+      choicePrompt: "How do you walk it?",
+      paragraphs: [
+        function (s) {
+          return s.name + " has walked this road as more people than one body should be able to hold — soldier, scholar, thief, believer, sometimes the one who bled for it and sometimes the one who buried something small and dangerous under a crossroads shrine three miles south. All of it happened. None of it happened at the same time. You remember it anyway, the way a hand remembers every glove it has ever worn.";
+        },
+        "The green light went out clean, once. It banked to embers and waited, once. It burned on after everything you had was already spent, once. You watched a stone that used to scream go quiet in your palm and called that mercy, once. Every keep needed someone; you have been all of the someones it needed, one telling at a time.",
+        "None of that is what's happening tonight. There's no messenger's purse in your coat, no lord's fear riding behind you, no reward posted at the road's end you haven't already collected in every denomination it comes in. Whatever needed ending, some version of you already ended it.",
+        "You came back anyway."
+      ],
+      choices: [
+        { text: "Walk it slowly. Nothing's chasing you this time.", setsFlag: "epilogue_unhurried", next: "epilogue_approach" },
+        { text: "Your feet already know the way. Don't slow down for memory.", next: "epilogue_approach" }
+      ]
+    },
+
+    "epilogue_approach": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "The Thornwood, Unwatched",
+      location: "The Thornwood",
+      choicePrompt: "How do you enter the keep grounds?",
+      paragraphs: [
+        function (s) {
+          if (s.flags.epilogue_unhurried) {
+            return "You find the place where three bandits once stepped out of the tree line with blades drawn. There's nothing left to mark it — no cairn, no broken branch, nothing that remembers being a fight. You stand there anyway, a minute longer than the spot deserves.";
+          }
+          return "You don't look for the place where the bandits stepped out of the tree line. It doesn't matter to you tonight, and the road doesn't slow down to ask.";
+        },
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "You catch yourself scanning the tree line out of an old, expensive habit, and then catch yourself smiling at the habit. Nothing is going to come out of these trees tonight. You've checked. You keep checking anyway.";
+            case "wizard":
+              return "The air here finally feels like air — no drained hush, no held-breath stillness where the ambient magic used to be siphoned thin. It took you a long time, across a long list of tellings, to notice that silence could mean nothing at all.";
+            case "rogue":
+              return "You're not counting exits. You realize this three hundred yards in, and it startles you more than any ambush ever did — the particular vertigo of a road that doesn't need you to be careful.";
+            case "cleric":
+              return "There's an ordinary hush over the Thornwood now, the kind woods are supposed to have. You say a small thanks for it, the way you'd thank someone for returning something you had stopped expecting back.";
+            default:
+              return "";
+          }
+        },
+        "The keep comes into view the way it always does — stone against a paling sky, walls older than the family that claimed them. Some tellings end with a tower down and half a wall open to weather. Some end with every window dark and quiet as a held breath. Tonight it is simply there, the way stone is there after everything that was ever going to happen to it already has."
+      ],
+      choices: [
+        { text: "Go in through the front gate, the way you did the first time.", next: "epilogue_gate" },
+        { text: "Circle round to the east wall, out of old habit.", next: "epilogue_gate" }
+      ]
+    },
+
+    "epilogue_gate": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "An Open Door",
+      location: "Valdrath's Keep — The Gate",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The portcullis is exactly as up as it's always been, rusted into position by however many seasons have passed since anyone last needed to raise or lower it. No skeletal guards flank the arch. Whatever stood there, in whichever telling, isn't standing there now.",
+        "Grass has found its way between the courtyard stones — not much, just enough to prove something in this ground still intends to grow. You cross to where the gate's shadow used to reach and don't flinch when you pass through it.",
+        "The keep swallows sound the way it always did, but the quality of the swallowing has changed. It isn't the pressurized nothing of a place still occupied. It's just quiet. An old building, minding its own emptiness."
+      ],
+      choices: [
+        { text: "Cross into the grand hall.", next: "epilogue_hall" },
+        { text: "Stand a moment in the courtyard first.", next: "epilogue_hall" }
+      ]
+    },
+
+    "epilogue_hall": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "The Grand Hall, Settled",
+      location: "Valdrath's Keep — Main Hall",
+      choicePrompt: "Where do you go?",
+      paragraphs: [
+        "The tapestries finished rotting a long time ago. What's left of them is closer to soil than fabric, dark rectangles on grey stone where something used to hang. The overturned furniture never got put right — no one ever came to do that — but it has stopped looking like violence. It just looks like furniture that fell down.",
+        "No green light pulses from the floors above. You look up out of reflex and see only the dark a building is supposed to have at night.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "You find the choke points again without meaning to — the doorways, the sightlines, the place where you'd have made your stand if it had come to that again. It doesn't come to that again. You let your hand fall away from your hilt and notice, with some surprise, how long it takes.";
+            case "wizard":
+              return "The wall where the binding lattice used to be scarred into the stone still carries a faint discoloration, the way skin holds a scar long after the wound that made it. You put your palm against it. It's cold in the ordinary way now. Just old stone.";
+            case "rogue":
+              return "You look for the line of disturbed dust that used to run along the left passage — a track something wore into this floor by walking it too often. It isn't there. Nothing's walked this hall in a long time. You find you don't miss having something to track.";
+            case "cleric":
+              return "The hall used to feel like a room with no air in it — a wound left open, the dead denied and displaced. It still isn't blessed. No one has come to say the words this room is owed. But it has stopped being a wound. It is only an old room now, waiting the way old rooms wait, without urgency.";
+            default:
+              return "";
+          }
+        },
+        "Two doors remain, the ones you remember. One toward the armory. One toward the chapel."
+      ],
+      choices: [
+        { text: "Go right, to the armory. There's someone you want to check on.", next: "epilogue_armory" },
+        { text: "Go left, to the chapel. That's the room that needs you.", next: "epilogue_chapel" }
+      ]
+    },
+
+    "epilogue_armory": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "The Empty Rack",
+      location: "Valdrath's Keep — Guard Wing",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The armory has finished being picked over. What racks remain are down to rust-shadows on the wall where iron used to hang. Someone — you, some other telling of you — took what mattered out of this room a long time ago.",
+        "The corner by the empty rack is just a corner. No shape holds itself there in guard's livery, staring at nothing. If it was ever going to be released, it already has been. If it was never really there to begin with, this is what that also looks like.",
+        "You stand where you once tried, or didn't try, to speak to something too far gone for words."
+      ],
+      choices: [
+        { text: "Say something into the empty corner, just in case it's still listening somewhere.", next: "epilogue_armory_ghost" },
+        { text: "Let the room stay quiet. Some things don't need an answer to be finished.", next: "epilogue_armory_quiet" }
+      ]
+    },
+
+    "epilogue_armory_ghost": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "Just in Case",
+      location: "Valdrath's Keep — Guard Wing",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        function (s) {
+          return s.name + " says a name into the empty corner — not the ghost's, since you never learned it, but your own, and the word 'finished,' and nothing else. It feels less foolish than you expected. It feels like exactly the right amount of foolish.";
+        },
+        "Nothing answers. Dust doesn't move. No cold spot draws itself around your shoulders, no impression of a livery collar or a soldier's fixed stare. Whatever stood its last post in this room stood it, eventually, all the way through to the end. That's what a post is for.",
+        "You leave the corner the way you found it. Empty is not the same thing as unresolved."
+      ],
+      choices: [
+        { text: "Go down to the crypt.", next: "epilogue_crypt" }
+      ]
+    },
+
+    "epilogue_armory_quiet": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "No Need",
+      location: "Valdrath's Keep — Guard Wing",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "You don't call out. Whatever happened here happened without needing your permission or your witness, in this telling or any of the others. You've done enough talking to the dead for one lifetime, or several.",
+        "You let the corner stay a corner. There's a kind of respect in that — not every silence is a wound. Some of them are just finished business, closed the way you close a door instead of the way you seal one."
+      ],
+      choices: [
+        { text: "Go down to the crypt.", next: "epilogue_crypt" }
+      ]
+    },
+
+    "epilogue_chapel": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "The Chapel, Unlit",
+      location: "Valdrath's Keep — Chapel",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The altar stands where it's always stood — toppled in some tellings, restored in others, and here, tonight, just an old stone shape in a small cold room, its history worn too smooth to read at a glance.",
+        "You run a hand along the edge of it anyway. Whatever you did here, or didn't do, the room holds the same weather now: dim, still, unbothered by whether anyone ever forgave it.",
+        function (s) {
+          if (s.charClass === "cleric") {
+            return "You kneel out of habit more than need. There's nothing left to reconsecrate — either it's already done, or it was never going to be, and either way the gesture isn't for the stone. It's for you.";
+          }
+          return "You don't kneel. It was never quite your room to fix, in any telling, and the keep has never once asked you to pretend otherwise.";
+        }
+      ],
+      choices: [
+        { text: "Go down to the crypt.", next: "epilogue_crypt" }
+      ]
+    },
+
+    "epilogue_crypt": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "The Stairs, Without Cold",
+      location: "Valdrath's Keep — The Crypt",
+      choicePrompt: "What do you do?",
+      paragraphs: [
+        "The stairs go down the same long way they always have. The cold that used to rise to meet you here — the specific, considering cold of something that already knew you were coming — doesn't rise tonight. It's just cellar air. Old and still and nobody's.",
+        "The alcoves are where you left them, iron plaques over names too old to matter to anyone but whoever cut them. The oldest dead were always the safest dead in this place. That hasn't changed, whatever else has.",
+        "At the far end, the seal chamber: four pillars, sword and flame and shadow and sunburst, and the dais between them where the stone door tested you once. The runes have stopped shifting. They sit still now, worn smooth wherever you personally pressed your palm, or your blade, or your faith against them.",
+        "You find the pillar that answered you and rest your hand on it for a moment. It doesn't answer twice. Trials don't, as a rule. You weren't really asking it to."
+      ],
+      choices: [
+        { text: "Step through into the sanctum, one last time.", next: "epilogue_sanctum" }
+      ]
+    },
+
+    "epilogue_sanctum": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "Malachar's Chamber, Quiet",
+      location: "Valdrath's Keep — The Sanctum",
+      choicePrompt: "What do you do, before you leave for good?",
+      paragraphs: [
+        "The chamber is exactly as large as you remember and exactly as empty as it should be. The green flames that lit it without warmth are gone, or banked to nothing, or sealed three miles south under a crossroads shrine, depending on which telling you're standing inside tonight. The throne of fused bone and dark iron is still there. It's just furniture now.",
+        function (s) {
+          switch (s.charClass) {
+            case "fighter":
+              return "You don't reach for your weapon. There's nothing here asking you to. You stand in the middle of the floor where you once measured the distance between yourself and something that wanted you dead, and you let the measuring stop. It's the first time, in every telling, that it has.";
+            case "wizard":
+              return "You'd have liked to take notes. Instead you just look — at the throne, at the cracks in the stone floor, at the absence where a century of sustained working used to hum under everything. Some data only exists in the noticing. You notice it, once, and let that be enough.";
+            case "rogue":
+              return "You check the throne for anything worth taking out of pure professional reflex, and find nothing, and feel no disappointment about it. You already took the only thing this room ever had that mattered. You don't remember, anymore, if it was gold.";
+            case "cleric":
+              return "You say the rite anyway — the short version, the battlefield prayer, not because anything here still needs releasing but because some words are owed regardless of whether they're required. The chamber doesn't answer. You didn't come here for an answer.";
+            default:
+              return "";
+          }
+        },
+        "Whatever this room used to hold — a man who chose wrong a long time ago, or the wreckage of that choice, or nothing at all anymore — it isn't holding it tonight. You stood at the center of every version of this ending there was. You don't have to choose between them. You already lived all of them."
+      ],
+      choices: [
+        { text: "Sit in the quiet a while before you go.", setsFlag: "epilogue_sat_with_it", next: "epilogue_end" },
+        { text: "Say something out loud to the empty throne, and mean it.", next: "epilogue_end" }
+      ]
+    },
+
+    "epilogue_end": {
+      chapter: "Epilogue — After the Last Telling",
+      title: "What the Keep Keeps",
+      location: "Valdrath's Keep — Long After",
+      isEnding: true,
+      isEpilogue: true,
+      paragraphs: [
+        function (s) {
+          return s.name + " climbs back up through the crypt, past the seal chamber and the old dead and the settled hall, and out through the gate into whatever hour of morning has decided to be waiting.";
+        },
+        function (s) {
+          if (s.flags.epilogue_sat_with_it) {
+            return "You sat with it a while down there, in the quiet, before you climbed out. It felt less like mourning and more like counting — making sure every version of what happened in that chamber was accounted for, at least once, by someone who was actually there for all of them.";
+          }
+          return "You said your piece to the throne and meant every word of it, and whatever you said is yours to keep. Some things don't need a witness to be true.";
+        },
+        "No coin purse waits at the gate this time. No messenger, no lord, no survivor with a key pressed into your hands. Thornwall doesn't know you came back, and won't ask, and that turns out to be exactly the right amount of attention for this particular trip.",
+        "The keep will still be here the next time someone needs it to mean something. It has been a soldier's fight, a scholar's puzzle, a thief's job, a believer's vigil, and, once, a stone buried quietly and asked to keep a promise. It has been all of those things because you were all of those people, at different times, in different tellings, and it never once complained about the inconsistency.",
+        function (s) {
+          return "This time it was neither. This time " + s.name + " came back only to look, and only to leave on your own terms, with nothing left to prove to Lord Harwick, or Malachar, or the fifty gold crowns that started all of it more tellings ago than you've bothered to count.";
+        },
+        "Somewhere behind you, the keep settles the way old stone settles — not collapsing, not healing, just continuing, indifferent to whichever ending you brought with you this time.",
+        "You walk south. The road doesn't need you to remember it. You do anyway.",
+        "The story is finished being told. You are the only one who was there for every way it ends — and that, it turns out, was the last thing left to give this place. You gave it."
       ]
     }
 
