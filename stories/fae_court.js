@@ -1054,7 +1054,7 @@ window.STORIES.push({
           text: function(s) {
             if (s.charClass === "knight") return "Draw your iron blade and charge.";
             if (s.charClass === "bard") return "Challenge him to a contest of songs.";
-            if (s.charClass === "witch") return "Speak his true name.";
+            if (s.charClass === "witch") return s.flags.has_true_name ? "Speak his true name." : "Assert the Accord. Force his compliance.";
             return "Invoke your fae heritage to challenge the court.";
           },
           next: function(s) {
@@ -1151,7 +1151,12 @@ window.STORIES.push({
       location: "The Throne Room",
       paragraphs: [
         "You go to the throne with nothing but yourself.",
-        "The Thornweave looks at you for a long moment. Then: \"No iron. No true name. No contest law cited. No ally hidden in the wings.\" He tilts his head. \"Just you.\"",
+        function(s) {
+          if (s.charClass === "witch") {
+            return "The Thornweave looks at you for a long moment. Then: \"The Accord. The archive clause. You know your law.\" He tilts his head. \"No true name, though. No ally in the wings.\" A pause. \"Just you.\"";
+          }
+          return "The Thornweave looks at you for a long moment. Then: \"No iron. No true name. No contest law cited. No ally hidden in the wings.\" He tilts his head. \"Just you.\"";
+        },
         "\"Just me,\" you agree.",
         "\"Then,\" he says, and rises from the throne, and the court closes around you like a hand, \"we will do this the simple way.\"",
         "The simple way is not good for you. The court's weight comes down on you — stolen hours pressing at the edges of your memory, your purpose, your name. You feel them slipping. You hold on. It is not enough and you know it is not enough, but you hold on anyway.",

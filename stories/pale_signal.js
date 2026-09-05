@@ -1,5 +1,6 @@
 window.STORIES = window.STORIES || [];
 window.STORIES.push({
+  id:      "pale_signal",
   title:   "The Pale Signal",
   blurb:   "1923. A lighthouse has gone dark, its keeper vanished. On the rocks below, something pulses in the deep — a pattern older than ships, older than shores. You have been sent to find out what happened. You will wish you hadn't.",
   classes: [
